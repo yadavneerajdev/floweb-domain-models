@@ -10,6 +10,16 @@ from typing import Any, Literal
 from pydantic import BaseModel, ConfigDict
 
 
+class Type(StrEnum):
+    """
+    Type of the flow
+    """
+
+    flow = 'flow'
+    test = 'test'
+    performance = 'performance'
+
+
 class WebSocketMessage(BaseModel):
     """
     Base WebSocket message structure
@@ -64,6 +74,7 @@ class Flow(BaseModel):
     )
     id: str
     name: str
+    type: Type
     actions: list[dict[str, Any]]
     edges: list[dict[str, Any]]
 
