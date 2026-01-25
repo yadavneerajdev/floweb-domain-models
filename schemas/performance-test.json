@@ -1,0 +1,600 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://floweb.com/schemas/performance-test.json",
+  "title": "PerformanceTest",
+  "description": "Performance test definition for load testing and API monitoring",
+  "type": "object",
+  "properties": {
+    "metadata": {
+      "$ref": "#/$defs/PerformanceTestMetadata",
+      "description": "Test metadata and configuration"
+    },
+    "recordedRequests": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/RecordedRequest"
+      },
+      "description": "HTTP requests recorded during test creation"
+    },
+    "loadTestConfig": {
+      "$ref": "#/$defs/LoadTestConfiguration",
+      "description": "Load test execution configuration"
+    },
+    "filterPatterns": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "URL patterns for filtering recorded requests"
+    },
+    "onlySameDomain": {
+      "type": "boolean",
+      "description": "Restrict recording to same domain only"
+    },
+    "results": {
+      "$ref": "#/$defs/PerformanceTestResults",
+      "description": "Results from load test execution"
+    }
+  },
+  "required": ["metadata", "recordedRequests", "loadTestConfig"],
+  "$defs": {
+    "RecordedRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique request identifier"
+        },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "description": "Request URL"
+        },
+        "method": {
+          "type": "string",
+          "enum": ["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"],
+          "description": "HTTP method"
+        },
+        "headers": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Request headers"
+        },
+        "body": {
+          "type": "string",
+          "description": "Request body"
+        },
+        "timestamp": {
+          "type": "number",
+          "description": "Request timestamp in milliseconds"
+        },
+        "response": {
+          "$ref": "#/$defs/RecordedResponse",
+          "description": "Response data"
+        },
+        "resourceType": {
+          "type": "string",
+          "enum": ["document", "stylesheet", "script", "image", "fetch", "xhr", "other"],
+          "description": "Type of resource requested"
+        },
+        "initiator": {
+          "type": "string",
+          "description": "What triggered this request"
+        }
+      },
+      "required": ["id", "url", "method", "headers", "timestamp", "resourceType"]
+    },
+    "RecordedResponse": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "integer",
+          "description": "HTTP status code"
+        },
+        "statusText": {
+          "type": "string",
+          "description": "HTTP status text"
+        },
+        "headers": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Response headers"
+        },
+        "body": {
+          "type": "string",
+          "description": "Response body"
+        },
+        "size": {
+          "type": "integer",
+          "description": "Response size in bytes"
+        },
+        "timing": {
+          "$ref": "#/$defs/ResponseTiming",
+          "description": "Response timing breakdown"
+        }
+      },
+      "required": ["status", "statusText", "headers", "size", "timing"]
+    },
+    "ResponseTiming": {
+      "type": "object",
+      "properties": {
+        "dns": {
+          "type": "number",
+          "description": "DNS lookup time in milliseconds"
+        },
+        "tcp": {
+          "type": "number",
+          "description": "TCP connection time in milliseconds"
+        },
+        "ssl": {
+          "type": "number",
+          "description": "SSL/TLS handshake time in milliseconds"
+        },
+        "ttfb": {
+          "type": "number",
+          "description": "Time to first byte in milliseconds"
+        },
+        "download": {
+          "type": "number",
+          "description": "Download time in milliseconds"
+        },
+        "total": {
+          "type": "number",
+          "description": "Total request time in milliseconds"
+        }
+      },
+      "required": ["dns", "tcp", "ssl", "ttfb", "download", "total"]
+    },
+    "PerformanceTestMetadata": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique test identifier"
+        },
+        "name": {
+          "type": "string",
+          "description": "Test name"
+        },
+        "description": {
+          "type": "string",
+          "description": "Test description"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Test tags for categorization"
+        },
+        "parentID": {
+          "type": ["string", "null"],
+          "description": "Parent folder ID"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Creation timestamp"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last update timestamp"
+        },
+        "createdBy": {
+          "type": "string",
+          "description": "Creator identifier"
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Test version number"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["draft", "configured", "running", "completed", "archived"],
+          "description": "Test status"
+        },
+        "lastRun": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last execution timestamp"
+        }
+      },
+      "required": ["id", "name", "description", "tags", "createdAt", "updatedAt", "createdBy", "version", "status"]
+    },
+    "AuthConfig": {
+      "type": "object",
+      "properties": {
+        "token_refresh": {
+          "$ref": "#/$defs/TokenRefreshConfig",
+          "description": "Token refresh configuration"
+        },
+        "credential_rotation": {
+          "$ref": "#/$defs/CredentialRotationConfig",
+          "description": "Credential rotation configuration"
+        },
+        "header_override": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Header override configuration"
+        }
+      }
+    },
+    "TokenRefreshConfig": {
+      "type": "object",
+      "properties": {
+        "refresh_url": {
+          "type": "string",
+          "format": "uri",
+          "description": "Token refresh endpoint URL"
+        },
+        "refresh_method": {
+          "type": "string",
+          "enum": ["GET", "POST", "PUT"],
+          "default": "POST",
+          "description": "HTTP method for refresh request"
+        },
+        "refresh_body": {
+          "description": "Request body for token refresh"
+        },
+        "refresh_headers": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Headers for refresh request"
+        },
+        "token_path": {
+          "type": "string",
+          "description": "JSON path to extract token from response"
+        },
+        "token_header": {
+          "type": "string",
+          "default": "Authorization",
+          "description": "Header name for token"
+        },
+        "token_prefix": {
+          "type": "string",
+          "default": "Bearer",
+          "description": "Token prefix"
+        },
+        "refresh_interval": {
+          "type": "integer",
+          "description": "Refresh interval in seconds"
+        }
+      },
+      "required": ["refresh_url", "token_path"]
+    },
+    "CredentialRotationConfig": {
+      "type": "object",
+      "properties": {
+        "credentials": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "headers": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "description": "Headers for this credential set"
+              },
+              "user_id": {
+                "type": "string",
+                "description": "User identifier"
+              }
+            },
+            "required": ["headers"]
+          },
+          "description": "Array of credential sets"
+        },
+        "rotation_strategy": {
+          "type": "string",
+          "enum": ["round_robin", "random"],
+          "default": "round_robin",
+          "description": "Credential rotation strategy"
+        }
+      },
+      "required": ["credentials"]
+    },
+    "LoadTestConfiguration": {
+      "type": "object",
+      "properties": {
+        "targetUrl": {
+          "type": "string",
+          "format": "uri",
+          "description": "Base URL for the load test"
+        },
+        "duration": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Test duration in seconds"
+        },
+        "virtualUsers": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Number of concurrent virtual users"
+        },
+        "rampUpTime": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Time to ramp up to full load in seconds"
+        },
+        "thinkTime": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Delay between requests per user in milliseconds"
+        },
+        "includeRequests": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "IDs of requests to include in load test"
+        },
+        "thresholds": {
+          "$ref": "#/$defs/LoadTestThresholds",
+          "description": "Pass/fail thresholds"
+        },
+        "authConfig": {
+          "$ref": "#/$defs/AuthConfig",
+          "description": "Authentication configuration"
+        }
+      },
+      "required": ["targetUrl", "duration", "virtualUsers", "includeRequests", "thresholds"]
+    },
+    "LoadTestThresholds": {
+      "type": "object",
+      "properties": {
+        "maxResponseTime": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Maximum acceptable response time in milliseconds"
+        },
+        "maxErrorRate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Maximum acceptable error rate (0-1)"
+        },
+        "minThroughput": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Minimum requests per second"
+        }
+      },
+      "required": ["maxResponseTime", "maxErrorRate", "minThroughput"]
+    },
+    "PerformanceTestResults": {
+      "type": "object",
+      "properties": {
+        "testId": {
+          "type": "string",
+          "description": "Test identifier"
+        },
+        "startTime": {
+          "type": "number",
+          "description": "Test start timestamp"
+        },
+        "endTime": {
+          "type": "number",
+          "description": "Test end timestamp"
+        },
+        "duration": {
+          "type": "number",
+          "description": "Test duration in seconds"
+        },
+        "metrics": {
+          "$ref": "#/$defs/AggregateMetrics",
+          "description": "Aggregate performance metrics"
+        },
+        "requestResults": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/RequestResults"
+          },
+          "description": "Per-request execution results"
+        },
+        "timeline": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TimelineDataPoint"
+          },
+          "description": "Time-series data for charts"
+        },
+        "passed": {
+          "type": "boolean",
+          "description": "Whether the test passed"
+        },
+        "failureReasons": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Reasons for test failure"
+        }
+      },
+      "required": ["testId", "startTime", "endTime", "duration", "metrics", "requestResults", "timeline", "passed"]
+    },
+    "AggregateMetrics": {
+      "type": "object",
+      "properties": {
+        "totalRequests": {
+          "type": "integer",
+          "description": "Total number of requests executed"
+        },
+        "successfulRequests": {
+          "type": "integer",
+          "description": "Number of successful requests"
+        },
+        "failedRequests": {
+          "type": "integer",
+          "description": "Number of failed requests"
+        },
+        "errorRate": {
+          "type": "number",
+          "description": "Error rate (0-1)"
+        },
+        "throughput": {
+          "type": "number",
+          "description": "Requests per second"
+        },
+        "responseTime": {
+          "$ref": "#/$defs/ResponseTimeMetrics",
+          "description": "Response time statistics"
+        },
+        "bandwidth": {
+          "$ref": "#/$defs/BandwidthMetrics",
+          "description": "Bandwidth usage metrics"
+        }
+      },
+      "required": ["totalRequests", "successfulRequests", "failedRequests", "errorRate", "throughput", "responseTime", "bandwidth"]
+    },
+    "ResponseTimeMetrics": {
+      "type": "object",
+      "properties": {
+        "min": {
+          "type": "number",
+          "description": "Minimum response time"
+        },
+        "max": {
+          "type": "number",
+          "description": "Maximum response time"
+        },
+        "mean": {
+          "type": "number",
+          "description": "Mean response time"
+        },
+        "median": {
+          "type": "number",
+          "description": "Median response time"
+        },
+        "p90": {
+          "type": "number",
+          "description": "90th percentile response time"
+        },
+        "p95": {
+          "type": "number",
+          "description": "95th percentile response time"
+        },
+        "p99": {
+          "type": "number",
+          "description": "99th percentile response time"
+        }
+      },
+      "required": ["min", "max", "mean", "median", "p90", "p95", "p99"]
+    },
+    "BandwidthMetrics": {
+      "type": "object",
+      "properties": {
+        "sent": {
+          "type": "integer",
+          "description": "Total bytes sent"
+        },
+        "received": {
+          "type": "integer",
+          "description": "Total bytes received"
+        },
+        "avgSentPerSecond": {
+          "type": "number",
+          "description": "Average bytes sent per second"
+        },
+        "avgReceivedPerSecond": {
+          "type": "number",
+          "description": "Average bytes received per second"
+        }
+      },
+      "required": ["sent", "received", "avgSentPerSecond", "avgReceivedPerSecond"]
+    },
+    "RequestResults": {
+      "type": "object",
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "description": "Request identifier"
+        },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "description": "Request URL"
+        },
+        "method": {
+          "type": "string",
+          "description": "HTTP method"
+        },
+        "executions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/RequestExecution"
+          },
+          "description": "Individual execution results"
+        }
+      },
+      "required": ["requestId", "url", "method", "executions"]
+    },
+    "RequestExecution": {
+      "type": "object",
+      "properties": {
+        "timestamp": {
+          "type": "number",
+          "description": "Execution timestamp"
+        },
+        "statusCode": {
+          "type": "integer",
+          "description": "HTTP status code"
+        },
+        "responseTime": {
+          "type": "number",
+          "description": "Response time in milliseconds"
+        },
+        "size": {
+          "type": "integer",
+          "description": "Response size in bytes"
+        },
+        "success": {
+          "type": "boolean",
+          "description": "Whether the request was successful"
+        },
+        "error": {
+          "type": "string",
+          "description": "Error message if failed"
+        }
+      },
+      "required": ["timestamp", "statusCode", "responseTime", "size", "success"]
+    },
+    "TimelineDataPoint": {
+      "type": "object",
+      "properties": {
+        "timestamp": {
+          "type": "number",
+          "description": "Data point timestamp"
+        },
+        "activeUsers": {
+          "type": "integer",
+          "description": "Number of active users at this point"
+        },
+        "requestsPerSecond": {
+          "type": "number",
+          "description": "Requests per second at this point"
+        },
+        "avgResponseTime": {
+          "type": "number",
+          "description": "Average response time at this point"
+        },
+        "errorRate": {
+          "type": "number",
+          "description": "Error rate at this point"
+        }
+      },
+      "required": ["timestamp", "activeUsers", "requestsPerSecond", "avgResponseTime", "errorRate"]
+    }
+  }
+}

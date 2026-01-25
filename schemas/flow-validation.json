@@ -1,0 +1,311 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://floweb.com/schemas/flow-validation.json",
+  "title": "Flow Validation Models",
+  "description": "Schema for flow validation warnings and errors",
+  "type": "object",
+  "properties": {
+    "flowValidation": {
+      "type": "object",
+      "properties": {
+        "warnings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FlowWarning"
+          }
+        },
+        "loopDetections": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/LoopDetectionResult"
+          }
+        },
+        "validationResults": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FlowValidationResult"
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "FlowWarning": {
+      "type": "object",
+      "description": "Flow validation warning or error",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique warning identifier"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "missing-selector",
+            "infinite-loop",
+            "unreachable-node",
+            "missing-condition",
+            "invalid-reference",
+            "missing-action-reference",
+            "circular-dependency",
+            "duplicate-id",
+            "invalid-variable",
+            "missing-variable",
+            "type-mismatch",
+            "performance-issue",
+            "security-risk"
+          ],
+          "description": "Type of warning"
+        },
+        "severity": {
+          "$ref": "#/$defs/WarningSeverity"
+        },
+        "nodeId": {
+          "type": "string",
+          "description": "ID of the node that triggered the warning"
+        },
+        "nodeName": {
+          "type": "string",
+          "description": "Name of the node that triggered the warning"
+        },
+        "message": {
+          "type": "string",
+          "description": "Warning message"
+        },
+        "description": {
+          "type": "string",
+          "description": "Detailed description of the warning"
+        },
+        "affectedNodes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of other affected node IDs"
+        },
+        "suggestion": {
+          "type": "string",
+          "description": "Suggested fix for the warning"
+        },
+        "category": {
+          "type": "string",
+          "enum": ["logic", "performance", "security", "usability", "compatibility"],
+          "description": "Category of the warning"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the warning was detected"
+        }
+      },
+      "required": ["id", "type", "severity", "nodeId", "nodeName", "message", "description"]
+    },
+    "WarningSeverity": {
+      "type": "string",
+      "enum": ["minor", "medium", "critical", "info"],
+      "description": "Severity level of the warning"
+    },
+    "LoopDetectionResult": {
+      "type": "object",
+      "description": "Result of loop detection analysis",
+      "properties": {
+        "hasLoops": {
+          "type": "boolean",
+          "description": "Whether loops were detected in the flow"
+        },
+        "loops": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/LoopInfo"
+          },
+          "description": "Information about detected loops"
+        },
+        "totalLoops": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total number of loops detected"
+        },
+        "infiniteLoops": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of potentially infinite loops"
+        }
+      },
+      "required": ["hasLoops", "loops"]
+    },
+    "LoopInfo": {
+      "type": "object",
+      "description": "Information about a detected loop",
+      "properties": {
+        "nodes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Node IDs that form the loop"
+        },
+        "hasExitCondition": {
+          "type": "boolean",
+          "description": "Whether the loop has a proper exit condition"
+        },
+        "severity": {
+          "$ref": "#/$defs/WarningSeverity"
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of the loop issue"
+        },
+        "maxIterations": {
+          "type": "integer",
+          "description": "Maximum iterations if detectable"
+        },
+        "isInfinite": {
+          "type": "boolean",
+          "description": "Whether this appears to be an infinite loop"
+        }
+      },
+      "required": ["nodes", "hasExitCondition", "severity", "description"]
+    },
+    "FlowValidationResult": {
+      "type": "object",
+      "description": "Complete result of flow validation",
+      "properties": {
+        "flowId": {
+          "type": "string",
+          "description": "ID of the validated flow"
+        },
+        "flowName": {
+          "type": "string",
+          "description": "Name of the validated flow"
+        },
+        "isValid": {
+          "type": "boolean",
+          "description": "Whether the flow is valid"
+        },
+        "warnings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FlowWarning"
+          },
+          "description": "List of warnings found"
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FlowWarning"
+          },
+          "description": "List of errors found (critical warnings)"
+        },
+        "summary": {
+          "$ref": "#/$defs/ValidationSummary"
+        },
+        "validatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When validation was performed"
+        },
+        "validationTime": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Time taken for validation in seconds"
+        }
+      },
+      "required": ["flowId", "isValid", "warnings", "errors", "summary"]
+    },
+    "ValidationSummary": {
+      "type": "object",
+      "description": "Summary statistics of validation results",
+      "properties": {
+        "totalNodes": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total number of nodes in the flow"
+        },
+        "totalEdges": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total number of edges in the flow"
+        },
+        "warningCount": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total number of warnings"
+        },
+        "errorCount": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total number of errors"
+        },
+        "criticalCount": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of critical severity issues"
+        },
+        "warningsByType": {
+          "type": "object",
+          "description": "Count of warnings by type",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "warningsBySeverity": {
+          "type": "object",
+          "description": "Count of warnings by severity",
+          "properties": {
+            "minor": {"type": "integer", "minimum": 0},
+            "medium": {"type": "integer", "minimum": 0},
+            "critical": {"type": "integer", "minimum": 0},
+            "info": {"type": "integer", "minimum": 0}
+          }
+        }
+      },
+      "required": ["totalNodes", "totalEdges", "warningCount", "errorCount"]
+    },
+    "NodeValidationResult": {
+      "type": "object",
+      "description": "Validation result for a specific node",
+      "properties": {
+        "nodeId": {
+          "type": "string",
+          "description": "ID of the validated node"
+        },
+        "nodeType": {
+          "type": "string",
+          "description": "Type of the node"
+        },
+        "isValid": {
+          "type": "boolean",
+          "description": "Whether the node is valid"
+        },
+        "warnings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FlowWarning"
+          },
+          "description": "Warnings specific to this node"
+        },
+        "configValidation": {
+          "type": "object",
+          "description": "Validation of node configuration",
+          "properties": {
+            "isValid": {"type": "boolean"},
+            "missingFields": {
+              "type": "array",
+              "items": {"type": "string"}
+            },
+            "invalidFields": {
+              "type": "array",
+              "items": {"type": "string"}
+            },
+            "typeErrors": {
+              "type": "array",
+              "items": {"type": "string"}
+            }
+          }
+        }
+      },
+      "required": ["nodeId", "nodeType", "isValid"]
+    }
+  }
+}

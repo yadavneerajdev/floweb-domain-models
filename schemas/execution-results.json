@@ -1,0 +1,209 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://floweb.com/schemas/execution-results.json",
+  "title": "Execution Results Models",
+  "description": "Schema for action execution results and flow reports",
+  "type": "object",
+  "properties": {
+    "executionResults": {
+      "type": "object",
+      "properties": {
+        "actionResults": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ActionResult"
+          }
+        },
+        "flowReports": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FlowReport"
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "ActionResult": {
+      "type": "object",
+      "description": "Result of executing an action",
+      "properties": {
+        "node_id": {
+          "type": "string",
+          "description": "Action node ID"
+        },
+        "action_type": {
+          "type": "string",
+          "description": "Type of action executed"
+        },
+        "config": {
+          "type": "object",
+          "description": "Action configuration used",
+          "additionalProperties": true
+        },
+        "start_time": {
+          "type": "integer",
+          "description": "Start timestamp in milliseconds"
+        },
+        "end_time": {
+          "type": "integer",
+          "description": "End timestamp in milliseconds"
+        },
+        "duration_seconds": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Duration in seconds"
+        },
+        "success": {
+          "type": "boolean",
+          "description": "Whether the action succeeded"
+        },
+        "message": {
+          "type": "string",
+          "description": "Result message"
+        },
+        "error": {
+          "type": "string",
+          "description": "Error message if failed"
+        },
+        "screenshot": {
+          "type": "string",
+          "description": "Base64 screenshot if taken"
+        },
+        "data": {
+          "type": "object",
+          "description": "Additional action-specific data",
+          "additionalProperties": true
+        }
+      },
+      "required": ["node_id", "action_type", "config", "start_time", "end_time", "duration_seconds", "success", "message"]
+    },
+    "FlowReport": {
+      "type": "object",
+      "description": "Complete report of flow execution",
+      "properties": {
+        "actions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ActionResult"
+          },
+          "description": "Results of all actions"
+        },
+        "variables": {
+          "type": "object",
+          "description": "Variables used during execution (input/output)",
+          "patternProperties": {
+            ".*": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            }
+          }
+        },
+        "parameters": {
+          "type": "object",
+          "description": "Parameters used during execution (input/output)",
+          "properties": {
+            "input": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": true
+              },
+              "default": []
+            },
+            "output": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": true
+              },
+              "default": []
+            }
+          },
+          "default": {
+            "input": [],
+            "output": []
+          }
+        },
+        "output": {
+          "type": "object",
+          "description": "Final output",
+          "additionalProperties": true,
+          "default": {}
+        },
+        "recording": {
+          "type": "string",
+          "description": "Recording data (deprecated, use recording_file instead)"
+        },
+        "recording_file": {
+          "type": "string",
+          "description": "Path to the recording file on the server"
+        },
+        "recording_duration": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Duration of the recording in seconds"
+        },
+        "flow_id": {
+          "type": "string",
+          "description": "ID of the executed flow"
+        },
+        "flow_name": {
+          "type": "string",
+          "description": "Name of the executed flow"
+        },
+        "start_time": {
+          "type": "integer",
+          "description": "Flow execution start timestamp"
+        },
+        "end_time": {
+          "type": "integer",
+          "description": "Flow execution end timestamp"
+        },
+        "total_duration": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Total execution time in seconds"
+        },
+        "success": {
+          "type": "boolean",
+          "description": "Overall flow success status"
+        },
+        "error": {
+          "type": "string",
+          "description": "Error message if flow failed"
+        },
+        "environment": {
+          "type": "object",
+          "description": "Environment used during execution",
+          "additionalProperties": true
+        },
+        "browser_info": {
+          "type": "object",
+          "description": "Browser information",
+          "properties": {
+            "name": {"type": "string"},
+            "version": {"type": "string"},
+            "user_agent": {"type": "string"}
+          }
+        },
+        "performance_metrics": {
+          "type": "object",
+          "description": "Performance metrics collected during execution",
+          "properties": {
+            "total_actions": {"type": "integer", "minimum": 0},
+            "successful_actions": {"type": "integer", "minimum": 0},
+            "failed_actions": {"type": "integer", "minimum": 0},
+            "average_action_time": {"type": "number", "minimum": 0},
+            "total_network_requests": {"type": "integer", "minimum": 0},
+            "total_data_transferred": {"type": "integer", "minimum": 0}
+          }
+        }
+      },
+      "required": ["actions", "variables", "parameters", "output"]
+    }
+  }
+}

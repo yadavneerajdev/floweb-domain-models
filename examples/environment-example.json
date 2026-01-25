@@ -1,0 +1,180 @@
+{
+  "environments": [
+    {
+      "id": "env-dev",
+      "name": "Development",
+      "description": "Local development environment",
+      "variables": [
+        {
+          "id": "dev-base-url",
+          "name": "baseUrl",
+          "value": "http://localhost:3000",
+          "type": "url",
+          "description": "Base URL for the application"
+        },
+        {
+          "id": "dev-api-url",
+          "name": "apiUrl",
+          "value": "http://localhost:8000/api",
+          "type": "url",
+          "description": "API base URL"
+        },
+        {
+          "id": "dev-db-conn",
+          "name": "databaseConnection",
+          "value": "postgresql://user:password@localhost:5432/floweb_dev",
+          "type": "string",
+          "description": "Database connection string"
+        },
+        {
+          "id": "dev-timeout",
+          "name": "defaultTimeout",
+          "value": "10000",
+          "type": "number",
+          "description": "Default timeout in milliseconds"
+        }
+      ],
+      "isDefault": false,
+      "createdAt": "2024-01-10T08:00:00Z",
+      "updatedAt": "2024-01-10T08:00:00Z"
+    },
+    {
+      "id": "env-staging",
+      "name": "Staging",
+      "description": "Staging environment for testing",
+      "variables": [
+        {
+          "id": "staging-base-url",
+          "name": "baseUrl",
+          "value": "https://staging.floweb.com",
+          "type": "url",
+          "description": "Base URL for staging"
+        },
+        {
+          "id": "staging-api-url",
+          "name": "apiUrl",
+          "value": "https://api-staging.floweb.com",
+          "type": "url",
+          "description": "API base URL for staging"
+        },
+        {
+          "id": "staging-db-conn",
+          "name": "databaseConnection",
+          "value": "postgresql://user:password@staging-db.floweb.com:5432/floweb_staging",
+          "type": "string",
+          "description": "Staging database connection"
+        },
+        {
+          "id": "staging-timeout",
+          "name": "defaultTimeout",
+          "value": "15000",
+          "type": "number",
+          "description": "Default timeout for staging"
+        },
+        {
+          "id": "staging-rate-limit",
+          "name": "rateLimit",
+          "value": "100",
+          "type": "number",
+          "description": "Rate limit per minute"
+        }
+      ],
+      "isDefault": true,
+      "createdAt": "2024-01-10T08:00:00Z",
+      "updatedAt": "2024-01-15T10:30:00Z"
+    },
+    {
+      "id": "env-prod",
+      "name": "Production",
+      "description": "Production environment",
+      "variables": [
+        {
+          "id": "prod-base-url",
+          "name": "baseUrl",
+          "value": "https://floweb.com",
+          "type": "url",
+          "description": "Production base URL"
+        },
+        {
+          "id": "prod-api-url",
+          "name": "apiUrl",
+          "value": "https://api.floweb.com",
+          "type": "url",
+          "description": "Production API URL"
+        },
+        {
+          "id": "prod-db-conn",
+          "name": "databaseConnection",
+          "value": "postgresql://user:password@prod-db.floweb.com:5432/floweb_prod",
+          "type": "string",
+          "description": "Production database connection"
+        },
+        {
+          "id": "prod-timeout",
+          "name": "defaultTimeout",
+          "value": "30000",
+          "type": "number",
+          "description": "Production timeout settings"
+        },
+        {
+          "id": "prod-monitoring",
+          "name": "monitoringEnabled",
+          "value": "true",
+          "type": "boolean",
+          "description": "Enable production monitoring"
+        }
+      ],
+      "isDefault": false,
+      "createdAt": "2024-01-10T08:00:00Z",
+      "updatedAt": "2024-01-20T14:15:00Z"
+    }
+  ],
+  "globalVariables": [
+    {
+      "id": "global-browser-timeout",
+      "name": "browserTimeout",
+      "value": "30000",
+      "type": "number",
+      "description": "Global browser timeout setting",
+      "createdAt": "2024-01-10T08:00:00Z",
+      "updatedAt": "2024-01-10T08:00:00Z"
+    },
+    {
+      "id": "global-max-retries",
+      "name": "maxRetries",
+      "value": "3",
+      "type": "number",
+      "description": "Maximum retry attempts for failed operations",
+      "createdAt": "2024-01-10T08:00:00Z",
+      "updatedAt": "2024-01-12T11:20:00Z"
+    },
+    {
+      "id": "global-screenshot-format",
+      "name": "screenshotFormat",
+      "value": "png",
+      "type": "string",
+      "description": "Default screenshot format",
+      "createdAt": "2024-01-10T08:00:00Z",
+      "updatedAt": "2024-01-10T08:00:00Z"
+    },
+    {
+      "id": "global-log-level",
+      "name": "logLevel",
+      "value": "info",
+      "type": "string",
+      "description": "Global logging level",
+      "createdAt": "2024-01-10T08:00:00Z",
+      "updatedAt": "2024-01-15T09:45:00Z"
+    },
+    {
+      "id": "global-test-data-path",
+      "name": "testDataPath",
+      "value": "./test-data",
+      "type": "file",
+      "description": "Path to test data files",
+      "createdAt": "2024-01-10T08:00:00Z",
+      "updatedAt": "2024-01-10T08:00:00Z"
+    }
+  ],
+  "selectedEnvironmentId": "env-staging"
+}

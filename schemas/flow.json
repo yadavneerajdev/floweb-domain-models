@@ -1,0 +1,350 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://floweb.com/schemas/flow.json",
+  "title": "Flow",
+  "description": "Complete flow definition for automation workflows",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique identifier for the flow"
+    },
+    "name": {
+      "type": "string",
+      "description": "Human-readable name of the flow"
+    },
+    "description": {
+      "type": "string",
+      "description": "Optional description of the flow"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Tags for categorization and filtering"
+    },
+    "parentID": {
+      "type": ["string", "null"],
+      "description": "Parent folder ID for organization"
+    },
+    "type": {
+      "type": "string",
+      "enum": ["flow", "test", "performance"],
+      "description": "Type of the flow"
+    },
+    "actions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Action"
+      },
+      "description": "List of actions in the flow"
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Edge"
+      },
+      "description": "Connections between actions"
+    },
+    "zoom": {
+      "$ref": "#/$defs/Zoom",
+      "description": "Canvas zoom and pan state"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Creation timestamp"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last update timestamp"
+    },
+    "variables": {
+      "$ref": "#/$defs/FlowVariables",
+      "description": "Flow input and output variables"
+    },
+    "parameters": {
+      "$ref": "#/$defs/FlowParameters",
+      "description": "Flow parameters for configuration"
+    },
+    "environment": {
+      "$ref": "#/$defs/Environment",
+      "description": "Environment configuration"
+    },
+    "globalVariables": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/GlobalVariable"
+      },
+      "description": "Global variables available to the flow"
+    },
+    "synced": {
+      "type": "boolean",
+      "description": "Whether the flow is synced with server"
+    },
+    "lastRun": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last execution timestamp"
+    },
+    "lastResult": {
+      "type": "string",
+      "enum": ["passed", "failed", "pending", "running"],
+      "description": "Result of last execution"
+    }
+  },
+  "required": ["id", "name", "type", "actions", "edges", "createdAt", "updatedAt"],
+  "$defs": {
+    "Position": {
+      "type": "object",
+      "properties": {
+        "x": {
+          "type": "number",
+          "description": "X coordinate"
+        },
+        "y": {
+          "type": "number",
+          "description": "Y coordinate"
+        }
+      },
+      "required": ["x", "y"]
+    },
+    "ActionData": {
+      "type": "object",
+      "properties": {
+        "label": {
+          "type": "string",
+          "description": "Human-readable label"
+        },
+        "type": {
+          "type": "string",
+          "description": "Action type identifier"
+        },
+        "config": {
+          "type": "object",
+          "description": "Action-specific configuration"
+        }
+      },
+      "required": ["label", "type", "config"]
+    },
+    "Action": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique action identifier"
+        },
+        "type": {
+          "type": "string",
+          "description": "Action type"
+        },
+        "position": {
+          "$ref": "#/$defs/Position"
+        },
+        "data": {
+          "$ref": "#/$defs/ActionData"
+        }
+      },
+      "required": ["id", "type", "position", "data"]
+    },
+    "Edge": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique edge identifier"
+        },
+        "source": {
+          "type": "string",
+          "description": "Source action ID"
+        },
+        "sourceHandle": {
+          "type": "string",
+          "description": "Source handle identifier"
+        },
+        "target": {
+          "type": "string",
+          "description": "Target action ID"
+        },
+        "targetHandle": {
+          "type": "string",
+          "description": "Target handle identifier"
+        },
+        "type": {
+          "type": "string",
+          "default": "step",
+          "description": "Edge type"
+        },
+        "data": {
+          "type": "object",
+          "description": "Additional edge data"
+        }
+      },
+      "required": ["id", "source", "target"]
+    },
+    "Zoom": {
+      "type": "object",
+      "properties": {
+        "x": {
+          "type": "number",
+          "description": "Pan X position"
+        },
+        "y": {
+          "type": "number",
+          "description": "Pan Y position"
+        },
+        "zoom": {
+          "type": "number",
+          "description": "Zoom level"
+        }
+      },
+      "required": ["x", "y", "zoom"]
+    },
+    "Variable": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Variable identifier"
+        },
+        "name": {
+          "type": "string",
+          "description": "Variable name"
+        },
+        "type": {
+          "type": "string",
+          "description": "Variable data type"
+        },
+        "value": {
+          "description": "Variable value"
+        },
+        "description": {
+          "type": "string",
+          "description": "Optional description"
+        }
+      },
+      "required": ["id", "name", "type", "value"]
+    },
+    "FlowVariables": {
+      "type": "object",
+      "properties": {
+        "input": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Variable"
+          },
+          "description": "Input variables"
+        },
+        "output": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Variable"
+          },
+          "description": "Output variables"
+        }
+      },
+      "required": ["input", "output"]
+    },
+    "FlowParameters": {
+      "type": "object",
+      "properties": {
+        "input": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Variable"
+          },
+          "description": "Input parameters"
+        },
+        "output": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Variable"
+          },
+          "description": "Output parameters"
+        }
+      },
+      "required": ["input", "output"]
+    },
+    "EnvironmentVariable": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Variable identifier"
+        },
+        "name": {
+          "type": "string",
+          "description": "Variable name"
+        },
+        "type": {
+          "type": "string",
+          "description": "Variable data type"
+        },
+        "value": {
+          "description": "Variable value"
+        },
+        "description": {
+          "type": "string",
+          "description": "Optional description"
+        }
+      },
+      "required": ["id", "name", "type", "value"]
+    },
+    "Environment": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Environment identifier"
+        },
+        "name": {
+          "type": "string",
+          "description": "Environment name"
+        },
+        "variables": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EnvironmentVariable"
+          },
+          "description": "Environment variables"
+        },
+        "description": {
+          "type": "string",
+          "description": "Environment description"
+        },
+        "isActive": {
+          "type": "boolean",
+          "description": "Whether this environment is active"
+        }
+      },
+      "required": ["id", "name"]
+    },
+    "GlobalVariable": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Variable identifier"
+        },
+        "name": {
+          "type": "string",
+          "description": "Variable name"
+        },
+        "type": {
+          "type": "string",
+          "description": "Variable data type"
+        },
+        "value": {
+          "description": "Variable value"
+        },
+        "description": {
+          "type": "string",
+          "description": "Optional description"
+        }
+      },
+      "required": ["id", "name", "type", "value"]
+    }
+  }
+}

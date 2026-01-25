@@ -1,0 +1,165 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://floweb.com/schemas/environment.json",
+  "title": "Environment and Global Variables Configuration",
+  "description": "Schema for environment configurations and global variables used in Floweb automation flows",
+  "type": "object",
+  "properties": {
+    "environments": {
+      "type": "array",
+      "description": "List of available environments",
+      "items": {
+        "$ref": "#/$defs/Environment"
+      },
+      "minItems": 0
+    },
+    "globalVariables": {
+      "type": "array",
+      "description": "List of global variables available across all environments",
+      "items": {
+        "$ref": "#/$defs/GlobalVariable"
+      },
+      "minItems": 0
+    },
+    "selectedEnvironmentId": {
+      "type": "string",
+      "description": "ID of the currently selected environment",
+      "pattern": "^[a-zA-Z0-9_-]+$"
+    }
+  },
+  "required": ["environments", "globalVariables"],
+  "$defs": {
+    "Environment": {
+      "type": "object",
+      "description": "An environment configuration with its variables",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the environment",
+          "pattern": "^[a-zA-Z0-9_-]+$",
+          "minLength": 1,
+          "maxLength": 50
+        },
+        "name": {
+          "type": "string",
+          "description": "Display name for the environment",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of the environment's purpose",
+          "maxLength": 500
+        },
+        "variables": {
+          "type": "array",
+          "description": "Environment-specific variables",
+          "items": {
+            "$ref": "#/$defs/Variable"
+          },
+          "minItems": 0
+        },
+        "isDefault": {
+          "type": "boolean",
+          "description": "Whether this is the default environment",
+          "default": false
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 timestamp when the environment was created"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 timestamp when the environment was last updated"
+        }
+      },
+      "required": ["id", "name", "variables", "isDefault", "createdAt", "updatedAt"]
+    },
+    "GlobalVariable": {
+      "type": "object",
+      "description": "A global variable available across all environments",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the global variable",
+          "pattern": "^[a-zA-Z0-9_-]+$",
+          "minLength": 1,
+          "maxLength": 50
+        },
+        "name": {
+          "type": "string",
+          "description": "Variable name used in flows",
+          "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$",
+          "minLength": 1,
+          "maxLength": 50
+        },
+        "value": {
+          "type": "string",
+          "description": "The variable's value",
+          "minLength": 0,
+          "maxLength": 10000
+        },
+        "type": {
+          "type": "string",
+          "description": "Data type of the variable",
+          "enum": ["string", "number", "boolean", "url", "file", "json", "array"]
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of the variable's purpose",
+          "maxLength": 500
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 timestamp when the variable was created"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 timestamp when the variable was last updated"
+        }
+      },
+      "required": ["id", "name", "value", "type", "createdAt", "updatedAt"]
+    },
+    "Variable": {
+      "type": "object",
+      "description": "An environment-specific variable",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the variable within this environment",
+          "pattern": "^[a-zA-Z0-9_-]+$",
+          "minLength": 1,
+          "maxLength": 50
+        },
+        "name": {
+          "type": "string",
+          "description": "Variable name used in flows",
+          "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$",
+          "minLength": 1,
+          "maxLength": 50
+        },
+        "value": {
+          "type": "string",
+          "description": "The variable's value",
+          "minLength": 0,
+          "maxLength": 10000
+        },
+        "type": {
+          "type": "string",
+          "description": "Data type of the variable",
+          "enum": ["string", "number", "boolean", "url", "file", "json", "array"]
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of the variable's purpose",
+          "maxLength": 500
+        }
+      },
+      "required": ["id", "name", "value", "type"]
+    }
+  }
+}

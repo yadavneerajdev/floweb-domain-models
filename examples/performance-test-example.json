@@ -1,0 +1,186 @@
+{
+  "metadata": {
+    "id": "perf-test-123",
+    "name": "API Load Test - User Authentication",
+    "description": "Load testing for user login and authentication endpoints",
+    "tags": ["api", "authentication", "load-test"],
+    "parentID": "folder-api-tests",
+    "createdAt": "2024-01-15T09:00:00Z",
+    "updatedAt": "2024-01-15T09:30:00Z",
+    "createdBy": "test-engineer@example.com",
+    "version": 1,
+    "status": "configured",
+    "lastRun": "2024-01-15T10:00:00Z"
+  },
+  "recordedRequests": [
+    {
+      "id": "req-1",
+      "url": "https://api.example.com/auth/login",
+      "method": "POST",
+      "headers": {
+        "Content-Type": "application/json",
+        "User-Agent": "Floweb-Performance-Test/1.0"
+      },
+      "body": "{\"email\":\"{{email}}\",\"password\":\"{{password}}\"}",
+      "timestamp": 1705312200000,
+      "response": {
+        "status": 200,
+        "statusText": "OK",
+        "headers": {
+          "content-type": "application/json",
+          "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        },
+        "body": "{\"token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\"expiresIn\":3600}",
+        "size": 1247,
+        "timing": {
+          "dns": 45,
+          "tcp": 23,
+          "ssl": 67,
+          "ttfb": 234,
+          "download": 89,
+          "total": 458
+        }
+      },
+      "resourceType": "fetch",
+      "initiator": "load-test"
+    },
+    {
+      "id": "req-2",
+      "url": "https://api.example.com/user/profile",
+      "method": "GET",
+      "headers": {
+        "Authorization": "Bearer {{authToken}}",
+        "User-Agent": "Floweb-Performance-Test/1.0"
+      },
+      "timestamp": 1705312210000,
+      "response": {
+        "status": 200,
+        "statusText": "OK",
+        "headers": {
+          "content-type": "application/json"
+        },
+        "body": "{\"id\":123,\"email\":\"user@example.com\",\"name\":\"Test User\"}",
+        "size": 892,
+        "timing": {
+          "dns": 12,
+          "tcp": 18,
+          "ssl": 45,
+          "ttfb": 156,
+          "download": 67,
+          "total": 298
+        }
+      },
+      "resourceType": "fetch",
+      "initiator": "load-test"
+    }
+  ],
+  "loadTestConfig": {
+    "targetUrl": "https://api.example.com",
+    "duration": 300,
+    "virtualUsers": 50,
+    "rampUpTime": 30,
+    "thinkTime": 1000,
+    "includeRequests": ["req-1", "req-2"],
+    "thresholds": {
+      "maxResponseTime": 2000,
+      "maxErrorRate": 0.05,
+      "minThroughput": 10
+    },
+    "authConfig": {
+      "token_refresh": {
+        "refresh_url": "https://api.example.com/auth/refresh",
+        "refresh_method": "POST",
+        "refresh_body": "{\"refreshToken\":\"{{refreshToken}}\"}",
+        "refresh_headers": {
+          "Content-Type": "application/json"
+        },
+        "token_path": "token",
+        "token_header": "Authorization",
+        "token_prefix": "Bearer",
+        "refresh_interval": 300
+      }
+    }
+  },
+  "filterPatterns": [
+    "*.js",
+    "*.css",
+    "*.png",
+    "*.jpg"
+  ],
+  "onlySameDomain": true,
+  "results": {
+    "testId": "perf-test-123",
+    "startTime": 1705312800000,
+    "endTime": 1705313100000,
+    "duration": 300,
+    "metrics": {
+      "totalRequests": 15000,
+      "successfulRequests": 14850,
+      "failedRequests": 150,
+      "errorRate": 0.01,
+      "throughput": 50,
+      "responseTime": {
+        "min": 145,
+        "max": 3456,
+        "mean": 567,
+        "median": 523,
+        "p90": 890,
+        "p95": 1234,
+        "p99": 2345
+      },
+      "bandwidth": {
+        "sent": 5242880,
+        "received": 15728640,
+        "avgSentPerSecond": 17476,
+        "avgReceivedPerSecond": 52428
+      }
+    },
+    "requestResults": [
+      {
+        "requestId": "req-1",
+        "url": "https://api.example.com/auth/login",
+        "method": "POST",
+        "executions": [
+          {
+            "timestamp": 1705312801000,
+            "statusCode": 200,
+            "responseTime": 456,
+            "size": 1247,
+            "success": true
+          },
+          {
+            "timestamp": 1705312802000,
+            "statusCode": 200,
+            "responseTime": 423,
+            "size": 1247,
+            "success": true
+          }
+        ]
+      }
+    ],
+    "timeline": [
+      {
+        "timestamp": 1705312800000,
+        "activeUsers": 5,
+        "requestsPerSecond": 12.5,
+        "avgResponseTime": 567,
+        "errorRate": 0.01
+      },
+      {
+        "timestamp": 1705312830000,
+        "activeUsers": 25,
+        "requestsPerSecond": 45.2,
+        "avgResponseTime": 623,
+        "errorRate": 0.008
+      },
+      {
+        "timestamp": 1705312860000,
+        "activeUsers": 50,
+        "requestsPerSecond": 52.1,
+        "avgResponseTime": 589,
+        "errorRate": 0.012
+      }
+    ],
+    "passed": true
+  }
+}

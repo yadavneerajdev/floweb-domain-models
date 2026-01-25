@@ -1,0 +1,1172 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://floweb.com/schemas/action-configs.json",
+  "title": "Action Configurations",
+  "description": "Configuration schemas for all automation actions",
+  "type": "object",
+  "properties": {
+    "actionConfigs": {
+      "type": "object",
+      "patternProperties": {
+        ".*": {
+          "oneOf": [
+            {"$ref": "#/$defs/ClickConfig"},
+            {"$ref": "#/$defs/InputConfig"},
+            {"$ref": "#/$defs/SendKeysConfig"},
+            {"$ref": "#/$defs/WaitConfig"},
+            {"$ref": "#/$defs/NavigateConfig"},
+            {"$ref": "#/$defs/ScrollConfig"},
+            {"$ref": "#/$defs/ScreenshotConfig"},
+            {"$ref": "#/$defs/AssertionConfig"},
+            {"$ref": "#/$defs/AssertVisibleConfig"},
+            {"$ref": "#/$defs/FormFillConfig"},
+            {"$ref": "#/$defs/ClearInputConfig"},
+            {"$ref": "#/$defs/OpenNewTabConfig"},
+            {"$ref": "#/$defs/SwitchTabConfig"},
+            {"$ref": "#/$defs/GoForwardConfig"},
+            {"$ref": "#/$defs/GoBackConfig"},
+            {"$ref": "#/$defs/RefreshConfig"},
+            {"$ref": "#/$defs/GetPageInfoConfig"},
+            {"$ref": "#/$defs/JunctionConfig"},
+            {"$ref": "#/$defs/ApiCallConfig"},
+            {"$ref": "#/$defs/ConditionalConfig"},
+            {"$ref": "#/$defs/LoopConfig"},
+            {"$ref": "#/$defs/DatabaseQueryConfig"},
+            {"$ref": "#/$defs/DatabaseInsertConfig"},
+            {"$ref": "#/$defs/CustomCodeConfig"},
+            {"$ref": "#/$defs/DragAndDropConfig"},
+            {"$ref": "#/$defs/CallToFlowConfig"},
+            {"$ref": "#/$defs/SwitchToFrameConfig"},
+            {"$ref": "#/$defs/ExitFrameConfig"},
+            {"$ref": "#/$defs/SetViewportConfig"},
+            {"$ref": "#/$defs/GetElementPropertiesConfig"},
+            {"$ref": "#/$defs/HandlePopupConfig"},
+            {"$ref": "#/$defs/FileUploadConfig"},
+            {"$ref": "#/$defs/FileDownloadConfig"},
+            {"$ref": "#/$defs/SubflowConfig"}
+          ]
+        }
+      }
+    }
+  },
+  "$defs": {
+    "BaseActionConfig": {
+      "type": "object",
+      "properties": {
+        "image": {
+          "type": "string",
+          "description": "Base64 encoded reference image"
+        }
+      }
+    },
+    "ClickConfig": {
+      "allOf": [
+        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "type": "object",
+          "properties": {
+            "selector": {
+              "type": "string",
+              "description": "CSS selector for element to click"
+            },
+            "waitTime": {
+              "type": "integer",
+              "default": 1000,
+              "description": "Wait time in milliseconds"
+            },
+            "forceClick": {
+              "type": "boolean",
+              "default": false,
+              "description": "Force click even if element not clickable"
+            },
+            "scrollIntoView": {
+              "type": "boolean",
+              "default": true,
+              "description": "Scroll element into view before clicking"
+            },
+            "waitForElement": {
+              "type": "boolean",
+              "default": true,
+              "description": "Wait for element to be present"
+            },
+            "clickType": {
+              "type": "string",
+              "enum": ["left", "right"],
+              "default": "left",
+              "description": "Type of click to perform"
+            },
+            "clickCount": {
+              "type": "integer",
+              "default": 1,
+              "minimum": 1,
+              "description": "Number of clicks to perform"
+            },
+            "clickAndHold": {
+              "type": "boolean",
+              "default": false,
+              "description": "Whether to click and hold"
+            },
+            "holdDuration": {
+              "type": "integer",
+              "default": 1000,
+              "description": "Duration to hold click in milliseconds"
+            }
+          },
+          "required": ["selector"]
+        }
+      ]
+    },
+    "InputConfig": {
+      "allOf": [
+        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "type": "object",
+          "properties": {
+            "selector": {
+              "type": "string",
+              "description": "CSS selector for input element"
+            },
+            "text": {
+              "type": "string",
+              "description": "Text to input"
+            },
+            "clearFirst": {
+              "type": "boolean",
+              "default": true,
+              "description": "Clear field before typing"
+            },
+            "waitForElement": {
+              "type": "boolean",
+              "default": true,
+              "description": "Wait for element to be present"
+            },
+            "scrollIntoView": {
+              "type": "boolean",
+              "default": true,
+              "description": "Scroll element into view"
+            }
+          },
+          "required": ["selector", "text"]
+        }
+      ]
+    },
+    "NavigateConfig": {
+      "allOf": [
+        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "type": "object",
+          "properties": {
+            "url": {
+              "type": "string",
+              "format": "uri",
+              "description": "URL to navigate to"
+            },
+            "waitForLoad": {
+              "type": "boolean",
+              "default": true,
+              "description": "Wait for page to load"
+            },
+            "takeScreenshot": {
+              "type": "boolean",
+              "default": false,
+              "description": "Take screenshot after navigation"
+            }
+          },
+          "required": ["url"]
+        }
+      ]
+    },
+    "WaitConfig": {
+      "allOf": [
+        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "type": "object",
+          "properties": {
+            "waitType": {
+              "type": "string",
+              "enum": ["duration", "element", "interactable"],
+              "default": "duration",
+              "description": "Type of wait to perform"
+            },
+            "duration": {
+              "type": "integer",
+              "default": 3000,
+              "description": "Duration to wait in milliseconds"
+            },
+            "selector": {
+              "type": "string",
+              "description": "CSS selector for element to wait for"
+            },
+            "timeout": {
+              "type": "integer",
+              "default": 10000,
+              "description": "Maximum time to wait in milliseconds"
+            },
+            "waitForInteractable": {
+              "type": "boolean",
+              "default": false,
+              "description": "Wait for element to be interactable"
+            },
+            "fallbackToDuration": {
+              "type": "boolean",
+              "default": true,
+              "description": "Fallback to duration wait if element wait fails"
+            },
+            "fallbackDuration": {
+              "type": "integer",
+              "default": 2000,
+              "description": "Duration to wait if fallback triggered"
+            }
+          }
+        }
+      ]
+    },
+    "AssertionConfig": {
+      "allOf": [
+        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "type": "object",
+          "properties": {
+            "selector": {
+              "type": "string",
+              "description": "CSS selector for element"
+            },
+            "assertType": {
+              "type": "string",
+              "enum": ["exists", "visible", "text", "value", "attribute"],
+              "default": "exists",
+              "description": "Type of assertion"
+            },
+            "expectedValue": {
+              "type": "string",
+              "description": "Expected value for assertion"
+            },
+            "waitForElement": {
+              "type": "boolean",
+              "default": true,
+              "description": "Wait for element to be present"
+            },
+            "caseSensitive": {
+              "type": "boolean",
+              "default": false,
+              "description": "Case sensitive comparison"
+            },
+            "partialMatch": {
+              "type": "boolean",
+              "default": false,
+              "description": "Allow partial text matching"
+            }
+          },
+          "required": ["selector", "expectedValue"]
+        }
+      ]
+    },
+    "ScreenshotConfig": {
+      "allOf": [
+        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "type": "object",
+          "properties": {
+            "screenshotType": {
+              "type": "string",
+              "enum": ["viewport", "fullPage", "element"],
+              "default": "viewport",
+              "description": "Type of screenshot to capture"
+            },
+            "selector": {
+              "type": "string",
+              "description": "CSS selector for element screenshots"
+            },
+            "filename": {
+              "type": "string",
+              "default": "screenshot.png",
+              "description": "Output filename"
+            },
+            "saveToFile": {
+              "type": "boolean",
+              "default": true,
+              "description": "Save screenshot to file system"
+            },
+            "includeTimestamp": {
+              "type": "boolean",
+              "default": true,
+              "description": "Include timestamp in filename"
+            },
+            "format": {
+              "type": "string",
+              "enum": ["png", "jpg"],
+              "default": "png",
+              "description": "Output format"
+            },
+            "waitForElement": {
+              "type": "boolean",
+              "default": true,
+              "description": "Wait for element to be present"
+            },
+            "scrollIntoView": {
+              "type": "boolean",
+              "default": true,
+              "description": "Scroll element into view"
+            },
+            "fullPage": {
+              "type": "boolean",
+              "default": false,
+              "description": "Take full page screenshot"
+            }
+          }
+        }
+      ]
+    },
+    "FormField": {
+      "type": "object",
+      "properties": {
+        "selector": {
+          "type": "string",
+          "description": "CSS selector to target form field"
+        },
+        "value": {
+          "description": "Value to fill"
+        },
+        "image": {
+          "type": "string",
+          "description": "Optional screenshot path"
+        },
+        "name": {
+          "type": "string",
+          "description": "Human-readable field name"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "text", "password", "email", "number", "tel", "textarea",
+            "date", "time", "datetime-local", "checkbox", "radio", "select", "file"
+          ],
+          "default": "text",
+          "description": "Type of form field"
+        },
+        "options": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FormFieldOption"
+          },
+          "description": "Options for select/radio fields"
+        },
+        "checked": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether checkbox is checked"
+        },
+        "multiple": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether select allows multiple selections"
+        }
+      },
+      "required": ["selector", "value"]
+    },
+    "FormFieldOption": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "string",
+          "description": "Option value"
+        },
+        "label": {
+          "type": "string",
+          "description": "Option label"
+        }
+      },
+      "required": ["value", "label"]
+    },
+    "FormFillConfig": {
+      "allOf": [
+        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "type": "object",
+          "properties": {
+            "fields": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/FormField"
+              },
+              "description": "Array of form field configurations"
+            },
+            "waitForElements": {
+              "type": "boolean",
+              "default": true,
+              "description": "Wait for all form elements to be present"
+            },
+            "clearFirst": {
+              "type": "boolean",
+              "default": true,
+              "description": "Clear existing values before filling"
+            },
+            "submitAfterFill": {
+              "type": "boolean",
+              "default": false,
+              "description": "Automatically submit form after filling"
+            },
+            "smartFieldDetection": {
+              "type": "boolean",
+              "default": true,
+              "description": "Automatically detect field types"
+            }
+          },
+          "required": ["fields"]
+        }
+      ]
+    },
+    "ApiCallConfig": {
+      "allOf": [
+        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "type": "object",
+          "properties": {
+            "method": {
+              "type": "string",
+              "enum": ["GET", "POST", "PUT", "DELETE", "PATCH"],
+              "default": "GET",
+              "description": "HTTP method"
+            },
+            "url": {
+              "type": "string",
+              "format": "uri",
+              "description": "API endpoint URL"
+            },
+            "headers": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              },
+              "description": "HTTP headers"
+            },
+            "body": {
+              "type": "string",
+              "description": "Request body"
+            },
+            "outputVariable": {
+              "type": "string",
+              "default": "apiResponse",
+              "description": "Variable to store response"
+            },
+            "timeout": {
+              "type": "integer",
+              "default": 30000,
+              "description": "Request timeout in milliseconds"
+            },
+            "retryCount": {
+              "type": "integer",
+              "default": 0,
+              "description": "Number of retries"
+            },
+            "parseJson": {
+              "type": "boolean",
+              "default": true,
+              "description": "Parse response as JSON"
+            },
+            "validateStatus": {
+              "type": "boolean",
+              "default": true,
+              "description": "Validate HTTP status code"
+            },
+            "followRedirects": {
+              "type": "boolean",
+              "default": true,
+              "description": "Follow HTTP redirects"
+            },
+            "verifySSL": {
+              "type": "boolean",
+              "default": true,
+              "description": "Verify SSL certificates"
+            },
+            "basicAuthUsername": {
+              "type": "string",
+              "description": "Basic auth username"
+            },
+            "basicAuthPassword": {
+              "type": "string",
+              "description": "Basic auth password"
+            }
+          },
+          "required": ["url"]
+        }
+      ]
+    },
+    "DatabaseQueryConfig": {
+      "allOf": [
+        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "type": "object",
+          "properties": {
+            "connectionString": {
+              "type": "string",
+              "description": "Database connection string"
+            },
+            "query": {
+              "type": "string",
+              "description": "SQL query to execute"
+            },
+            "outputVariable": {
+              "type": "string",
+              "default": "queryResult",
+              "description": "Variable to store result"
+            },
+            "logQuery": {
+              "type": "boolean",
+              "default": true,
+              "description": "Log the query being executed"
+            },
+            "validateConnection": {
+              "type": "boolean",
+              "default": true,
+              "description": "Validate database connection"
+            },
+            "timeout": {
+              "type": "integer",
+              "default": 30000,
+              "description": "Query timeout in milliseconds"
+            }
+          },
+          "required": ["connectionString", "query"]
+        }
+      ]
+    },
+    "DatabaseInsertConfig": {
+      "allOf": [
+        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "type": "object",
+          "properties": {
+            "connectionString": {
+              "type": "string",
+              "description": "Database connection string"
+            },
+            "table": {
+              "type": "string",
+              "description": "Table name to insert into"
+            },
+            "data": {
+              "type": "object",
+              "description": "Data to insert (column-value pairs)"
+            },
+            "logOperation": {
+              "type": "boolean",
+              "default": true,
+              "description": "Log the insert operation"
+            },
+            "validateConnection": {
+              "type": "boolean",
+              "default": true,
+              "description": "Validate database connection"
+            },
+            "rollbackOnError": {
+              "type": "boolean",
+              "default": true,
+              "description": "Rollback transaction on error"
+            }
+          },
+          "required": ["connectionString", "table", "data"]
+        }
+      ]
+    },
+    "FileUploadConfig": {
+      "allOf": [
+        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "type": "object",
+          "properties": {
+            "selector": {
+              "type": "string",
+              "description": "CSS selector for file input"
+            },
+            "filePath": {
+              "type": "string",
+              "description": "Path to file to upload"
+            },
+            "waitForElement": {
+              "type": "boolean",
+              "default": true,
+              "description": "Wait for element to be present"
+            },
+            "scrollIntoView": {
+              "type": "boolean",
+              "default": true,
+              "description": "Scroll element into view"
+            },
+            "validateFile": {
+              "type": "boolean",
+              "default": true,
+              "description": "Validate file exists before upload"
+            }
+          },
+          "required": ["selector", "filePath"]
+        }
+      ]
+    },
+    "FileDownloadConfig": {
+      "allOf": [
+        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "type": "object",
+          "properties": {
+            "selector": {
+              "type": "string",
+              "description": "CSS selector for download link"
+            },
+            "downloadPath": {
+              "type": "string",
+              "description": "Path to save downloaded file"
+            },
+            "waitForElement": {
+              "type": "boolean",
+              "default": true,
+              "description": "Wait for element to be present"
+            },
+            "validateDownload": {
+              "type": "boolean",
+              "default": true,
+              "description": "Validate download completed"
+            },
+            "overwriteExisting": {
+              "type": "boolean",
+              "default": false,
+              "description": "Overwrite existing files"
+            }
+          },
+          "required": ["selector", "downloadPath"]
+        }
+      ]
+    },
+    "CustomCodeConfig": {
+      "allOf": [
+        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string",
+              "description": "JavaScript code to execute"
+            },
+            "outputVariable": {
+              "type": "string",
+              "default": "customResult",
+              "description": "Variable to store result"
+            },
+            "logExecution": {
+              "type": "boolean",
+              "default": true,
+              "description": "Log code execution"
+            },
+            "catchErrors": {
+              "type": "boolean",
+              "default": true,
+              "description": "Catch and handle errors"
+            },
+            "timeout": {
+              "type": "integer",
+              "default": 30000,
+              "description": "Execution timeout in milliseconds"
+            }
+          },
+          "required": ["code"]
+        }
+      ]
+    },
+    "SubflowConfig": {
+      "allOf": [
+        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "type": "object",
+          "properties": {
+            "flowId": {
+              "type": "string",
+              "description": "ID of flow to call"
+            },
+            "flowName": {
+              "type": "string",
+              "description": "Name of flow to call"
+            },
+            "inputParameters": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              },
+              "description": "Input parameters for subflow"
+            },
+            "outputParameters": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              },
+              "description": "Output parameters from subflow"
+            },
+            "outputVariable": {
+              "type": "string",
+              "default": "flowResult",
+              "description": "Variable to store result"
+            },
+            "waitForCompletion": {
+              "type": "boolean",
+              "default": true,
+              "description": "Wait for flow to complete"
+            },
+            "logExecution": {
+              "type": "boolean",
+              "default": true,
+              "description": "Log flow execution"
+            },
+            "propagateErrors": {
+              "type": "boolean",
+              "default": true,
+              "description": "Propagate errors from subflow"
+            }
+          },
+          "required": ["flowId"]
+        }
+      ]
+    },
+    "SendKeysConfig": {
+      "allOf": [
+        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "type": "object",
+          "properties": {
+            "selector": {
+              "type": "string",
+              "description": "CSS selector for element to send keys to"
+            },
+            "keys": {
+              "type": "string",
+              "description": "Keys to send"
+            },
+            "waitForElement": {
+              "type": "boolean",
+              "default": true,
+              "description": "Wait for element to be present"
+            }
+          },
+          "required": ["keys"]
+        }
+      ]
+    },
+    "ScrollConfig": {
+      "allOf": [
+        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "type": "object",
+          "properties": {
+            "direction": {
+              "type": "string",
+              "enum": ["up", "down", "left", "right"],
+              "default": "down",
+              "description": "Scroll direction"
+            },
+            "distance": {
+              "type": "integer",
+              "default": 100,
+              "description": "Scroll distance in pixels"
+            },
+            "selector": {
+              "type": "string",
+              "description": "Element to scroll (optional, defaults to window)"
+            }
+          }
+        }
+      ]
+    },
+    "AssertVisibleConfig": {
+      "allOf": [
+        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "type": "object",
+          "properties": {
+            "selector": {
+              "type": "string",
+              "description": "CSS selector for element to check"
+            },
+            "timeout": {
+              "type": "integer",
+              "default": 5000,
+              "description": "Timeout in milliseconds"
+            },
+            "waitForElement": {
+              "type": "boolean",
+              "default": true,
+              "description": "Wait for element to be present"
+            }
+          },
+          "required": ["selector"]
+        }
+      ]
+    },
+    "ClearInputConfig": {
+      "allOf": [
+        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "type": "object",
+          "properties": {
+            "selector": {
+              "type": "string",
+              "description": "CSS selector for input element"
+            },
+            "waitForElement": {
+              "type": "boolean",
+              "default": true,
+              "description": "Wait for element to be present"
+            }
+          },
+          "required": ["selector"]
+        }
+      ]
+    },
+    "OpenNewTabConfig": {
+      "allOf": [
+        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "type": "object",
+          "properties": {
+            "url": {
+              "type": "string",
+              "description": "URL to open in new tab"
+            }
+          },
+          "required": ["url"]
+        }
+      ]
+    },
+    "SwitchTabConfig": {
+      "allOf": [
+        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "type": "object",
+          "properties": {
+            "tabIndex": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Tab index to switch to"
+            },
+            "tabTitle": {
+              "type": "string",
+              "description": "Tab title to switch to (alternative to index)"
+            }
+          }
+        }
+      ]
+    },
+    "GoForwardConfig": {
+      "allOf": [
+        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "type": "object",
+          "properties": {}
+        }
+      ]
+    },
+    "GoBackConfig": {
+      "allOf": [
+        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "type": "object",
+          "properties": {}
+        }
+      ]
+    },
+    "RefreshConfig": {
+      "allOf": [
+        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "type": "object",
+          "properties": {}
+        }
+      ]
+    },
+    "GetPageInfoConfig": {
+      "allOf": [
+        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "type": "object",
+          "properties": {
+            "outputVariable": {
+              "type": "string",
+              "default": "pageInfo",
+              "description": "Variable to store page information"
+            }
+          }
+        }
+      ]
+    },
+    "JunctionConfig": {
+      "allOf": [
+        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "type": "object",
+          "properties": {
+            "condition": {
+              "type": "string",
+              "description": "Condition to evaluate"
+            },
+            "truePath": {
+              "type": "string",
+              "description": "Path to take if condition is true"
+            },
+            "falsePath": {
+              "type": "string",
+              "description": "Path to take if condition is false"
+            }
+          }
+        }
+      ]
+    },
+    "ConditionalConfig": {
+      "allOf": [
+        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "type": "object",
+          "properties": {
+            "condition": {
+              "type": "string",
+              "description": "JavaScript condition to evaluate"
+            },
+            "thenActions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": true
+              },
+              "description": "Actions to execute if condition is true"
+            },
+            "elseActions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": true
+              },
+              "description": "Actions to execute if condition is false"
+            }
+          },
+          "required": ["condition"]
+        }
+      ]
+    },
+    "LoopConfig": {
+      "allOf": [
+        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "type": "object",
+          "properties": {
+            "loopType": {
+              "type": "string",
+              "enum": ["count", "condition", "foreach"],
+              "default": "count",
+              "description": "Type of loop"
+            },
+            "count": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Number of iterations (for count loops)"
+            },
+            "condition": {
+              "type": "string",
+              "description": "Condition to continue loop (for condition loops)"
+            },
+            "arrayVariable": {
+              "type": "string",
+              "description": "Variable containing array to iterate (for foreach loops)"
+            },
+            "itemVariable": {
+              "type": "string",
+              "default": "item",
+              "description": "Variable name for current item (for foreach loops)"
+            },
+            "actions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": true
+              },
+              "description": "Actions to execute in each iteration"
+            },
+            "maxIterations": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 100,
+              "description": "Maximum iterations to prevent infinite loops"
+            }
+          },
+          "required": ["actions"]
+        }
+      ]
+    },
+    "DragAndDropConfig": {
+      "allOf": [
+        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "type": "object",
+          "properties": {
+            "sourceSelector": {
+              "type": "string",
+              "description": "CSS selector for element to drag"
+            },
+            "targetSelector": {
+              "type": "string",
+              "description": "CSS selector for drop target"
+            },
+            "waitForElement": {
+              "type": "boolean",
+              "default": true,
+              "description": "Wait for elements to be present"
+            }
+          },
+          "required": ["sourceSelector", "targetSelector"]
+        }
+      ]
+    },
+    "CallToFlowConfig": {
+      "allOf": [
+        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "type": "object",
+          "properties": {
+            "flowId": {
+              "type": "string",
+              "description": "ID of flow to call"
+            },
+            "inputParameters": {
+              "type": "object",
+              "description": "Input parameters to pass to subflow",
+              "additionalProperties": true
+            },
+            "outputVariable": {
+              "type": "string",
+              "default": "flowResult",
+              "description": "Variable to store result"
+            },
+            "waitForCompletion": {
+              "type": "boolean",
+              "default": true,
+              "description": "Wait for subflow to complete"
+            },
+            "async": {
+              "type": "boolean",
+              "default": false,
+              "description": "Execute subflow asynchronously"
+            }
+          },
+          "required": ["flowId"]
+        }
+      ]
+    },
+    "SwitchToFrameConfig": {
+      "allOf": [
+        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "type": "object",
+          "properties": {
+            "frameSelector": {
+              "type": "string",
+              "description": "CSS selector or frame name/ID"
+            },
+            "frameIndex": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Frame index (alternative to selector)"
+            }
+          }
+        }
+      ]
+    },
+    "ExitFrameConfig": {
+      "allOf": [
+        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "type": "object",
+          "properties": {}
+        }
+      ]
+    },
+    "SetViewportConfig": {
+      "allOf": [
+        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "type": "object",
+          "properties": {
+            "width": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Viewport width in pixels"
+            },
+            "height": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Viewport height in pixels"
+            }
+          },
+          "required": ["width", "height"]
+        }
+      ]
+    },
+    "GetElementPropertiesConfig": {
+      "allOf": [
+        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "type": "object",
+          "properties": {
+            "selector": {
+              "type": "string",
+              "description": "CSS selector for element"
+            },
+            "properties": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["text", "value", "class", "id", "tagName", "innerHTML", "outerHTML", "attributes", "rect", "visible", "enabled", "selected"]
+              },
+              "description": "Properties to retrieve"
+            },
+            "outputVariable": {
+              "type": "string",
+              "default": "elementProps",
+              "description": "Variable to store properties"
+            },
+            "waitForElement": {
+              "type": "boolean",
+              "default": true,
+              "description": "Wait for element to be present"
+            }
+          },
+          "required": ["selector", "properties"]
+        }
+      ]
+    },
+    "HandlePopupConfig": {
+      "allOf": [
+        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "type": "object",
+          "properties": {
+            "action": {
+              "type": "string",
+              "enum": ["accept", "dismiss", "text"],
+              "default": "accept",
+              "description": "Action to perform on popup"
+            },
+            "text": {
+              "type": "string",
+              "description": "Text to enter in prompt popup"
+            },
+            "waitForPopup": {
+              "type": "boolean",
+              "default": true,
+              "description": "Wait for popup to appear"
+            },
+            "timeout": {
+              "type": "integer",
+              "default": 5000,
+              "description": "Timeout in milliseconds"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

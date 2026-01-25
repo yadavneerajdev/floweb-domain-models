@@ -1,0 +1,215 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://floweb.com/schemas/parallel-execution.json",
+  "title": "Parallel Execution Models",
+  "description": "Schema for parallel test execution requests and results",
+  "type": "object",
+  "properties": {
+    "parallelExecution": {
+      "type": "object",
+      "properties": {
+        "requests": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ParallelTestsRequest"
+          }
+        },
+        "results": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ParallelTestsResult"
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "FlowExecutionRequest": {
+      "type": "object",
+      "description": "Request to execute a single test/flow",
+      "properties": {
+        "flow": {
+          "type": "object",
+          "description": "Flow to execute (without environment/globalVariables)",
+          "properties": {
+            "id": {"type": "string"},
+            "name": {"type": "string"},
+            "actions": {"type": "array", "items": {"type": "object"}},
+            "edges": {"type": "array", "items": {"type": "object"}}
+          },
+          "required": ["id", "name", "actions", "edges"]
+        },
+        "mode": {
+          "type": "string",
+          "enum": ["full", "partial"],
+          "default": "full",
+          "description": "Execution mode"
+        },
+        "recording": {
+          "type": "object",
+          "description": "Recording configuration",
+          "additionalProperties": true
+        },
+        "metadata": {
+          "type": "object",
+          "description": "Additional test metadata",
+          "additionalProperties": true,
+          "default": {}
+        }
+      },
+      "required": ["flow"]
+    },
+    "FlowExecutionResult": {
+      "type": "object",
+      "description": "Result of a single test execution",
+      "properties": {
+        "flow_id": {
+          "type": "string",
+          "description": "ID of the executed flow"
+        },
+        "flow_name": {
+          "type": "string",
+          "description": "Name of the executed flow"
+        },
+        "success": {
+          "type": "boolean",
+          "description": "Whether the test passed"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["completed", "error", "stopped", "running", "pending"],
+          "description": "Execution status"
+        },
+        "total_actions": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total actions in the flow"
+        },
+        "executed_actions": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of actions executed"
+        },
+        "successful_actions": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of successful actions"
+        },
+        "duration_seconds": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Total execution time in seconds"
+        },
+        "report": {
+          "type": "object",
+          "description": "Full flow report",
+          "additionalProperties": true
+        },
+        "error": {
+          "type": "string",
+          "description": "Error message if failed"
+        },
+        "metadata": {
+          "type": "object",
+          "description": "Additional test metadata",
+          "additionalProperties": true,
+          "default": {}
+        }
+      },
+      "required": ["flow_id", "flow_name", "success", "status", "total_actions", "executed_actions", "successful_actions", "duration_seconds", "report"]
+    },
+    "ParallelTestsRequest": {
+      "type": "object",
+      "description": "Request to execute multiple tests in parallel",
+      "properties": {
+        "tests": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FlowExecutionRequest"
+          },
+          "description": "List of tests to execute"
+        },
+        "data": {
+          "type": "object",
+          "description": "Shared data containing environment and globalVariables for all tests",
+          "additionalProperties": true
+        },
+        "max_parallel": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50,
+          "default": 10,
+          "description": "Maximum number of parallel executions"
+        },
+        "stop_on_failure": {
+          "type": "boolean",
+          "default": false,
+          "description": "Stop all tests if one fails"
+        },
+        "cleanup_after": {
+          "type": "boolean",
+          "default": true,
+          "description": "Cleanup resources after execution"
+        },
+        "browser_mode": {
+          "type": "string",
+          "enum": ["headed", "headless"],
+          "default": "headed",
+          "description": "Browser mode"
+        },
+        "max_retries": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10,
+          "default": 3,
+          "description": "Maximum retries for transient failures"
+        }
+      },
+      "required": ["tests"]
+    },
+    "ParallelTestsResult": {
+      "type": "object",
+      "description": "Result of parallel test execution",
+      "properties": {
+        "total_tests": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total number of tests"
+        },
+        "passed_tests": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of passed tests"
+        },
+        "failed_tests": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of failed tests"
+        },
+        "skipped_tests": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 0,
+          "description": "Number of skipped tests"
+        },
+        "total_duration_seconds": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Total execution time"
+        },
+        "results": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FlowExecutionResult"
+          },
+          "description": "Individual test results"
+        },
+        "success": {
+          "type": "boolean",
+          "description": "Overall success status"
+        }
+      },
+      "required": ["total_tests", "passed_tests", "failed_tests", "total_duration_seconds", "results", "success"]
+    }
+  }
+}
