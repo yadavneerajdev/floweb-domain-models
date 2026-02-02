@@ -95,7 +95,7 @@
       "description": "Result of last execution"
     }
   },
-  "required": ["id", "name", "type", "actions", "edges", "createdAt", "updatedAt"],
+  "required": ["id", "name", "actions", "edges"],
   "$defs": {
     "Position": {
       "type": "object",
@@ -218,11 +218,16 @@
           "description": "Variable data type"
         },
         "value": {
+          "type": "string",
           "description": "Variable value"
         },
         "description": {
           "type": "string",
           "description": "Optional description"
+        },
+        "isOutput": {
+          "type": "boolean",
+          "description": "Whether this is an output variable"
         }
       },
       "required": ["id", "name", "type", "value"]
@@ -283,6 +288,7 @@
           "description": "Variable data type"
         },
         "value": {
+          "type": "string",
           "description": "Variable value"
         },
         "description": {
@@ -314,12 +320,26 @@
           "type": "string",
           "description": "Environment description"
         },
+        "isDefault": {
+          "type": "boolean",
+          "description": "Whether this is the default environment"
+        },
         "isActive": {
           "type": "boolean",
           "description": "Whether this environment is active"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Creation timestamp"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last update timestamp"
         }
       },
-      "required": ["id", "name"]
+      "required": ["id", "name", "variables", "createdAt", "updatedAt"]
     },
     "GlobalVariable": {
       "type": "object",
@@ -337,14 +357,25 @@
           "description": "Variable data type"
         },
         "value": {
+          "type": "string",
           "description": "Variable value"
         },
         "description": {
           "type": "string",
           "description": "Optional description"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Creation timestamp"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last update timestamp"
         }
       },
-      "required": ["id", "name", "type", "value"]
+      "required": ["id", "name", "type", "value", "createdAt", "updatedAt"]
     }
   }
 }

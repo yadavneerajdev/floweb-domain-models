@@ -291,7 +291,7 @@ class Flow(BaseModel):
     """
     Parent folder ID for organization
     """
-    type: Type
+    type: Type | None = 'flow'
     """
     Type of the flow
     """
@@ -307,11 +307,11 @@ class Flow(BaseModel):
     """
     Canvas zoom and pan state
     """
-    createdAt: AwareDatetime
+    createdAt: AwareDatetime | None = None
     """
     Creation timestamp
     """
-    updatedAt: AwareDatetime
+    updatedAt: AwareDatetime | None = None
     """
     Last update timestamp
     """
