@@ -10,40 +10,108 @@
       "patternProperties": {
         ".*": {
           "oneOf": [
-            {"$ref": "#/$defs/ClickConfig"},
-            {"$ref": "#/$defs/InputConfig"},
-            {"$ref": "#/$defs/SendKeysConfig"},
-            {"$ref": "#/$defs/WaitConfig"},
-            {"$ref": "#/$defs/NavigateConfig"},
-            {"$ref": "#/$defs/ScrollConfig"},
-            {"$ref": "#/$defs/ScreenshotConfig"},
-            {"$ref": "#/$defs/AssertionConfig"},
-            {"$ref": "#/$defs/AssertVisibleConfig"},
-            {"$ref": "#/$defs/FormFillConfig"},
-            {"$ref": "#/$defs/ClearInputConfig"},
-            {"$ref": "#/$defs/OpenNewTabConfig"},
-            {"$ref": "#/$defs/SwitchTabConfig"},
-            {"$ref": "#/$defs/GoForwardConfig"},
-            {"$ref": "#/$defs/GoBackConfig"},
-            {"$ref": "#/$defs/RefreshConfig"},
-            {"$ref": "#/$defs/GetPageInfoConfig"},
-            {"$ref": "#/$defs/JunctionConfig"},
-            {"$ref": "#/$defs/ApiCallConfig"},
-            {"$ref": "#/$defs/ConditionalConfig"},
-            {"$ref": "#/$defs/LoopConfig"},
-            {"$ref": "#/$defs/DatabaseQueryConfig"},
-            {"$ref": "#/$defs/DatabaseInsertConfig"},
-            {"$ref": "#/$defs/CustomCodeConfig"},
-            {"$ref": "#/$defs/DragAndDropConfig"},
-            {"$ref": "#/$defs/CallToFlowConfig"},
-            {"$ref": "#/$defs/SwitchToFrameConfig"},
-            {"$ref": "#/$defs/ExitFrameConfig"},
-            {"$ref": "#/$defs/SetViewportConfig"},
-            {"$ref": "#/$defs/GetElementPropertiesConfig"},
-            {"$ref": "#/$defs/HandlePopupConfig"},
-            {"$ref": "#/$defs/FileUploadConfig"},
-            {"$ref": "#/$defs/FileDownloadConfig"},
-            {"$ref": "#/$defs/SubflowConfig"}
+            {
+              "$ref": "#/$defs/ClickConfig"
+            },
+            {
+              "$ref": "#/$defs/InputConfig"
+            },
+            {
+              "$ref": "#/$defs/SendKeysConfig"
+            },
+            {
+              "$ref": "#/$defs/WaitConfig"
+            },
+            {
+              "$ref": "#/$defs/NavigateConfig"
+            },
+            {
+              "$ref": "#/$defs/ScrollConfig"
+            },
+            {
+              "$ref": "#/$defs/ScreenshotConfig"
+            },
+            {
+              "$ref": "#/$defs/AssertionConfig"
+            },
+            {
+              "$ref": "#/$defs/AssertVisibleConfig"
+            },
+            {
+              "$ref": "#/$defs/FormFillConfig"
+            },
+            {
+              "$ref": "#/$defs/ClearInputConfig"
+            },
+            {
+              "$ref": "#/$defs/OpenNewTabConfig"
+            },
+            {
+              "$ref": "#/$defs/SwitchTabConfig"
+            },
+            {
+              "$ref": "#/$defs/GoForwardConfig"
+            },
+            {
+              "$ref": "#/$defs/GoBackConfig"
+            },
+            {
+              "$ref": "#/$defs/RefreshConfig"
+            },
+            {
+              "$ref": "#/$defs/GetPageInfoConfig"
+            },
+            {
+              "$ref": "#/$defs/JunctionConfig"
+            },
+            {
+              "$ref": "#/$defs/ApiCallConfig"
+            },
+            {
+              "$ref": "#/$defs/ConditionalConfig"
+            },
+            {
+              "$ref": "#/$defs/LoopConfig"
+            },
+            {
+              "$ref": "#/$defs/DatabaseQueryConfig"
+            },
+            {
+              "$ref": "#/$defs/DatabaseInsertConfig"
+            },
+            {
+              "$ref": "#/$defs/CustomCodeConfig"
+            },
+            {
+              "$ref": "#/$defs/DragAndDropConfig"
+            },
+            {
+              "$ref": "#/$defs/CallToFlowConfig"
+            },
+            {
+              "$ref": "#/$defs/SwitchToFrameConfig"
+            },
+            {
+              "$ref": "#/$defs/ExitFrameConfig"
+            },
+            {
+              "$ref": "#/$defs/SetViewportConfig"
+            },
+            {
+              "$ref": "#/$defs/GetElementPropertiesConfig"
+            },
+            {
+              "$ref": "#/$defs/HandlePopupConfig"
+            },
+            {
+              "$ref": "#/$defs/FileUploadConfig"
+            },
+            {
+              "$ref": "#/$defs/FileDownloadConfig"
+            },
+            {
+              "$ref": "#/$defs/SubflowConfig"
+            }
           ]
         }
       }
@@ -61,7 +129,9 @@
     },
     "ClickConfig": {
       "allOf": [
-        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "$ref": "#/$defs/BaseActionConfig"
+        },
         {
           "type": "object",
           "properties": {
@@ -91,7 +161,10 @@
             },
             "clickType": {
               "type": "string",
-              "enum": ["left", "right"],
+              "enum": [
+                "left",
+                "right"
+              ],
               "default": "left",
               "description": "Type of click to perform"
             },
@@ -112,13 +185,17 @@
               "description": "Duration to hold click in milliseconds"
             }
           },
-          "required": ["selector"]
+          "required": [
+            "selector"
+          ]
         }
       ]
     },
     "InputConfig": {
       "allOf": [
-        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "$ref": "#/$defs/BaseActionConfig"
+        },
         {
           "type": "object",
           "properties": {
@@ -146,13 +223,18 @@
               "description": "Scroll element into view"
             }
           },
-          "required": ["selector", "text"]
+          "required": [
+            "selector",
+            "text"
+          ]
         }
       ]
     },
     "NavigateConfig": {
       "allOf": [
-        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "$ref": "#/$defs/BaseActionConfig"
+        },
         {
           "type": "object",
           "properties": {
@@ -172,19 +254,27 @@
               "description": "Take screenshot after navigation"
             }
           },
-          "required": ["url"]
+          "required": [
+            "url"
+          ]
         }
       ]
     },
     "WaitConfig": {
       "allOf": [
-        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "$ref": "#/$defs/BaseActionConfig"
+        },
         {
           "type": "object",
           "properties": {
             "waitType": {
               "type": "string",
-              "enum": ["duration", "element", "interactable"],
+              "enum": [
+                "duration",
+                "element",
+                "interactable"
+              ],
               "default": "duration",
               "description": "Type of wait to perform"
             },
@@ -223,7 +313,9 @@
     },
     "AssertionConfig": {
       "allOf": [
-        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "$ref": "#/$defs/BaseActionConfig"
+        },
         {
           "type": "object",
           "properties": {
@@ -233,7 +325,13 @@
             },
             "assertType": {
               "type": "string",
-              "enum": ["exists", "visible", "text", "value", "attribute"],
+              "enum": [
+                "exists",
+                "visible",
+                "text",
+                "value",
+                "attribute"
+              ],
               "default": "exists",
               "description": "Type of assertion"
             },
@@ -257,19 +355,28 @@
               "description": "Allow partial text matching"
             }
           },
-          "required": ["selector", "expectedValue"]
+          "required": [
+            "selector",
+            "expectedValue"
+          ]
         }
       ]
     },
     "ScreenshotConfig": {
       "allOf": [
-        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "$ref": "#/$defs/BaseActionConfig"
+        },
         {
           "type": "object",
           "properties": {
             "screenshotType": {
               "type": "string",
-              "enum": ["viewport", "fullPage", "element"],
+              "enum": [
+                "viewport",
+                "fullPage",
+                "element"
+              ],
               "default": "viewport",
               "description": "Type of screenshot to capture"
             },
@@ -294,7 +401,10 @@
             },
             "format": {
               "type": "string",
-              "enum": ["png", "jpg"],
+              "enum": [
+                "png",
+                "jpg"
+              ],
               "default": "png",
               "description": "Output format"
             },
@@ -338,8 +448,19 @@
         "type": {
           "type": "string",
           "enum": [
-            "text", "password", "email", "number", "tel", "textarea",
-            "date", "time", "datetime-local", "checkbox", "radio", "select", "file"
+            "text",
+            "password",
+            "email",
+            "number",
+            "tel",
+            "textarea",
+            "date",
+            "time",
+            "datetime-local",
+            "checkbox",
+            "radio",
+            "select",
+            "file"
           ],
           "default": "text",
           "description": "Type of form field"
@@ -362,7 +483,10 @@
           "description": "Whether select allows multiple selections"
         }
       },
-      "required": ["selector", "value"]
+      "required": [
+        "selector",
+        "value"
+      ]
     },
     "FormFieldOption": {
       "type": "object",
@@ -376,11 +500,16 @@
           "description": "Option label"
         }
       },
-      "required": ["value", "label"]
+      "required": [
+        "value",
+        "label"
+      ]
     },
     "FormFillConfig": {
       "allOf": [
-        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "$ref": "#/$defs/BaseActionConfig"
+        },
         {
           "type": "object",
           "properties": {
@@ -412,19 +541,29 @@
               "description": "Automatically detect field types"
             }
           },
-          "required": ["fields"]
+          "required": [
+            "fields"
+          ]
         }
       ]
     },
     "ApiCallConfig": {
       "allOf": [
-        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "$ref": "#/$defs/BaseActionConfig"
+        },
         {
           "type": "object",
           "properties": {
             "method": {
               "type": "string",
-              "enum": ["GET", "POST", "PUT", "DELETE", "PATCH"],
+              "enum": [
+                "GET",
+                "POST",
+                "PUT",
+                "DELETE",
+                "PATCH"
+              ],
               "default": "GET",
               "description": "HTTP method"
             },
@@ -488,13 +627,17 @@
               "description": "Basic auth password"
             }
           },
-          "required": ["url"]
+          "required": [
+            "url"
+          ]
         }
       ]
     },
     "DatabaseQueryConfig": {
       "allOf": [
-        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "$ref": "#/$defs/BaseActionConfig"
+        },
         {
           "type": "object",
           "properties": {
@@ -527,13 +670,18 @@
               "description": "Query timeout in milliseconds"
             }
           },
-          "required": ["connectionString", "query"]
+          "required": [
+            "connectionString",
+            "query"
+          ]
         }
       ]
     },
     "DatabaseInsertConfig": {
       "allOf": [
-        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "$ref": "#/$defs/BaseActionConfig"
+        },
         {
           "type": "object",
           "properties": {
@@ -565,13 +713,19 @@
               "description": "Rollback transaction on error"
             }
           },
-          "required": ["connectionString", "table", "data"]
+          "required": [
+            "connectionString",
+            "table",
+            "data"
+          ]
         }
       ]
     },
     "FileUploadConfig": {
       "allOf": [
-        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "$ref": "#/$defs/BaseActionConfig"
+        },
         {
           "type": "object",
           "properties": {
@@ -599,13 +753,18 @@
               "description": "Validate file exists before upload"
             }
           },
-          "required": ["selector", "filePath"]
+          "required": [
+            "selector",
+            "filePath"
+          ]
         }
       ]
     },
     "FileDownloadConfig": {
       "allOf": [
-        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "$ref": "#/$defs/BaseActionConfig"
+        },
         {
           "type": "object",
           "properties": {
@@ -633,13 +792,18 @@
               "description": "Overwrite existing files"
             }
           },
-          "required": ["selector", "downloadPath"]
+          "required": [
+            "selector",
+            "downloadPath"
+          ]
         }
       ]
     },
     "CustomCodeConfig": {
       "allOf": [
-        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "$ref": "#/$defs/BaseActionConfig"
+        },
         {
           "type": "object",
           "properties": {
@@ -668,13 +832,17 @@
               "description": "Execution timeout in milliseconds"
             }
           },
-          "required": ["code"]
+          "required": [
+            "code"
+          ]
         }
       ]
     },
     "SubflowConfig": {
       "allOf": [
-        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "$ref": "#/$defs/BaseActionConfig"
+        },
         {
           "type": "object",
           "properties": {
@@ -721,13 +889,17 @@
               "description": "Propagate errors from subflow"
             }
           },
-          "required": ["flowId"]
+          "required": [
+            "flowId"
+          ]
         }
       ]
     },
     "SendKeysConfig": {
       "allOf": [
-        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "$ref": "#/$defs/BaseActionConfig"
+        },
         {
           "type": "object",
           "properties": {
@@ -745,19 +917,28 @@
               "description": "Wait for element to be present"
             }
           },
-          "required": ["keys"]
+          "required": [
+            "keys"
+          ]
         }
       ]
     },
     "ScrollConfig": {
       "allOf": [
-        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "$ref": "#/$defs/BaseActionConfig"
+        },
         {
           "type": "object",
           "properties": {
             "direction": {
               "type": "string",
-              "enum": ["up", "down", "left", "right"],
+              "enum": [
+                "up",
+                "down",
+                "left",
+                "right"
+              ],
               "default": "down",
               "description": "Scroll direction"
             },
@@ -776,7 +957,9 @@
     },
     "AssertVisibleConfig": {
       "allOf": [
-        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "$ref": "#/$defs/BaseActionConfig"
+        },
         {
           "type": "object",
           "properties": {
@@ -795,13 +978,17 @@
               "description": "Wait for element to be present"
             }
           },
-          "required": ["selector"]
+          "required": [
+            "selector"
+          ]
         }
       ]
     },
     "ClearInputConfig": {
       "allOf": [
-        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "$ref": "#/$defs/BaseActionConfig"
+        },
         {
           "type": "object",
           "properties": {
@@ -815,13 +1002,17 @@
               "description": "Wait for element to be present"
             }
           },
-          "required": ["selector"]
+          "required": [
+            "selector"
+          ]
         }
       ]
     },
     "OpenNewTabConfig": {
       "allOf": [
-        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "$ref": "#/$defs/BaseActionConfig"
+        },
         {
           "type": "object",
           "properties": {
@@ -830,13 +1021,17 @@
               "description": "URL to open in new tab"
             }
           },
-          "required": ["url"]
+          "required": [
+            "url"
+          ]
         }
       ]
     },
     "SwitchTabConfig": {
       "allOf": [
-        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "$ref": "#/$defs/BaseActionConfig"
+        },
         {
           "type": "object",
           "properties": {
@@ -855,7 +1050,9 @@
     },
     "GoForwardConfig": {
       "allOf": [
-        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "$ref": "#/$defs/BaseActionConfig"
+        },
         {
           "type": "object",
           "properties": {}
@@ -864,7 +1061,9 @@
     },
     "GoBackConfig": {
       "allOf": [
-        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "$ref": "#/$defs/BaseActionConfig"
+        },
         {
           "type": "object",
           "properties": {}
@@ -873,7 +1072,9 @@
     },
     "RefreshConfig": {
       "allOf": [
-        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "$ref": "#/$defs/BaseActionConfig"
+        },
         {
           "type": "object",
           "properties": {}
@@ -882,7 +1083,9 @@
     },
     "GetPageInfoConfig": {
       "allOf": [
-        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "$ref": "#/$defs/BaseActionConfig"
+        },
         {
           "type": "object",
           "properties": {
@@ -897,7 +1100,9 @@
     },
     "JunctionConfig": {
       "allOf": [
-        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "$ref": "#/$defs/BaseActionConfig"
+        },
         {
           "type": "object",
           "properties": {
@@ -919,7 +1124,9 @@
     },
     "ConditionalConfig": {
       "allOf": [
-        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "$ref": "#/$defs/BaseActionConfig"
+        },
         {
           "type": "object",
           "properties": {
@@ -944,19 +1151,27 @@
               "description": "Actions to execute if condition is false"
             }
           },
-          "required": ["condition"]
+          "required": [
+            "condition"
+          ]
         }
       ]
     },
     "LoopConfig": {
       "allOf": [
-        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "$ref": "#/$defs/BaseActionConfig"
+        },
         {
           "type": "object",
           "properties": {
             "loopType": {
               "type": "string",
-              "enum": ["count", "condition", "foreach"],
+              "enum": [
+                "count",
+                "condition",
+                "foreach"
+              ],
               "default": "count",
               "description": "Type of loop"
             },
@@ -993,13 +1208,17 @@
               "description": "Maximum iterations to prevent infinite loops"
             }
           },
-          "required": ["actions"]
+          "required": [
+            "actions"
+          ]
         }
       ]
     },
     "DragAndDropConfig": {
       "allOf": [
-        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "$ref": "#/$defs/BaseActionConfig"
+        },
         {
           "type": "object",
           "properties": {
@@ -1017,13 +1236,18 @@
               "description": "Wait for elements to be present"
             }
           },
-          "required": ["sourceSelector", "targetSelector"]
+          "required": [
+            "sourceSelector",
+            "targetSelector"
+          ]
         }
       ]
     },
     "CallToFlowConfig": {
       "allOf": [
-        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "$ref": "#/$defs/BaseActionConfig"
+        },
         {
           "type": "object",
           "properties": {
@@ -1052,13 +1276,17 @@
               "description": "Execute subflow asynchronously"
             }
           },
-          "required": ["flowId"]
+          "required": [
+            "flowId"
+          ]
         }
       ]
     },
     "SwitchToFrameConfig": {
       "allOf": [
-        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "$ref": "#/$defs/BaseActionConfig"
+        },
         {
           "type": "object",
           "properties": {
@@ -1077,7 +1305,9 @@
     },
     "ExitFrameConfig": {
       "allOf": [
-        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "$ref": "#/$defs/BaseActionConfig"
+        },
         {
           "type": "object",
           "properties": {}
@@ -1086,10 +1316,23 @@
     },
     "SetViewportConfig": {
       "allOf": [
-        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "$ref": "#/$defs/BaseActionConfig"
+        },
         {
           "type": "object",
           "properties": {
+            "viewportType": {
+              "type": "string",
+              "enum": [
+                "preset",
+                "device",
+                "responsive",
+                "custom"
+              ],
+              "default": "custom",
+              "description": "Type of viewport configuration"
+            },
             "width": {
               "type": "integer",
               "minimum": 1,
@@ -1099,15 +1342,64 @@
               "type": "integer",
               "minimum": 1,
               "description": "Viewport height in pixels"
+            },
+            "screenSizePreset": {
+              "type": "string",
+              "description": "Preset screen size name"
+            },
+            "deviceName": {
+              "type": "string",
+              "description": "Device name for emulation"
+            },
+            "deviceScaleFactor": {
+              "type": "number",
+              "minimum": 0.1,
+              "maximum": 5,
+              "default": 1.0,
+              "description": "Device scale factor"
+            },
+            "isMobile": {
+              "type": "boolean",
+              "default": false,
+              "description": "Emulate mobile device"
+            },
+            "hasTouch": {
+              "type": "boolean",
+              "default": false,
+              "description": "Enable touch events"
+            },
+            "isLandscape": {
+              "type": "boolean",
+              "default": false,
+              "description": "Use landscape orientation"
+            },
+            "userAgent": {
+              "type": "string",
+              "description": "Custom user agent string"
+            },
+            "waitAfterResize": {
+              "type": "boolean",
+              "default": true,
+              "description": "Wait after viewport resize"
+            },
+            "takeScreenshot": {
+              "type": "boolean",
+              "default": false,
+              "description": "Take screenshot after resize"
             }
           },
-          "required": ["width", "height"]
+          "required": [
+            "width",
+            "height"
+          ]
         }
       ]
     },
     "GetElementPropertiesConfig": {
       "allOf": [
-        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "$ref": "#/$defs/BaseActionConfig"
+        },
         {
           "type": "object",
           "properties": {
@@ -1119,7 +1411,20 @@
               "type": "array",
               "items": {
                 "type": "string",
-                "enum": ["text", "value", "class", "id", "tagName", "innerHTML", "outerHTML", "attributes", "rect", "visible", "enabled", "selected"]
+                "enum": [
+                  "text",
+                  "value",
+                  "class",
+                  "id",
+                  "tagName",
+                  "innerHTML",
+                  "outerHTML",
+                  "attributes",
+                  "rect",
+                  "visible",
+                  "enabled",
+                  "selected"
+                ]
               },
               "description": "Properties to retrieve"
             },
@@ -1134,19 +1439,28 @@
               "description": "Wait for element to be present"
             }
           },
-          "required": ["selector", "properties"]
+          "required": [
+            "selector",
+            "properties"
+          ]
         }
       ]
     },
     "HandlePopupConfig": {
       "allOf": [
-        {"$ref": "#/$defs/BaseActionConfig"},
+        {
+          "$ref": "#/$defs/BaseActionConfig"
+        },
         {
           "type": "object",
           "properties": {
             "action": {
               "type": "string",
-              "enum": ["accept", "dismiss", "text"],
+              "enum": [
+                "accept",
+                "dismiss",
+                "text"
+              ],
               "default": "accept",
               "description": "Action to perform on popup"
             },
