@@ -29,15 +29,8 @@
       "description": "Request to execute a single test/flow",
       "properties": {
         "flow": {
-          "type": "object",
-          "description": "Flow to execute (without environment/globalVariables)",
-          "properties": {
-            "id": {"type": "string"},
-            "name": {"type": "string"},
-            "actions": {"type": "array", "items": {"type": "object"}},
-            "edges": {"type": "array", "items": {"type": "object"}}
-          },
-          "required": ["id", "name", "actions", "edges"]
+          "$ref": "flow.json#/$defs/Flow",
+          "description": "Flow to execute with all required fields"
         },
         "mode": {
           "type": "string",
