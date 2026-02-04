@@ -12,28 +12,87 @@
           "type": "array",
           "items": {
             "oneOf": [
-              {"$ref": "#/$defs/RunCommand"},
-              {"$ref": "#/$defs/RecordCommand"},
-              {"$ref": "#/$defs/PauseRecordingCommand"},
-              {"$ref": "#/$defs/ResumeRecordingCommand"},
-              {"$ref": "#/$defs/StopRecordingCommand"},
-              {"$ref": "#/$defs/FinishRecordingCommand"},
-              {"$ref": "#/$defs/GetRecordingStatusCommand"},
-              {"$ref": "#/$defs/ListRecordingsCommand"},
-              {"$ref": "#/$defs/ConvertRecordingToFlowCommand"},
-              {"$ref": "#/$defs/GetRealtimeActionsCommand"},
-              {"$ref": "#/$defs/GetLatestRealtimeActionCommand"},
-              {"$ref": "#/$defs/StopCommand"},
-              {"$ref": "#/$defs/CloseCommand"},
-              {"$ref": "#/$defs/ListSessionsCommand"},
-              {"$ref": "#/$defs/CloseSessionCommand"},
-              {"$ref": "#/$defs/RestartEngineCommand"},
-              {"$ref": "#/$defs/CloseEngineCommand"},
-              {"$ref": "#/$defs/GetEngineStatusCommand"},
-              {"$ref": "#/$defs/StartPerformanceScanCommand"},
-              {"$ref": "#/$defs/StopPerformanceScanCommand"},
-              {"$ref": "#/$defs/RunLoadTestCommand"},
-              {"$ref": "#/$defs/StopLoadTestCommand"}
+              {
+                "$ref": "#/$defs/RunCommand"
+              },
+              {
+                "$ref": "#/$defs/RecordCommand"
+              },
+              {
+                "$ref": "#/$defs/PauseRecordingCommand"
+              },
+              {
+                "$ref": "#/$defs/ResumeRecordingCommand"
+              },
+              {
+                "$ref": "#/$defs/StopRecordingCommand"
+              },
+              {
+                "$ref": "#/$defs/FinishRecordingCommand"
+              },
+              {
+                "$ref": "#/$defs/GetRecordingStatusCommand"
+              },
+              {
+                "$ref": "#/$defs/ListRecordingsCommand"
+              },
+              {
+                "$ref": "#/$defs/ConvertRecordingToFlowCommand"
+              },
+              {
+                "$ref": "#/$defs/GetRealtimeActionsCommand"
+              },
+              {
+                "$ref": "#/$defs/GetLatestRealtimeActionCommand"
+              },
+              {
+                "$ref": "#/$defs/StopCommand"
+              },
+              {
+                "$ref": "#/$defs/CloseCommand"
+              },
+              {
+                "$ref": "#/$defs/ListSessionsCommand"
+              },
+              {
+                "$ref": "#/$defs/CloseSessionCommand"
+              },
+              {
+                "$ref": "#/$defs/RestartEngineCommand"
+              },
+              {
+                "$ref": "#/$defs/CloseEngineCommand"
+              },
+              {
+                "$ref": "#/$defs/GetEngineStatusCommand"
+              },
+              {
+                "$ref": "#/$defs/StartPerformanceScanCommand"
+              },
+              {
+                "$ref": "#/$defs/StopPerformanceScanCommand"
+              },
+              {
+                "$ref": "#/$defs/RunLoadTestCommand"
+              },
+              {
+                "$ref": "#/$defs/StopLoadTestCommand"
+              },
+              {
+                "$ref": "#/$defs/DebugRunCommand"
+              },
+              {
+                "$ref": "#/$defs/DebugStepCommand"
+              },
+              {
+                "$ref": "#/$defs/DebugContinueCommand"
+              },
+              {
+                "$ref": "#/$defs/DebugPauseCommand"
+              },
+              {
+                "$ref": "#/$defs/DebugStopCommand"
+              }
             ]
           }
         },
@@ -41,13 +100,30 @@
           "type": "array",
           "items": {
             "oneOf": [
-              {"$ref": "#/$defs/RunResponse"},
-              {"$ref": "#/$defs/ListSessionsResponse"},
-              {"$ref": "#/$defs/EngineStatusResponse"},
-              {"$ref": "#/$defs/RecordingResponse"},
-              {"$ref": "#/$defs/RecordingStatusResponse"},
-              {"$ref": "#/$defs/ListRecordingsResponse"},
-              {"$ref": "#/$defs/WebSocketResponse"}
+              {
+                "$ref": "#/$defs/RunResponse"
+              },
+              {
+                "$ref": "#/$defs/ListSessionsResponse"
+              },
+              {
+                "$ref": "#/$defs/EngineStatusResponse"
+              },
+              {
+                "$ref": "#/$defs/RecordingResponse"
+              },
+              {
+                "$ref": "#/$defs/RecordingStatusResponse"
+              },
+              {
+                "$ref": "#/$defs/ListRecordingsResponse"
+              },
+              {
+                "$ref": "#/$defs/DebugResponse"
+              },
+              {
+                "$ref": "#/$defs/WebSocketResponse"
+              }
             ]
           }
         }
@@ -68,7 +144,9 @@
           "description": "Flow ID for the command"
         }
       },
-      "required": ["command"]
+      "required": [
+        "command"
+      ]
     },
     "SessionInfo": {
       "type": "object",
@@ -91,11 +169,18 @@
           "description": "Start timestamp"
         }
       },
-      "required": ["flowId", "status", "browser", "startedAt"]
+      "required": [
+        "flowId",
+        "status",
+        "browser",
+        "startedAt"
+      ]
     },
     "RunCommand": {
       "allOf": [
-        {"$ref": "#/$defs/WebSocketMessage"},
+        {
+          "$ref": "#/$defs/WebSocketMessage"
+        },
         {
           "type": "object",
           "properties": {
@@ -106,16 +191,38 @@
               "type": "object",
               "description": "Flow to execute",
               "properties": {
-                "id": {"type": "string"},
-                "name": {"type": "string"},
-                "actions": {"type": "array", "items": {"type": "object"}},
-                "edges": {"type": "array", "items": {"type": "object"}}
+                "id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "actions": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                },
+                "edges": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
               },
-              "required": ["id", "name", "actions", "edges"]
+              "required": [
+                "id",
+                "name",
+                "actions",
+                "edges"
+              ]
             },
             "mode": {
               "type": "string",
-              "enum": ["full", "partial"],
+              "enum": [
+                "full",
+                "partial"
+              ],
               "default": "full"
             },
             "recording": {
@@ -123,13 +230,18 @@
               "additionalProperties": true
             }
           },
-          "required": ["command", "flow"]
+          "required": [
+            "command",
+            "flow"
+          ]
         }
       ]
     },
     "RecordCommand": {
       "allOf": [
-        {"$ref": "#/$defs/WebSocketMessage"},
+        {
+          "$ref": "#/$defs/WebSocketMessage"
+        },
         {
           "type": "object",
           "properties": {
@@ -148,13 +260,17 @@
               "default": {}
             }
           },
-          "required": ["command"]
+          "required": [
+            "command"
+          ]
         }
       ]
     },
     "PauseRecordingCommand": {
       "allOf": [
-        {"$ref": "#/$defs/WebSocketMessage"},
+        {
+          "$ref": "#/$defs/WebSocketMessage"
+        },
         {
           "type": "object",
           "properties": {
@@ -166,13 +282,18 @@
               "description": "Recording session ID"
             }
           },
-          "required": ["command", "session_id"]
+          "required": [
+            "command",
+            "session_id"
+          ]
         }
       ]
     },
     "ResumeRecordingCommand": {
       "allOf": [
-        {"$ref": "#/$defs/WebSocketMessage"},
+        {
+          "$ref": "#/$defs/WebSocketMessage"
+        },
         {
           "type": "object",
           "properties": {
@@ -184,13 +305,18 @@
               "description": "Recording session ID"
             }
           },
-          "required": ["command", "session_id"]
+          "required": [
+            "command",
+            "session_id"
+          ]
         }
       ]
     },
     "StopRecordingCommand": {
       "allOf": [
-        {"$ref": "#/$defs/WebSocketMessage"},
+        {
+          "$ref": "#/$defs/WebSocketMessage"
+        },
         {
           "type": "object",
           "properties": {
@@ -202,13 +328,18 @@
               "description": "Recording session ID"
             }
           },
-          "required": ["command", "session_id"]
+          "required": [
+            "command",
+            "session_id"
+          ]
         }
       ]
     },
     "FinishRecordingCommand": {
       "allOf": [
-        {"$ref": "#/$defs/WebSocketMessage"},
+        {
+          "$ref": "#/$defs/WebSocketMessage"
+        },
         {
           "type": "object",
           "properties": {
@@ -224,13 +355,18 @@
               "default": "Recorded Flow"
             }
           },
-          "required": ["command", "session_id"]
+          "required": [
+            "command",
+            "session_id"
+          ]
         }
       ]
     },
     "GetRecordingStatusCommand": {
       "allOf": [
-        {"$ref": "#/$defs/WebSocketMessage"},
+        {
+          "$ref": "#/$defs/WebSocketMessage"
+        },
         {
           "type": "object",
           "properties": {
@@ -241,13 +377,17 @@
               "type": "string"
             }
           },
-          "required": ["command"]
+          "required": [
+            "command"
+          ]
         }
       ]
     },
     "ListRecordingsCommand": {
       "allOf": [
-        {"$ref": "#/$defs/WebSocketMessage"},
+        {
+          "$ref": "#/$defs/WebSocketMessage"
+        },
         {
           "type": "object",
           "properties": {
@@ -255,13 +395,17 @@
               "const": "list_recordings"
             }
           },
-          "required": ["command"]
+          "required": [
+            "command"
+          ]
         }
       ]
     },
     "ConvertRecordingToFlowCommand": {
       "allOf": [
-        {"$ref": "#/$defs/WebSocketMessage"},
+        {
+          "$ref": "#/$defs/WebSocketMessage"
+        },
         {
           "type": "object",
           "properties": {
@@ -277,13 +421,18 @@
               "default": "Recorded Flow"
             }
           },
-          "required": ["command", "session_id"]
+          "required": [
+            "command",
+            "session_id"
+          ]
         }
       ]
     },
     "GetRealtimeActionsCommand": {
       "allOf": [
-        {"$ref": "#/$defs/WebSocketMessage"},
+        {
+          "$ref": "#/$defs/WebSocketMessage"
+        },
         {
           "type": "object",
           "properties": {
@@ -295,13 +444,18 @@
               "description": "Recording session ID"
             }
           },
-          "required": ["command", "session_id"]
+          "required": [
+            "command",
+            "session_id"
+          ]
         }
       ]
     },
     "GetLatestRealtimeActionCommand": {
       "allOf": [
-        {"$ref": "#/$defs/WebSocketMessage"},
+        {
+          "$ref": "#/$defs/WebSocketMessage"
+        },
         {
           "type": "object",
           "properties": {
@@ -313,13 +467,18 @@
               "description": "Recording session ID"
             }
           },
-          "required": ["command", "session_id"]
+          "required": [
+            "command",
+            "session_id"
+          ]
         }
       ]
     },
     "StopCommand": {
       "allOf": [
-        {"$ref": "#/$defs/WebSocketMessage"},
+        {
+          "$ref": "#/$defs/WebSocketMessage"
+        },
         {
           "type": "object",
           "properties": {
@@ -330,13 +489,17 @@
               "type": "string"
             }
           },
-          "required": ["command"]
+          "required": [
+            "command"
+          ]
         }
       ]
     },
     "CloseCommand": {
       "allOf": [
-        {"$ref": "#/$defs/WebSocketMessage"},
+        {
+          "$ref": "#/$defs/WebSocketMessage"
+        },
         {
           "type": "object",
           "properties": {
@@ -344,13 +507,17 @@
               "const": "close"
             }
           },
-          "required": ["command"]
+          "required": [
+            "command"
+          ]
         }
       ]
     },
     "ListSessionsCommand": {
       "allOf": [
-        {"$ref": "#/$defs/WebSocketMessage"},
+        {
+          "$ref": "#/$defs/WebSocketMessage"
+        },
         {
           "type": "object",
           "properties": {
@@ -358,13 +525,17 @@
               "const": "list_sessions"
             }
           },
-          "required": ["command"]
+          "required": [
+            "command"
+          ]
         }
       ]
     },
     "CloseSessionCommand": {
       "allOf": [
-        {"$ref": "#/$defs/WebSocketMessage"},
+        {
+          "$ref": "#/$defs/WebSocketMessage"
+        },
         {
           "type": "object",
           "properties": {
@@ -375,13 +546,17 @@
               "type": "string"
             }
           },
-          "required": ["command"]
+          "required": [
+            "command"
+          ]
         }
       ]
     },
     "RestartEngineCommand": {
       "allOf": [
-        {"$ref": "#/$defs/WebSocketMessage"},
+        {
+          "$ref": "#/$defs/WebSocketMessage"
+        },
         {
           "type": "object",
           "properties": {
@@ -389,13 +564,17 @@
               "const": "restart_engine"
             }
           },
-          "required": ["command"]
+          "required": [
+            "command"
+          ]
         }
       ]
     },
     "CloseEngineCommand": {
       "allOf": [
-        {"$ref": "#/$defs/WebSocketMessage"},
+        {
+          "$ref": "#/$defs/WebSocketMessage"
+        },
         {
           "type": "object",
           "properties": {
@@ -403,13 +582,17 @@
               "const": "close_engine"
             }
           },
-          "required": ["command"]
+          "required": [
+            "command"
+          ]
         }
       ]
     },
     "GetEngineStatusCommand": {
       "allOf": [
-        {"$ref": "#/$defs/WebSocketMessage"},
+        {
+          "$ref": "#/$defs/WebSocketMessage"
+        },
         {
           "type": "object",
           "properties": {
@@ -417,13 +600,17 @@
               "const": "get_engine_status"
             }
           },
-          "required": ["command"]
+          "required": [
+            "command"
+          ]
         }
       ]
     },
     "StartPerformanceScanCommand": {
       "allOf": [
-        {"$ref": "#/$defs/WebSocketMessage"},
+        {
+          "$ref": "#/$defs/WebSocketMessage"
+        },
         {
           "type": "object",
           "properties": {
@@ -439,13 +626,19 @@
               "description": "URL to navigate to and record"
             }
           },
-          "required": ["command", "test_id", "url"]
+          "required": [
+            "command",
+            "test_id",
+            "url"
+          ]
         }
       ]
     },
     "StopPerformanceScanCommand": {
       "allOf": [
-        {"$ref": "#/$defs/WebSocketMessage"},
+        {
+          "$ref": "#/$defs/WebSocketMessage"
+        },
         {
           "type": "object",
           "properties": {
@@ -461,13 +654,19 @@
               "description": "Recording session ID"
             }
           },
-          "required": ["command", "test_id", "session_id"]
+          "required": [
+            "command",
+            "test_id",
+            "session_id"
+          ]
         }
       ]
     },
     "RunLoadTestCommand": {
       "allOf": [
-        {"$ref": "#/$defs/WebSocketMessage"},
+        {
+          "$ref": "#/$defs/WebSocketMessage"
+        },
         {
           "type": "object",
           "properties": {
@@ -489,13 +688,19 @@
               "additionalProperties": true
             }
           },
-          "required": ["command", "test_id", "config"]
+          "required": [
+            "command",
+            "test_id",
+            "config"
+          ]
         }
       ]
     },
     "StopLoadTestCommand": {
       "allOf": [
-        {"$ref": "#/$defs/WebSocketMessage"},
+        {
+          "$ref": "#/$defs/WebSocketMessage"
+        },
         {
           "type": "object",
           "properties": {
@@ -507,7 +712,10 @@
               "description": "Performance test ID"
             }
           },
-          "required": ["command", "test_id"]
+          "required": [
+            "command",
+            "test_id"
+          ]
         }
       ]
     },
@@ -528,11 +736,16 @@
           "description": "Response message"
         }
       },
-      "required": ["command", "success"]
+      "required": [
+        "command",
+        "success"
+      ]
     },
     "RunResponse": {
       "allOf": [
-        {"$ref": "#/$defs/WebSocketResponse"},
+        {
+          "$ref": "#/$defs/WebSocketResponse"
+        },
         {
           "type": "object",
           "properties": {
@@ -541,7 +754,10 @@
             },
             "mode": {
               "type": "string",
-              "enum": ["full", "partial"]
+              "enum": [
+                "full",
+                "partial"
+              ]
             },
             "reports": {
               "type": "array",
@@ -549,21 +765,38 @@
                 "type": "object",
                 "description": "Flow execution report",
                 "properties": {
-                  "actions": {"type": "array", "items": {"type": "object"}},
-                  "variables": {"type": "object"},
-                  "parameters": {"type": "object"},
-                  "output": {"type": "object"}
+                  "actions": {
+                    "type": "array",
+                    "items": {
+                      "type": "object"
+                    }
+                  },
+                  "variables": {
+                    "type": "object"
+                  },
+                  "parameters": {
+                    "type": "object"
+                  },
+                  "output": {
+                    "type": "object"
+                  }
                 }
               }
             }
           },
-          "required": ["command", "mode", "reports"]
+          "required": [
+            "command",
+            "mode",
+            "reports"
+          ]
         }
       ]
     },
     "ListSessionsResponse": {
       "allOf": [
-        {"$ref": "#/$defs/WebSocketResponse"},
+        {
+          "$ref": "#/$defs/WebSocketResponse"
+        },
         {
           "type": "object",
           "properties": {
@@ -577,13 +810,18 @@
               }
             }
           },
-          "required": ["command", "sessions"]
+          "required": [
+            "command",
+            "sessions"
+          ]
         }
       ]
     },
     "EngineStatusResponse": {
       "allOf": [
-        {"$ref": "#/$defs/WebSocketResponse"},
+        {
+          "$ref": "#/$defs/WebSocketResponse"
+        },
         {
           "type": "object",
           "properties": {
@@ -603,19 +841,32 @@
               "description": "Number of active sessions"
             }
           },
-          "required": ["command", "status", "uptime", "active_sessions"]
+          "required": [
+            "command",
+            "status",
+            "uptime",
+            "active_sessions"
+          ]
         }
       ]
     },
     "RecordingResponse": {
       "allOf": [
-        {"$ref": "#/$defs/WebSocketResponse"},
+        {
+          "$ref": "#/$defs/WebSocketResponse"
+        },
         {
           "type": "object",
           "properties": {
             "command": {
               "type": "string",
-              "enum": ["record", "pause_recording", "resume_recording", "stop_recording", "finish_recording"]
+              "enum": [
+                "record",
+                "pause_recording",
+                "resume_recording",
+                "stop_recording",
+                "finish_recording"
+              ]
             },
             "session_id": {
               "type": "string"
@@ -625,13 +876,17 @@
               "additionalProperties": true
             }
           },
-          "required": ["command"]
+          "required": [
+            "command"
+          ]
         }
       ]
     },
     "RecordingStatusResponse": {
       "allOf": [
-        {"$ref": "#/$defs/WebSocketResponse"},
+        {
+          "$ref": "#/$defs/WebSocketResponse"
+        },
         {
           "type": "object",
           "properties": {
@@ -643,13 +898,17 @@
               "additionalProperties": true
             }
           },
-          "required": ["command"]
+          "required": [
+            "command"
+          ]
         }
       ]
     },
     "ListRecordingsResponse": {
       "allOf": [
-        {"$ref": "#/$defs/WebSocketResponse"},
+        {
+          "$ref": "#/$defs/WebSocketResponse"
+        },
         {
           "type": "object",
           "properties": {
@@ -665,7 +924,193 @@
               "default": []
             }
           },
-          "required": ["command"]
+          "required": [
+            "command"
+          ]
+        }
+      ]
+    },
+    "DebugRunCommand": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/WebSocketMessage"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "command": {
+              "const": "debug_run"
+            },
+            "session_id": {
+              "type": "string",
+              "description": "Unique debug session identifier"
+            },
+            "flow": {
+              "type": "object",
+              "description": "Flow to execute in debug mode"
+            },
+            "breakpoints": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "List of action IDs where execution should pause",
+              "default": []
+            },
+            "mode": {
+              "type": "string",
+              "const": "debug",
+              "default": "debug"
+            }
+          },
+          "required": [
+            "command",
+            "session_id",
+            "flow"
+          ]
+        }
+      ]
+    },
+    "DebugStepCommand": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/WebSocketMessage"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "command": {
+              "const": "debug_step"
+            },
+            "session_id": {
+              "type": "string",
+              "description": "Debug session identifier"
+            }
+          },
+          "required": [
+            "command",
+            "session_id"
+          ]
+        }
+      ]
+    },
+    "DebugContinueCommand": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/WebSocketMessage"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "command": {
+              "const": "debug_continue"
+            },
+            "session_id": {
+              "type": "string",
+              "description": "Debug session identifier"
+            }
+          },
+          "required": [
+            "command",
+            "session_id"
+          ]
+        }
+      ]
+    },
+    "DebugPauseCommand": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/WebSocketMessage"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "command": {
+              "const": "debug_pause"
+            },
+            "session_id": {
+              "type": "string",
+              "description": "Debug session identifier"
+            }
+          },
+          "required": [
+            "command",
+            "session_id"
+          ]
+        }
+      ]
+    },
+    "DebugStopCommand": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/WebSocketMessage"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "command": {
+              "const": "debug_stop"
+            },
+            "session_id": {
+              "type": "string",
+              "description": "Debug session identifier"
+            }
+          },
+          "required": [
+            "command",
+            "session_id"
+          ]
+        }
+      ]
+    },
+    "DebugResponse": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/WebSocketResponse"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "command": {
+              "type": "string",
+              "enum": [
+                "debug_run",
+                "debug_step",
+                "debug_continue",
+                "debug_pause",
+                "debug_stop",
+                "debug_error"
+              ]
+            },
+            "session_id": {
+              "type": "string",
+              "description": "Debug session identifier"
+            },
+            "state": {
+              "type": "string",
+              "enum": [
+                "ready",
+                "running",
+                "paused",
+                "stepping",
+                "completed",
+                "error",
+                "stopped"
+              ],
+              "description": "Current debug session state"
+            },
+            "data": {
+              "type": "object",
+              "description": "Additional debug data (action results, variables, etc.)"
+            },
+            "error": {
+              "type": "string",
+              "description": "Error message if command failed"
+            }
+          },
+          "required": [
+            "command"
+          ]
         }
       ]
     }

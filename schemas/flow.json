@@ -339,7 +339,7 @@
           "description": "Last update timestamp"
         }
       },
-      "required": ["id", "name", "variables", "createdAt", "updatedAt"]
+      "required": ["id", "name", "variables"]
     },
     "GlobalVariable": {
       "type": "object",
@@ -375,7 +375,7 @@
           "description": "Last update timestamp"
         }
       },
-      "required": ["id", "name", "type", "value", "createdAt", "updatedAt"]
+      "required": ["id", "name", "type", "value"]
     }
   }
 }

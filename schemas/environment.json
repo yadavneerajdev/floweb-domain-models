@@ -75,7 +75,7 @@
           "description": "ISO 8601 timestamp when the environment was last updated"
         }
       },
-      "required": ["id", "name", "variables", "isDefault", "createdAt", "updatedAt"]
+      "required": ["id", "name", "variables", "isDefault"]
     },
     "GlobalVariable": {
       "type": "object",
@@ -122,7 +122,7 @@
           "description": "ISO 8601 timestamp when the variable was last updated"
         }
       },
-      "required": ["id", "name", "value", "type", "createdAt", "updatedAt"]
+      "required": ["id", "name", "value", "type"]
     },
     "Variable": {
       "type": "object",

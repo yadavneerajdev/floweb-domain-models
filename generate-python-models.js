@@ -26,7 +26,8 @@ const schemaFiles = [
   'parallel-execution.json',
   'websocket-communication.json',
   'execution-results.json',
-  'flow-validation.json'
+  'flow-validation.json',
+  'debug.json'
 ];
 
 // Generate Python models for each schema
@@ -62,6 +63,7 @@ from .parallel_execution import *
 from .websocket_communication import *
 from .execution_results import *
 from .flow_validation import *
+from .debug import *
 
 __all__ = [
     # Flow models
@@ -108,8 +110,13 @@ __all__ = [
     "GetLatestRealtimeActionCommand", "StopCommand", "CloseCommand", "ListSessionsCommand",
     "CloseSessionCommand", "RestartEngineCommand", "CloseEngineCommand", "GetEngineStatusCommand",
     "StartPerformanceScanCommand", "StopPerformanceScanCommand", "RunLoadTestCommand", "StopLoadTestCommand",
+    "DebugRunCommand", "DebugStepCommand", "DebugContinueCommand", "DebugPauseCommand", "DebugStopCommand",
     "WebSocketResponse", "RunResponse", "ListSessionsResponse", "EngineStatusResponse",
-    "RecordingResponse", "RecordingStatusResponse", "ListRecordingsResponse"
+    "RecordingResponse", "RecordingStatusResponse", "ListRecordingsResponse", "DebugResponse",
+    
+    # Debug models
+    "DebugState", "PauseReason", "Breakpoint", "DebugExecutionInfo",
+    "DebugSession", "DebugActionUpdate"
 ]
 `;
 

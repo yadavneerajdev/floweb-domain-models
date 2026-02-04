@@ -1,0 +1,203 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://floweb.com/schemas/debug.json",
+  "title": "Debug Models",
+  "description": "Schema for debug session management, states, and execution control",
+  "type": "object",
+  "$defs": {
+    "DebugState": {
+      "type": "string",
+      "enum": [
+        "ready",
+        "running",
+        "paused",
+        "stepping",
+        "completed",
+        "error",
+        "stopped"
+      ],
+      "description": "Debug session states following the state machine specification"
+    },
+    "PauseReason": {
+      "type": "string",
+      "enum": [
+        "breakpoint",
+        "manual",
+        "error",
+        "step"
+      ],
+      "description": "Reasons for debug execution pause"
+    },
+    "Breakpoint": {
+      "type": "object",
+      "description": "Represents a breakpoint in debug execution",
+      "properties": {
+        "nodeId": {
+          "type": "string",
+          "description": "Action/node ID where breakpoint is set"
+        },
+        "enabled": {
+          "type": "boolean",
+          "description": "Whether the breakpoint is active"
+        },
+        "hitCount": {
+          "type": "integer",
+          "description": "Number of times this breakpoint has been hit",
+          "default": 0
+        }
+      },
+      "required": ["nodeId", "enabled"]
+    },
+    "DebugExecutionInfo": {
+      "type": "object",
+      "description": "Information about current debug execution state",
+      "properties": {
+        "currentNodeId": {
+          "type": ["string", "null"],
+          "description": "ID of the action currently being executed or about to execute"
+        },
+        "currentActionIndex": {
+          "type": "integer",
+          "description": "Zero-based index of current action in execution order",
+          "default": 0
+        },
+        "totalActions": {
+          "type": "integer",
+          "description": "Total number of actions in the flow",
+          "default": 0
+        },
+        "executedActions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of action IDs that have been executed",
+          "default": []
+        },
+        "nextBreakpoint": {
+          "type": ["string", "null"],
+          "description": "ID of the next breakpoint that will be hit"
+        }
+      },
+      "required": ["currentNodeId", "currentActionIndex", "totalActions", "executedActions", "nextBreakpoint"]
+    },
+    "DebugSession": {
+      "type": "object",
+      "description": "Represents a single debug execution session",
+      "properties": {
+        "sessionId": {
+          "type": "string",
+          "description": "Unique identifier for the debug session"
+        },
+        "flowId": {
+          "type": "string",
+          "description": "ID of the flow being debugged"
+        },
+        "breakpoints": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Set of action IDs where execution should pause",
+          "default": []
+        },
+        "state": {
+          "$ref": "#/$defs/DebugState",
+          "default": "ready"
+        },
+        "currentActionId": {
+          "type": ["string", "null"],
+          "description": "ID of the action currently being executed or about to execute"
+        },
+        "currentActionIndex": {
+          "type": "integer",
+          "description": "Zero-based index of current action in execution order",
+          "default": 0
+        },
+        "executedActions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of action IDs that have been executed",
+          "default": []
+        },
+        "pauseRequested": {
+          "type": "boolean",
+          "description": "Flag indicating manual pause was requested",
+          "default": false
+        },
+        "stopRequested": {
+          "type": "boolean",
+          "description": "Flag indicating stop was requested",
+          "default": false
+        },
+        "createdAt": {
+          "type": "number",
+          "description": "Timestamp when session was created (Unix timestamp)"
+        },
+        "lastUpdated": {
+          "type": "number",
+          "description": "Timestamp of last state change (Unix timestamp)"
+        }
+      },
+      "required": ["sessionId", "flowId", "breakpoints", "state"]
+    },
+    "DebugActionUpdate": {
+      "type": "object",
+      "description": "Real-time update sent during debug execution",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "debug_action_started",
+            "debug_action_completed",
+            "debug_action_failed",
+            "debug_paused",
+            "debug_resumed",
+            "debug_completed",
+            "debug_stopped",
+            "debug_error"
+          ],
+          "description": "Type of debug update"
+        },
+        "sessionId": {
+          "type": "string",
+          "description": "Debug session ID"
+        },
+        "actionId": {
+          "type": ["string", "null"],
+          "description": "Action ID related to this update"
+        },
+        "actionIndex": {
+          "type": ["integer", "null"],
+          "description": "Index of the action in execution order"
+        },
+        "state": {
+          "$ref": "#/$defs/DebugState",
+          "description": "Current debug state"
+        },
+        "pauseReason": {
+          "oneOf": [
+            {"$ref": "#/$defs/PauseReason"},
+            {"type": "null"}
+          ],
+          "description": "Reason for pause if state is paused"
+        },
+        "result": {
+          "type": ["object", "null"],
+          "description": "Action execution result if available"
+        },
+        "error": {
+          "type": ["string", "null"],
+          "description": "Error message if action failed"
+        },
+        "variables": {
+          "type": ["object", "null"],
+          "description": "Current flow variables state"
+        }
+      },
+      "required": ["type", "sessionId", "state"]
+    }
+  }
+}

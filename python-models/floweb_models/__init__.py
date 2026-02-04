@@ -18,6 +18,38 @@ try:
 except ImportError:
     _has_parallel = False
 
+# Import debug models
+try:
+    from .debug import (
+        DebugState,
+        PauseReason,
+        Breakpoint,
+        DebugExecutionInfo,
+        DebugSession,
+        DebugActionUpdate,
+    )
+    _has_debug = True
+except ImportError:
+    _has_debug = False
+
+# Import websocket commands (including debug commands)
+try:
+    from .websocket_communication import (
+        DebugRunCommand,
+        DebugStepCommand,
+        DebugContinueCommand,
+        DebugPauseCommand,
+        DebugStopCommand,
+        DebugResponse,
+        RunCommand,
+        RecordCommand,
+        StopCommand,
+        WebSocketResponse,
+    )
+    _has_websocket = True
+except ImportError:
+    _has_websocket = False
+
 # Import action configs
 try:
     from .action_configs import (
@@ -62,18 +94,6 @@ try:
     _has_action_configs = True
 except ImportError:
     _has_action_configs = False
-
-# Import websocket models
-try:
-    from .websocket_communication import (
-        RunCommand,
-        RecordCommand,
-        StopCommand,
-        WebSocketResponse,
-    )
-    _has_websocket = True
-except ImportError:
-    _has_websocket = False
 
 __all__ = [
     # Flow models
@@ -144,6 +164,17 @@ if _has_action_configs:
         "SubflowConfig",
     ])
 
+# Add debug exports if available
+if _has_debug:
+    __all__.extend([
+        "DebugState",
+        "PauseReason",
+        "Breakpoint",
+        "DebugExecutionInfo",
+        "DebugSession",
+        "DebugActionUpdate",
+    ])
+
 # Add websocket exports if available
 if _has_websocket:
     __all__.extend([
@@ -151,5 +182,9 @@ if _has_websocket:
         "RecordCommand",
         "StopCommand",
         "WebSocketResponse",
-    ])
-
+        "DebugRunCommand",
+        "DebugStepCommand",
+        "DebugContinueCommand",
+        "DebugPauseCommand",
+        "DebugStopCommand",
+        "DebugResponse",    ])

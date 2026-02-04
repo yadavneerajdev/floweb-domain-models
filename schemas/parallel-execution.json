@@ -146,9 +146,20 @@
         },
         "browser_mode": {
           "type": "string",
-          "enum": ["headed", "headless"],
-          "default": "headed",
+          "enum": ["headful", "headless"],
+          "default": "headful",
           "description": "Browser mode"
+        },
+        "browser": {
+          "type": "string",
+          "enum": ["chrome", "firefox", "safari", "edge"],
+          "default": "chrome",
+          "description": "Browser to use for execution"
+        },
+        "incognito": {
+          "type": "boolean",
+          "default": false,
+          "description": "Run tests in incognito/private mode"
         },
         "max_retries": {
           "type": "integer",

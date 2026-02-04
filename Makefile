@@ -64,7 +64,7 @@ generate-py:
 			--output src/floweb_domain_models/$$filename.py \
 			--input-file-type jsonschema \
 			--output-model-type pydantic_v2.BaseModel \
-			--target-python-version 3.8 \
+			--target-python-version 3.12 \
 			--use-schema-description \
 			--use-field-description \
 			--treat-dot-as-module \
