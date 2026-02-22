@@ -179,6 +179,14 @@ class FlowParameters(BaseModel):
     """
     Input parameters
     """
+    parameterBefore: list[Variable]
+    """
+    Parameters to be set before execution
+    """
+    variableBefore: list[Variable]
+    """
+    Variables to be set before execution
+    """
     output: list[Variable]
     """
     Output parameters
@@ -223,7 +231,7 @@ class Environment(BaseModel):
     """
     Environment name
     """
-    variables: list[EnvironmentVariable | Variable] | None = None
+    variables: list[EnvironmentVariable | Variable] = None
     """
     Environment variables
     """
@@ -231,9 +239,21 @@ class Environment(BaseModel):
     """
     Environment description
     """
+    isDefault: bool | None = None
+    """
+    Whether this is the default environment
+    """
     isActive: bool | None = None
     """
     Whether this environment is active
+    """
+    createdAt: AwareDatetime | None = None
+    """
+    Creation timestamp
+    """
+    updatedAt: AwareDatetime | None = None
+    """
+    Last update timestamp
     """
 
 
@@ -315,11 +335,11 @@ class Flow(BaseModel):
     """
     Last update timestamp
     """
-    variables: FlowVariables | None = None
+    variables: FlowVariables = None
     """
     Flow input and output variables
     """
-    parameters: FlowParameters | None = None
+    parameters: FlowParameters = None
     """
     Flow parameters for configuration
     """

@@ -7,6 +7,8 @@ from __future__ import annotations
 from enum import StrEnum
 from typing import Annotated, Any
 
+from aiohttp.web_routedef import view
+from black.debug import T
 from pydantic import AnyUrl, BaseModel, ConfigDict, Field
 
 
@@ -37,35 +39,35 @@ class ClickConfig(BaseActionConfig):
     """
     CSS selector for element to click
     """
-    waitTime: int | None = 1000
+    waitTime: int = 1000
     """
     Wait time in milliseconds
     """
-    forceClick: bool | None = False
+    forceClick: bool = False
     """
     Force click even if element not clickable
     """
-    scrollIntoView: bool | None = True
+    scrollIntoView: bool = True
     """
     Scroll element into view before clicking
     """
-    waitForElement: bool | None = True
+    waitForElement: bool = True
     """
     Wait for element to be present
     """
-    clickType: ClickType | None = 'left'
+    clickType: ClickType = ClickType.left
     """
     Type of click to perform
     """
-    clickCount: Annotated[int | None, Field(ge=1)] = 1
+    clickCount: Annotated[int, Field(ge=1)] = 1
     """
     Number of clicks to perform
     """
-    clickAndHold: bool | None = False
+    clickAndHold: bool = False
     """
     Whether to click and hold
     """
-    holdDuration: int | None = 1000
+    holdDuration: int = 1000
     """
     Duration to hold click in milliseconds
     """
@@ -83,15 +85,15 @@ class InputConfig(BaseActionConfig):
     """
     Text to input
     """
-    clearFirst: bool | None = True
+    clearFirst: bool = True
     """
     Clear field before typing
     """
-    waitForElement: bool | None = True
+    waitForElement: bool = True
     """
     Wait for element to be present
     """
-    scrollIntoView: bool | None = True
+    scrollIntoView: bool = True
     """
     Scroll element into view
     """
@@ -105,11 +107,11 @@ class NavigateConfig(BaseActionConfig):
     """
     URL to navigate to
     """
-    waitForLoad: bool | None = True
+    waitForLoad: bool = True
     """
     Wait for page to load
     """
-    takeScreenshot: bool | None = False
+    takeScreenshot: bool = False
     """
     Take screenshot after navigation
     """
@@ -129,31 +131,31 @@ class WaitConfig(BaseActionConfig):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    waitType: WaitType | None = 'duration'
+    waitType: WaitType = WaitType.duration
     """
     Type of wait to perform
     """
-    duration: int | None = 3000
+    duration: int = 3000
     """
     Duration to wait in milliseconds
     """
-    selector: str | None = None
+    selector: str
     """
     CSS selector for element to wait for
     """
-    timeout: int | None = 10000
+    timeout: int = 10000
     """
     Maximum time to wait in milliseconds
     """
-    waitForInteractable: bool | None = False
+    waitForInteractable: bool = False
     """
     Wait for element to be interactable
     """
-    fallbackToDuration: bool | None = True
+    fallbackToDuration: bool = True
     """
     Fallback to duration wait if element wait fails
     """
-    fallbackDuration: int | None = 2000
+    fallbackDuration: int = 2000
     """
     Duration to wait if fallback triggered
     """
@@ -167,7 +169,7 @@ class AssertType(StrEnum):
     exists = 'exists'
     visible = 'visible'
     text = 'text'
-    value = 'value'
+    value_ = 'value'
     attribute = 'attribute'
 
 
@@ -179,7 +181,7 @@ class AssertionConfig(BaseActionConfig):
     """
     CSS selector for element
     """
-    assertType: AssertType | None = 'exists'
+    assertType: AssertType = AssertType.exists
     """
     Type of assertion
     """
@@ -224,7 +226,7 @@ class ScreenshotConfig(BaseActionConfig):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    screenshotType: ScreenshotType | None = 'viewport'
+    screenshotType: ScreenshotType = ScreenshotType.viewport
     """
     Type of screenshot to capture
     """
@@ -244,7 +246,7 @@ class ScreenshotConfig(BaseActionConfig):
     """
     Include timestamp in filename
     """
-    format: Format | None = 'png'
+    format: Format = Format.png
     """
     Output format
     """
@@ -312,7 +314,7 @@ class ApiCallConfig(BaseActionConfig):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    method: Method | None = 'GET'
+    method: Method = Method.GET
     """
     HTTP method
     """
@@ -386,11 +388,11 @@ class DatabaseQueryConfig(BaseActionConfig):
     """
     Log the query being executed
     """
-    validateConnection: bool | None = True
+    validateConnection: bool = True
     """
     Validate database connection
     """
-    timeout: int | None = 30000
+    timeout: int = 30000
     """
     Query timeout in milliseconds
     """
@@ -416,11 +418,11 @@ class DatabaseInsertConfig(BaseActionConfig):
     """
     Log the insert operation
     """
-    validateConnection: bool | None = True
+    validateConnection: bool = True
     """
     Validate database connection
     """
-    rollbackOnError: bool | None = True
+    rollbackOnError: bool = True
     """
     Rollback transaction on error
     """
@@ -442,7 +444,7 @@ class FileUploadConfig(BaseActionConfig):
     """
     Wait for element to be present
     """
-    scrollIntoView: bool | None = True
+    scrollIntoView: bool = True
     """
     Scroll element into view
     """
@@ -498,7 +500,7 @@ class CustomCodeConfig(BaseActionConfig):
     """
     Catch and handle errors
     """
-    timeout: int | None = 30000
+    timeout: int = 30000
     """
     Execution timeout in milliseconds
     """
@@ -579,7 +581,7 @@ class ScrollConfig(BaseActionConfig):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    direction: Direction | None = 'down'
+    direction: Direction = Direction.down
     """
     Scroll direction
     """
@@ -619,6 +621,14 @@ class ClearInputConfig(BaseActionConfig):
     """
     CSS selector for input element
     """
+    scrollIntoView: bool
+    """
+    Scroll element into view before clearing
+    """
+    maintainFocus: bool
+    """
+    Whether to keep focus on element after clearing
+    """
     waitForElement: bool | None = True
     """
     Wait for element to be present
@@ -642,6 +652,14 @@ class SwitchTabConfig(BaseActionConfig):
     tabIndex: Annotated[int | None, Field(ge=0)] = None
     """
     Tab index to switch to
+    """
+    tabUrl: str | None = None
+    """
+    URL of tab to switch to (alternative to index)
+    """
+    switchMethod: str | None = 'auto'
+    """
+    Explicit switch method (auto/index/url/title)
     """
     tabTitle: str | None = None
     """
@@ -703,11 +721,11 @@ class ConditionalConfig(BaseActionConfig):
     """
     JavaScript condition to evaluate
     """
-    operator: str | None = None
+    operator: str
     """
     Optional comparison operator used by editor helpers.
     """
-    value: Any | None = None
+    value: Any
     """
     Optional comparison value used by editor helpers.
     """
@@ -735,15 +753,15 @@ class LoopConfig(BaseActionConfig):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    loopType: LoopType | None = 'count'
+    loopType: LoopType
     """
     Type of loop
     """
-    count: Annotated[int | None, Field(ge=1)] = None
+    count: Annotated[int, Field(ge=1)]
     """
     Number of iterations (for count loops)
     """
-    condition: str | None = None
+    condition: str
     """
     Condition to continue loop (for condition loops)
     """
@@ -791,19 +809,35 @@ class CallToFlowConfig(BaseActionConfig):
     """
     ID of flow to call
     """
-    inputParameters: dict[str, Any] | None = None
+    flowName: str | None = None
     """
-    Input parameters to pass to subflow
+    Name of flow to call
     """
     outputVariable: str | None = 'flowResult'
     """
     Variable to store result
     """
-    waitForCompletion: bool | None = True
+    inputParameters: list[dict[str, Any]]
+    """
+    Input parameters to pass to subflow
+    """
+    outputParameters: list[dict[str, Any]]
+    """
+    Output parameters to store result
+    """
+    propagateErrors: bool
+    """
+    Whether to propagate errors from the subflow
+    """
+    logExecution: bool
+    """
+    Whether to log execution of the subflow
+    """
+    waitForCompletion: bool
     """
     Wait for subflow to complete
     """
-    async_: Annotated[bool | None, Field(alias='async')] = False
+    async_: Annotated[bool, Field(alias='async')]
     """
     Execute subflow asynchronously
     """
@@ -873,6 +907,57 @@ class SetViewportConfig(BaseActionConfig):
     """
     Viewport width in pixels
     """
+    viewportType: str = 'desktop'
+    """
+    Type of viewport (desktop, mobile, tablet, custom)
+    """
+    waitAfterResize: int = 1000
+    """
+    Time to wait after resizing viewport in milliseconds
+    """
+    screenSizePreset: str = '1080p'
+    """
+    Optional preset screen size (e.g. 1080p, 720p) for quick configuration
+    """
+    deviceName: str | None = None
+    """Optional device name (e.g. iPhone 12) for device emulation mode
+    """
+    deviceScaleFactor: int | None = None
+    """
+    Device scale factor for high DPI emulation (e.g. 3 for iPhone Plus models)
+    """
+    isMobile: bool | None = None
+    """
+    Whether to emulate mobile device (affects user agent and viewport behavior)
+    """
+    hasTouch: bool | None = None
+    """
+    Whether to emulate touch screen (enables touch events)
+    """
+    isLandscape: bool | None = None
+    """
+    Whether to set landscape orientation (swaps width and height)
+    """
+    userAgent: str | None = None
+    """
+    Custom user agent string to use in mobile emulation mode
+    """
+    preserveCookies: bool = False
+    """
+    Whether to preserve cookies when changing viewport
+    """
+    preserveLocalStorage: bool = False
+    """
+    Whether to preserve local storage when changing viewport
+    """
+    preserveSessionStorage: bool = False
+    """
+    Whether to preserve session storage when changing viewport
+    """
+    takeScreenshot: bool = False
+    """
+    Whether to take screenshot after resizing viewport
+    """
     height: Annotated[int, Field(ge=1)] = 1080
     """
     Viewport height in pixels
@@ -881,7 +966,7 @@ class SetViewportConfig(BaseActionConfig):
 
 class Property(StrEnum):
     text = 'text'
-    value = 'value'
+    value_ = 'value'
     class_ = 'class'
     id = 'id'
     tagName = 'tagName'
@@ -930,7 +1015,7 @@ class HandlePopupConfig(BaseActionConfig):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    action: Action | None = 'accept'
+    action: Action = Action.accept
     """
     Action to perform on popup
     """
@@ -968,7 +1053,7 @@ class FormField(BaseModel):
     """
     Human-readable field name
     """
-    type: Type | None = 'text'
+    type: Type = Type.text
     """
     Type of form field
     """
@@ -980,7 +1065,7 @@ class FormField(BaseModel):
     """
     Whether checkbox is checked
     """
-    multiple: bool | None = False
+    multiple: bool = False
     """
     Whether select allows multiple selections
     """
@@ -994,19 +1079,19 @@ class FormFillConfig(BaseActionConfig):
     """
     Array of form field configurations
     """
-    waitForElements: bool | None = True
+    waitForElements: bool = True
     """
     Wait for all form elements to be present
     """
-    clearFirst: bool | None = True
+    clearFirst: bool = True
     """
     Clear existing values before filling
     """
-    submitAfterFill: bool | None = False
+    submitAfterFill: bool = False
     """
     Automatically submit form after filling
     """
-    smartFieldDetection: bool | None = True
+    smartFieldDetection: bool = True
     """
     Automatically detect field types
     """

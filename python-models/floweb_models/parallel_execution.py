@@ -45,7 +45,7 @@ class FlowExecutionRequest(BaseModel):
     """
     Flow to execute (without environment/globalVariables)
     """
-    mode: Mode | None = 'full'
+    mode: Mode = Mode.full
     """
     Execution mode
     """
@@ -53,7 +53,7 @@ class FlowExecutionRequest(BaseModel):
     """
     Recording configuration
     """
-    metadata: dict[str, Any] | None = {}
+    metadata: dict[str, Any] = {}
     """
     Additional test metadata
     """
@@ -119,7 +119,7 @@ class FlowExecutionResult(BaseModel):
     """
     Error message if failed
     """
-    metadata: dict[str, Any] | None = {}
+    metadata: dict[str, Any] = {}
     """
     Additional test metadata
     """
@@ -146,27 +146,35 @@ class ParallelTestsRequest(BaseModel):
     """
     List of tests to execute
     """
-    data: dict[str, Any] | None = None
+    data: dict[str, Any]
     """
     Shared data containing environment and globalVariables for all tests
     """
-    max_parallel: Annotated[int | None, Field(ge=1, le=50)] = 10
+    max_parallel: Annotated[int, Field(ge=1, le=50)] = 10
     """
     Maximum number of parallel executions
     """
-    stop_on_failure: bool | None = False
+    stop_on_failure: bool = False
     """
     Stop all tests if one fails
     """
-    cleanup_after: bool | None = True
+    cleanup_after: bool = True
     """
     Cleanup resources after execution
     """
-    browser_mode: BrowserMode | None = 'headed'
+    browser_mode: BrowserMode = BrowserMode.headed
     """
     Browser mode
     """
-    max_retries: Annotated[int | None, Field(ge=0, le=10)] = 3
+    incognito: bool = False
+    """
+    Whether to use incognito/private mode
+    """
+    browser: str = 'chrome'
+    """
+    Browser type (chrome, firefox, etc.)
+    """
+    max_retries: Annotated[int, Field(ge=0, le=10)] = 3
     """
     Maximum retries for transient failures
     """

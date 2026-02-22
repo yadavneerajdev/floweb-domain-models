@@ -9,6 +9,8 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict
 
+from engine.server.ws.handlers import flow
+
 
 class WebSocketMessage(BaseModel):
     """
@@ -47,6 +49,10 @@ class SessionInfo(BaseModel):
     browser: str
     """
     Browser type
+    """
+    flowName: str | None = None
+    """
+    Flow name
     """
     startedAt: int
     """

@@ -148,7 +148,7 @@ class TokenRefreshConfig(BaseModel):
     """
     Token refresh endpoint URL
     """
-    refresh_method: RefreshMethod | None = 'POST'
+    refresh_method: RefreshMethod = RefreshMethod.POST
     """
     HTTP method for refresh request
     """
@@ -209,7 +209,7 @@ class CredentialRotationConfig(BaseModel):
     """
     Array of credential sets
     """
-    rotation_strategy: RotationStrategy | None = 'round_robin'
+    rotation_strategy: RotationStrategy = RotationStrategy.round_robin
     """
     Credential rotation strategy
     """
