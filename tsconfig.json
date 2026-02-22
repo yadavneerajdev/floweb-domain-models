@@ -3,9 +3,7 @@
     "target": "ES2020",
     "lib": ["ES2020"],
     "module": "CommonJS",
-    "declaration": true,
-    "outDir": "./dist",
-    "rootDir": "./types",
+    "noEmit": true,
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
@@ -16,11 +14,10 @@
     "emitDecoratorMetadata": true
   },
   "include": [
-    "types/**/*"
+    "index.d.ts"
   ],
   "exclude": [
     "node_modules",
-    "dist",
     "schemas",
     "examples"
   ]

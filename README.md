@@ -65,6 +65,11 @@ flow = Flow(
 
 All schemas are validated against JSON Schema Draft 2020-12 specification.
 
+### Push the changes and update the npm package version
+
+npm version patch
+npm publish
+
 ### Code Generation
 
 - TypeScript: Generated using `json-schema-to-typescript`

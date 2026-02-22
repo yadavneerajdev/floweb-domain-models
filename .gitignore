@@ -63,3 +63,6 @@ Thumbs.db
 # Temporary files
 *.tmp
 *.temp
+
+#npm cache ignore
+.npm-cache/

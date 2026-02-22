@@ -1,7 +1,7 @@
 {
-  "name": "@floweb/domain-models",
+  "name": "@autoweb/domain-models",
   "version": "1.0.0",
-  "description": "Domain models for Floweb Desktop - centralized type definitions",
+  "description": "Domain models for AutoWeb Desktop - centralized type definitions",
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
@@ -14,18 +14,18 @@
     "prepublishOnly": "npm run build && npm run test"
   },
   "keywords": [
-    "floweb",
+    "autoweb",
     "domain-models",
     "typescript",
     "automation",
     "testing",
     "schemas"
   ],
-  "author": "Floweb Team",
+  "author": "AutoWeb Team",
   "license": "UNLICENSED",
   "repository": {
     "type": "git",
-    "url": "https://github.com/floweb/floweb-domain-models.git"
+    "url": "https://github.com/yadavneerajdev/floweb-domain-models.git"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
@@ -34,7 +34,7 @@
     "json-schema-to-typescript": "^13.0.0",
     "ts-jest": "^29.4.6",
     "typedoc": "^0.25.0",
-    "typescript": "^5.9.3"
+    "typescript": "5.4.5"
   },
   "peerDependencies": {
     "typescript": ">=4.9.0"

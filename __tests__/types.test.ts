@@ -1,4 +1,8 @@
-import { Flow, PerformanceTest, EnvironmentAndGlobalVariablesConfiguration } from '../types';
+import {
+  Flow,
+  PerformanceTest,
+  EnvironmentAndGlobalVariablesConfiguration,
+} from "../index";
 
 // Test Flow type
 const testFlow: Flow = {
