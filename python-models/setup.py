@@ -1,10 +1,11 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="floweb-domain-models",
+    name="floweb-models",
     version="1.0.0",
-    description="Floweb Domain Models - Python Pydantic Models",
-    packages=find_packages(),
+    description="Shared Floweb Python domain models",
+    packages=find_packages(include=["floweb_models", "floweb_models.*"]),
+    include_package_data=True,
     install_requires=[
         "pydantic>=2.0.0",
     ],

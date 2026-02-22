@@ -10,7 +10,7 @@ const fs = require('fs');
 const path = require('path');
 
 const schemasDir = path.join(__dirname, 'schemas');
-const outputDir = path.join(__dirname, 'python-models');
+const outputDir = path.join(__dirname, 'python-models', 'floweb_models');
 
 // Ensure output directory exists
 if (!fs.existsSync(outputDir)) {
@@ -33,7 +33,7 @@ const schemaFiles = [
 // Generate Python models for each schema
 schemaFiles.forEach(schemaFile => {
   const schemaPath = path.join(schemasDir, schemaFile);
-  const outputFile = schemaFile.replace('.json', '.py');
+  const outputFile = schemaFile.replace('.json', '.py').replace(/-/g, '_');
   const outputPath = path.join(outputDir, outputFile);
 
   console.log(`Generating Python model for ${schemaFile}...`);

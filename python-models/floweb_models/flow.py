@@ -223,7 +223,7 @@ class Environment(BaseModel):
     """
     Environment name
     """
-    variables: list[EnvironmentVariable] | None = None
+    variables: list[EnvironmentVariable | Variable] | None = None
     """
     Environment variables
     """
@@ -291,7 +291,7 @@ class Flow(BaseModel):
     """
     Parent folder ID for organization
     """
-    type: Type | None = 'flow'
+    type: Type | None = Type.flow
     """
     Type of the flow
     """
