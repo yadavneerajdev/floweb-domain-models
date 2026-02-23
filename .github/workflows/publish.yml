@@ -1,8 +1,9 @@
 name: Publish to npm (Trusted Publishing)
 
 on:
-  release:
-    types: [created]
+  push:
+    branches:
+      - main
 
 permissions:
   contents: read
