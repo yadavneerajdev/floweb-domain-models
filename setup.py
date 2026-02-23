@@ -9,7 +9,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="floweb-domain-models",
-    version="1.0.7",
+    version="1.0.8",
     author="Floweb Team",
     author_email="neeraj@floweb.com",
     description="Domain models for Floweb Desktop - centralized Python models",
