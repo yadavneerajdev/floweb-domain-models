@@ -90,7 +90,7 @@ domain-models/
 │   └── environment.json
 ├── types/            # Generated type definitions
 ├── examples/         # Sample data files
-└── docs/            # Generated documentation
+└── docs/            # Generated documentations
 ```
 
 ## Contributing
