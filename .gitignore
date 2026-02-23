@@ -5,9 +5,6 @@ build/
 
 # Generated code (regenerate with make generate)
 types/
-src/floweb_domain_models/*.py
-!src/floweb_domain_models/__init__.py
-!src/floweb_domain_models/py.typed
 
 # Documentation
 docs/_build/

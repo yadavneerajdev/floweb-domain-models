@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "floweb-domain-models"
-version = "1.0.0"
+version = "1.0.6"
 description = "Domain models for Floweb Desktop - centralized Python models"
 readme = "README.md"
 license = {text = "Proprietary"}
@@ -52,12 +52,14 @@ Repository = "https://github.com/floweb/floweb-domain-models.git"
 Documentation = "https://docs.floweb.com/domain-models/"
 Issues = "https://github.com/floweb/floweb-domain-models/issues"
 
+
+
 [tool.setuptools]
-packages = ["floweb_domain_models"]
-package-dir = {"" = "src"}
+packages = ["floweb_models"]
+package-dir = {"floweb_models" = "python-models/floweb_models"}
 
 [tool.setuptools.package-data]
-floweb_domain_models = ["schemas/*.json", "py.typed"]
+floweb_models = ["schemas/*.json", "py.typed"]
 
 [tool.black]
 line-length = 88

@@ -9,17 +9,17 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="floweb-domain-models",
-    version="1.0.0",
+    version="1.0.6",
     author="Floweb Team",
-    author_email="team@floweb.com",
+    author_email="neeraj@floweb.com",
     description="Domain models for Floweb Desktop - centralized Python models",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/floweb/floweb-domain-models",
-    packages=find_packages(where="src"),
-    package_dir={"": "src"},
+    packages=["floweb_models"],
+    package_dir={"floweb_models": "python-models/floweb_models"},
     package_data={
-        "floweb_domain_models": ["schemas/*.json", "py.typed"],
+        "floweb_models": ["schemas/*.json", "py.typed"],
     },
     include_package_data=True,
     classifiers=[
