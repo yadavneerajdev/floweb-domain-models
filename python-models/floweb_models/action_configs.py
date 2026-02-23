@@ -693,6 +693,11 @@ class GetPageInfoConfig(BaseActionConfig):
     """
     Variable to store page information
     """
+    outputKey: str | None = None
+    """
+    Dot-notation path to extract a specific key from the page info object (e.g. 'title', 'url').
+    If omitted, the full page info object is stored.
+    """
 
 
 class JunctionConfig(BaseActionConfig):
