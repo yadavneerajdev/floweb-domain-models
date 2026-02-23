@@ -621,11 +621,11 @@ class ClearInputConfig(BaseActionConfig):
     """
     CSS selector for input element
     """
-    scrollIntoView: bool
+    scrollIntoView: bool = False
     """
     Scroll element into view before clearing
     """
-    maintainFocus: bool
+    maintainFocus: bool = False
     """
     Whether to keep focus on element after clearing
     """
