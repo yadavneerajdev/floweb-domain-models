@@ -1,5 +1,5 @@
 {
-  "name": "@autoweb/domain-models",
+  "name": "@autoweb/floweb-domain-models",
   "version": "1.0.10",
   "description": "Domain models for AutoWeb Desktop - centralized type definitions",
   "main": "index.js",
