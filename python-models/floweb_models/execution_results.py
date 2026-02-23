@@ -73,6 +73,8 @@ class Parameters(BaseModel):
     )
     input: list[dict[str, Any]] | None = []
     output: list[dict[str, Any]] | None = []
+    parameterBefore: list[dict[str, Any]] | None = []
+    variableBefore: list[dict[str, Any]] | None = []
 
 
 class BrowserInfo(BaseModel):
@@ -124,7 +126,7 @@ class FlowReport(BaseModel):
         Parameters,
         Field(
             default_factory=lambda: Parameters.model_validate(
-                {'input': [], 'output': []}
+                {'input': [], 'output': [], 'parameterBefore': [], 'variableBefore': []}
             )
         ),
     ]
