@@ -69,6 +69,7 @@ class Status(StrEnum):
     stopped = 'stopped'
     running = 'running'
     pending = 'pending'
+    skipped = 'skipped'
 
 
 class FlowExecutionResult(BaseModel):
@@ -131,6 +132,7 @@ class BrowserMode(StrEnum):
     """
 
     headed = 'headed'
+    headful = 'headful'
     headless = 'headless'
 
 

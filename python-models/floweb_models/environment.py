@@ -54,11 +54,11 @@ class GlobalVariable(BaseModel):
     """
     Description of the variable's purpose
     """
-    createdAt: AwareDatetime
+    createdAt: AwareDatetime | None = None
     """
     ISO 8601 timestamp when the variable was created
     """
-    updatedAt: AwareDatetime
+    updatedAt: AwareDatetime | None = None
     """
     ISO 8601 timestamp when the variable was last updated
     """

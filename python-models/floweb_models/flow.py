@@ -179,11 +179,11 @@ class FlowParameters(BaseModel):
     """
     Input parameters
     """
-    parameterBefore: list[Variable]
+    parameterBefore: list[Variable] = []
     """
     Parameters to be set before execution
     """
-    variableBefore: list[Variable]
+    variableBefore: list[Variable] = []
     """
     Variables to be set before execution
     """

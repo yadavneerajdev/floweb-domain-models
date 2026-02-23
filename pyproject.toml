@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "floweb-domain-models"
-version = "1.0.14"
+version = "1.0.15"
 description = "Domain models for Floweb Desktop - centralized Python models"
 readme = "README.md"
 license = {text = "Proprietary"}
