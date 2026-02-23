@@ -89,7 +89,7 @@ domain-models/
 │   ├── action-configs.json
 │   └── environment.json
 ├── types/            # Generated type definitions
-├── examples/         # Sample data files
+├── examples/         # Sample data
 └── docs/            # Generated documentations
 ```
 
