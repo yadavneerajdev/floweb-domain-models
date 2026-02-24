@@ -1,6 +1,6 @@
 {
   "name": "@autoweb/domain-models",
-  "version": "1.0.2",
+  "version": "1.0.20",
   "description": "Domain models for AutoWeb Desktop - centralized type definitions",
   "main": "index.js",
   "types": "index.d.ts",
