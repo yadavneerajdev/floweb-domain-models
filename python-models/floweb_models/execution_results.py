@@ -55,7 +55,11 @@ class ActionResult(BaseModel):
     """
     screenshot: str | None = None
     """
-    Base64 screenshot if taken
+    Screenshot reference (legacy base64 or mediaId:<id>)
+    """
+    screenshot_media_id: str | None = None
+    """
+    Server media key for uploaded screenshot
     """
     data: dict[str, Any] | None = None
     """
@@ -184,6 +188,10 @@ class FlowReport(BaseModel):
     browser_info: BrowserInfo | None = None
     """
     Browser information
+    """
+    run_config: dict[str, Any] | None = None
+    """
+    Runtime execution configuration
     """
     performance_metrics: PerformanceMetrics | None = None
     """

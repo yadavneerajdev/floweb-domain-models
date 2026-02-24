@@ -68,7 +68,11 @@
         },
         "screenshot": {
           "type": "string",
-          "description": "Base64 screenshot if taken"
+          "description": "Screenshot reference (legacy base64 or mediaId:<id>)"
+        },
+        "screenshot_media_id": {
+          "type": "string",
+          "description": "Server media key for uploaded screenshot"
         },
         "data": {
           "type": "object",
@@ -188,6 +192,34 @@
             "name": {"type": "string"},
             "version": {"type": "string"},
             "user_agent": {"type": "string"}
+          }
+        },
+        "run_config": {
+          "type": "object",
+          "description": "Runtime execution configuration",
+          "properties": {
+            "execution_mode": {
+              "type": "string",
+              "description": "Execution mode used for run (full/partial)"
+            },
+            "browser_config": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "browser": { "type": "string" },
+                  "mode": {
+                    "type": "string",
+                    "enum": ["normal", "incognito"]
+                  },
+                  "browser_mode": {
+                    "type": "string",
+                    "enum": ["headful", "headless"]
+                  }
+                },
+                "required": ["browser", "mode", "browser_mode"]
+              }
+            }
           }
         },
         "performance_metrics": {

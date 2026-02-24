@@ -169,6 +169,59 @@ export interface PerformanceTest {
   results?: AnyObject;
 }
 
+export type TestFlowData = Flow | PerformanceTest;
+
+export interface StoredTestInput {
+  id: string;
+  name: string;
+  folderId?: string | null;
+  flowData: TestFlowData;
+  type?: FlowKind;
+  tags?: string[];
+}
+
+export interface StoredTestRecord extends Omit<StoredTestInput, "id" | "folderId" | "type" | "tags"> {
+  id: string;
+  accountId: string;
+  folderId: string | null;
+  type: FlowKind;
+  tags: string[];
+  lastResult?: FlowLastResult;
+  createdBy?: string;
+  updatedBy?: string;
+  syncedAt?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface TestCatalogItem {
+  id: string;
+  name: string;
+  folderId: string | null;
+  type: FlowKind;
+  tags: string[];
+  description?: string;
+  status?: string;
+  lastResult?: FlowLastResult;
+  recentRuns?: TestRecentRun[];
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface TestRecentRun {
+  id: string;
+  status: ReportStatus;
+  createdAt: string;
+}
+
+export interface PaginatedResponse<T> {
+  items: T[];
+  page: number;
+  limit: number;
+  total: number;
+  hasMore: boolean;
+}
+
 export interface BaseActionConfig {
   image?: string;
   [key: string]: unknown;
@@ -232,6 +285,7 @@ export interface ActionResult {
   message: string;
   error?: string;
   screenshot?: string;
+  screenshot_media_id?: string;
   data?: AnyObject;
 }
 
@@ -255,6 +309,14 @@ export interface FlowReport {
   error?: string;
   environment?: AnyObject;
   browser_info?: AnyObject;
+  run_config?: {
+    execution_mode?: string;
+    browser_config?: Array<{
+      browser: string;
+      mode: "normal" | "incognito";
+      browser_mode: "headful" | "headless";
+    }>;
+  };
   performance_metrics?: AnyObject;
 }
 
@@ -591,4 +653,136 @@ export interface DebugResponse {
   session_id?: string;
   message?: string;
   data?: AnyObject;
+}
+
+// ─── Server Domain Models ────────────────────────────────────────────────────
+
+export type UserRole = 'owner' | 'admin' | 'member' | 'viewer';
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: UserRole;
+  accountId: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Account {
+  id: string;
+  name: string;
+  ownerId: string;
+  settings: {
+    timezone: string;
+    dateFormat: string;
+    language: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Folder {
+  id: string;
+  name: string;
+  accountId: string;
+  parentId: string | null;
+  path: string;
+  createdBy: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type MediaStorageDriver = 'local' | 's3' | 'r2';
+
+export interface MediaItem {
+  id: string;
+  accountId: string;
+  filename: string;
+  originalName: string;
+  mimeType: string;
+  sizeBytes: number;
+  storageDriver: MediaStorageDriver;
+  storageKey: string;
+  url?: string;
+  uploadedBy: string;
+  createdAt: string;
+}
+
+export interface StoredEnvironment extends Environment {
+  accountId: string;
+}
+
+export interface StoredGlobalVariable extends GlobalVariable {
+  accountId: string;
+}
+
+export interface AccountDataStore {
+  accountId: string;
+  environments: Environment[];
+  globalVariables: GlobalVariable[];
+  updatedAt: string;
+}
+
+export type ReportType = 'flow' | 'performance' | 'parallel' | 'suite';
+export type ReportStatus = 'passed' | 'failed' | 'error' | 'running' | 'pending';
+
+export interface ExecutionReport {
+  id: string;
+  accountId: string;
+  testId?: string;
+  flowId?: string;
+  flowName?: string;
+  type: ReportType;
+  status: ReportStatus;
+  duration: number;
+  report: FlowReport | FlowExecutionResult | AnyObject;
+  metadata?: AnyObject;
+  executedBy: string;
+  executedByName?: string;
+  executedByEmail?: string;
+  createdAt: string;
+}
+
+export interface EngineSession {
+  accountId: string;
+  userId: string;
+  role: UserRole;
+  token: string;
+  issuedAt: number;
+  expiresAt: number;
+}
+
+export interface CallToFlowConfig extends BaseActionConfig {
+  flowId?: string;
+  flowName?: string;
+  inputParameters?: Variable[];
+  outputParameters?: Variable[];
+}
+
+export interface ImageUploadResponse {
+  mediaId: string;
+  url: string;
+  filename: string;
+}
+
+// Runtime resolution — what the engine fetches before execution
+export interface RuntimeContext {
+  environments: Environment[];
+  globalVariables: GlobalVariable[];
+  selectedEnvironmentId?: string;
+}
+
+// Engine authentication handshake
+export interface EngineAuthPayload {
+  token: string;         // engine_session JWT
+  accountId: string;
+  userId: string;
+}
+
+// Extended RunCommand with engine auth and runtime resolution support
+export interface AuthenticatedRunCommand extends RunCommand {
+  auth?: EngineAuthPayload;
+  runtimeContext?: RuntimeContext;  // Pre-fetched by engine from server
 }
