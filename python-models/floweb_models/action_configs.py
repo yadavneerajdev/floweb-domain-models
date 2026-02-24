@@ -822,27 +822,27 @@ class CallToFlowConfig(BaseActionConfig):
     """
     Variable to store result
     """
-    inputParameters: list[dict[str, Any]]
+    inputParameters: list[dict[str, Any]] = Field(default_factory=list)
     """
     Input parameters to pass to subflow
     """
-    outputParameters: list[dict[str, Any]]
+    outputParameters: list[dict[str, Any]] = Field(default_factory=list)
     """
     Output parameters to store result
     """
-    propagateErrors: bool
+    propagateErrors: bool = True
     """
     Whether to propagate errors from the subflow
     """
-    logExecution: bool
+    logExecution: bool = True
     """
     Whether to log execution of the subflow
     """
-    waitForCompletion: bool
+    waitForCompletion: bool = True
     """
     Wait for subflow to complete
     """
-    async_: Annotated[bool, Field(alias='async')]
+    async_: Annotated[bool, Field(alias='async')] = False
     """
     Execute subflow asynchronously
     """

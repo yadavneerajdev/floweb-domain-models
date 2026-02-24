@@ -759,6 +759,11 @@ export interface CallToFlowConfig extends BaseActionConfig {
   flowName?: string;
   inputParameters?: Variable[];
   outputParameters?: Variable[];
+  outputVariable?: string;
+  waitForCompletion?: boolean;
+  logExecution?: boolean;
+  propagateErrors?: boolean;
+  async?: boolean;
 }
 
 export interface ImageUploadResponse {
