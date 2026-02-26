@@ -1,6 +1,6 @@
 export type Primitive = string | number | boolean | null;
 export type JsonValue = Primitive | JsonValue[] | { [key: string]: JsonValue };
-export type AnyObject = Record<string, unknown>;
+export type AnyObject = Record<string, JsonValue>;
 
 export interface Position {
   x: number;
@@ -17,6 +17,10 @@ export interface ActionData {
   label: string;
   type: string;
   config: AnyObject;
+  image?: string;
+  status?: string;
+  expanded?: boolean;
+  [key: string]: JsonValue | undefined;
 }
 
 export interface Action {
@@ -49,7 +53,7 @@ export interface Variable {
   id: string;
   name: string;
   type: VariableType;
-  value: unknown;
+  value: JsonValue | undefined;
   description?: string;
   isOutput?: boolean;
 }
@@ -124,13 +128,13 @@ export interface RecordedRequest {
   method: string;
   url: string;
   headers?: Record<string, string>;
-  body?: unknown;
+  body?: JsonValue;
 }
 
 export interface RecordedResponse {
   status: number;
   headers?: Record<string, string>;
-  body?: unknown;
+  body?: JsonValue;
   timing?: ResponseTiming;
 }
 
