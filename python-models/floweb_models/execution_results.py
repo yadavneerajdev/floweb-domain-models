@@ -110,6 +110,77 @@ class PerformanceMetrics(BaseModel):
     total_data_transferred: Annotated[int | None, Field(ge=0)] = None
 
 
+class HealedSelectorSuggestion(BaseModel):
+    """
+    Suggested selector candidate for future runs
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    selector: str
+    source: str | None = None
+    confidence: Annotated[float | None, Field(ge=0.0, le=1.0)] = None
+
+
+class HealedSelectorRecord(BaseModel):
+    """
+    Runtime selector healing decision for a single action
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    node_id: str
+    action_type: str
+    selector_key: str | None = None
+    selectors_key: str | None = None
+    original_selector: str | None = None
+    healed_selector: str
+    source: str | None = None
+    confidence: Annotated[float | None, Field(ge=0.0, le=1.0)] = None
+    attempted_selectors: list[str] | None = []
+    failed_selectors: list[str] | None = []
+    suggestions: list[HealedSelectorSuggestion] | None = []
+
+
+class SelectorCandidateSuggestion(BaseModel):
+    """
+    Discovered selector candidate for future stability improvements
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    selector: str
+    source: str | None = None
+    confidence: Annotated[float | None, Field(ge=0.0, le=1.0)] = None
+    score: Annotated[float | None, Field(ge=0.0, le=1.0)] = None
+    discovered: bool | None = None
+    same_target: bool | None = None
+    match_count: Annotated[int | None, Field(ge=0)] = None
+    unique: bool | None = None
+
+
+class SelectorCandidateRecord(BaseModel):
+    """
+    Selector discovery output for a single action
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    node_id: str
+    action_type: str
+    selector_key: str | None = None
+    selectors_key: str | None = None
+    primary_selector: str | None = None
+    used_selector: str | None = None
+    used_source: str | None = None
+    best_selector_candidate: SelectorCandidateSuggestion | None = None
+    candidates: list[SelectorCandidateSuggestion] | None = []
+
+
 class FlowReport(BaseModel):
     """
     Complete report of flow execution
@@ -196,6 +267,14 @@ class FlowReport(BaseModel):
     performance_metrics: PerformanceMetrics | None = None
     """
     Performance metrics collected during execution
+    """
+    healed_selectors: list[HealedSelectorRecord] | None = []
+    """
+    Runtime self-healed selectors captured during execution
+    """
+    candidate_selectors: list[SelectorCandidateRecord] | None = []
+    """
+    Runtime-discovered selector candidates captured during execution
     """
 
 

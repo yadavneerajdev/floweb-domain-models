@@ -228,6 +228,17 @@ export interface PaginatedResponse<T> {
 
 export interface BaseActionConfig {
   image?: string;
+  identifiers?: Array<string | IdentifierCandidate>;
+  selectors?: string[];
+  [key: string]: unknown;
+}
+
+export interface IdentifierCandidate {
+  value: string;
+  type?: string;
+  confidence?: number;
+  primary?: boolean;
+  unique?: boolean;
   [key: string]: unknown;
 }
 
@@ -249,6 +260,8 @@ export interface FormField {
   type?: string;
   value?: unknown;
   options?: FormFieldOption[];
+  identifiers?: Array<string | IdentifierCandidate>;
+  selectors?: string[];
 }
 export interface FormFillConfig extends BaseActionConfig {
   fields?: FormField[];
@@ -267,9 +280,22 @@ export interface LoopConfig extends BaseActionConfig {}
 export interface DatabaseQueryConfig extends BaseActionConfig {}
 export interface DatabaseInsertConfig extends BaseActionConfig {}
 export interface CustomCodeConfig extends BaseActionConfig {}
-export interface DragAndDropConfig extends BaseActionConfig {}
+export interface DragAndDropConfig extends BaseActionConfig {
+  sourceSelector?: string;
+  targetSelector?: string;
+  sourceIdentifiers?: Array<string | IdentifierCandidate>;
+  targetIdentifiers?: Array<string | IdentifierCandidate>;
+  sourceSelectors?: string[];
+  targetSelectors?: string[];
+  sourceImage?: string;
+  targetImage?: string;
+}
 export interface CallToFlowConfig extends BaseActionConfig {}
-export interface SwitchToFrameConfig extends BaseActionConfig {}
+export interface SwitchToFrameConfig extends BaseActionConfig {
+  frameSelector?: string;
+  frameIdentifiers?: Array<string | IdentifierCandidate>;
+  frameSelectors?: string[];
+}
 export interface ExitFrameConfig extends BaseActionConfig {}
 export interface SetViewportConfig extends BaseActionConfig {}
 export interface GetElementPropertiesConfig extends BaseActionConfig {}
@@ -291,6 +317,49 @@ export interface ActionResult {
   screenshot?: string;
   screenshot_media_id?: string;
   data?: AnyObject;
+}
+
+export interface HealedSelectorSuggestion {
+  selector: string;
+  source?: string;
+  confidence?: number;
+}
+
+export interface HealedSelectorRecord {
+  node_id: string;
+  action_type: string;
+  selector_key?: string;
+  selectors_key?: string;
+  original_selector?: string;
+  healed_selector: string;
+  source?: string;
+  confidence?: number;
+  attempted_selectors?: string[];
+  failed_selectors?: string[];
+  suggestions?: HealedSelectorSuggestion[];
+}
+
+export interface SelectorCandidateSuggestion {
+  selector: string;
+  source?: string;
+  confidence?: number;
+  score?: number;
+  discovered?: boolean;
+  same_target?: boolean;
+  match_count?: number;
+  unique?: boolean;
+}
+
+export interface SelectorCandidateRecord {
+  node_id: string;
+  action_type: string;
+  selector_key?: string;
+  selectors_key?: string;
+  primary_selector?: string;
+  used_selector?: string;
+  used_source?: string;
+  best_selector_candidate?: SelectorCandidateSuggestion;
+  candidates?: SelectorCandidateSuggestion[];
 }
 
 export interface FlowReport {
@@ -322,6 +391,8 @@ export interface FlowReport {
     }>;
   };
   performance_metrics?: AnyObject;
+  healed_selectors?: HealedSelectorRecord[];
+  candidate_selectors?: SelectorCandidateRecord[];
 }
 
 export type WarningSeverity = "minor" | "medium" | "critical";

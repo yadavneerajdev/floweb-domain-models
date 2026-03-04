@@ -20,6 +20,14 @@ class BaseActionConfig(BaseModel):
     """
     Base64 encoded reference image
     """
+    identifiers: list[Any] | None = None
+    """
+    Ordered fallback identifiers to locate the target element
+    """
+    selectors: list[str] | None = None
+    """
+    Ordered fallback selectors to locate the target element
+    """
 
 
 class ClickType(StrEnum):
@@ -800,6 +808,22 @@ class DragAndDropConfig(BaseActionConfig):
     """
     CSS selector for drop target
     """
+    sourceIdentifiers: list[Any] | None = None
+    """
+    Ordered fallback identifiers for drag source
+    """
+    sourceSelectors: list[str] | None = None
+    """
+    Ordered fallback selectors for drag source
+    """
+    targetIdentifiers: list[Any] | None = None
+    """
+    Ordered fallback identifiers for drag target
+    """
+    targetSelectors: list[str] | None = None
+    """
+    Ordered fallback selectors for drag target
+    """
     waitForElement: bool | None = True
     """
     Wait for elements to be present
@@ -859,6 +883,14 @@ class SwitchToFrameConfig(BaseActionConfig):
     frameSelector: str | None = None
     """
     CSS selector or frame name/ID
+    """
+    frameIdentifiers: list[Any] | None = None
+    """
+    Ordered fallback identifiers for the frame element
+    """
+    frameSelectors: list[str] | None = None
+    """
+    Ordered fallback selectors for the frame element
     """
     frameIndex: Annotated[int | None, Field(ge=0)] = None
     """
@@ -1053,6 +1085,14 @@ class FormField(BaseModel):
     image: str | None = None
     """
     Optional screenshot path
+    """
+    identifiers: list[Any] | None = None
+    """
+    Ordered fallback identifiers for this field
+    """
+    selectors: list[str] | None = None
+    """
+    Ordered fallback selectors for this field
     """
     name: str | None = None
     """

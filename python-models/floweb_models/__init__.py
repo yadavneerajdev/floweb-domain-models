@@ -48,7 +48,14 @@ from .debug import (
     PauseReason,
 )
 from .environment import Environment, GlobalVariable, Variable
-from .execution_results import ActionResult, FlowReport
+from .execution_results import (
+    ActionResult,
+    FlowReport,
+    HealedSelectorRecord,
+    HealedSelectorSuggestion,
+    SelectorCandidateRecord,
+    SelectorCandidateSuggestion,
+)
 from .flow import Action, ActionData, Edge, EnvironmentVariable, Flow, FlowParameters, FlowVariables, Position, Zoom
 from .parallel_execution import (
     FlowExecutionRequest,
@@ -156,6 +163,10 @@ __all__ = [
     "SubflowConfig",
     "ActionResult",
     "FlowReport",
+    "HealedSelectorRecord",
+    "HealedSelectorSuggestion",
+    "SelectorCandidateRecord",
+    "SelectorCandidateSuggestion",
     "WebSocketMessage",
     "SessionInfo",
     "RunCommand",

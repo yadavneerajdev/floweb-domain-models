@@ -124,6 +124,47 @@
         "image": {
           "type": "string",
           "description": "Base64 encoded reference image"
+        },
+        "identifiers": {
+          "type": "array",
+          "description": "Ordered fallback identifiers to locate the target element",
+          "items": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "value": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "primary": {
+                    "type": "boolean"
+                  },
+                  "unique": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "value"
+                ]
+              }
+            ]
+          }
+        },
+        "selectors": {
+          "type": "array",
+          "description": "Ordered fallback selectors to locate the target element",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -440,6 +481,41 @@
         "image": {
           "type": "string",
           "description": "Optional screenshot path"
+        },
+        "identifiers": {
+          "type": "array",
+          "description": "Ordered fallback identifiers for this field",
+          "items": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "value": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "confidence": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "value"
+                ]
+              }
+            ]
+          }
+        },
+        "selectors": {
+          "type": "array",
+          "description": "Ordered fallback selectors for this field",
+          "items": {
+            "type": "string"
+          }
         },
         "name": {
           "type": "string",
@@ -1230,6 +1306,76 @@
               "type": "string",
               "description": "CSS selector for drop target"
             },
+            "source_identifiers": {
+              "type": "array",
+              "description": "Ordered fallback identifiers for drag source",
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "value": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "confidence": {
+                        "type": "number"
+                      }
+                    },
+                    "required": [
+                      "value"
+                    ]
+                  }
+                ]
+              }
+            },
+            "source_selectors": {
+              "type": "array",
+              "description": "Ordered fallback selectors for drag source",
+              "items": {
+                "type": "string"
+              }
+            },
+            "target_identifiers": {
+              "type": "array",
+              "description": "Ordered fallback identifiers for drag target",
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "value": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "confidence": {
+                        "type": "number"
+                      }
+                    },
+                    "required": [
+                      "value"
+                    ]
+                  }
+                ]
+              }
+            },
+            "target_selectors": {
+              "type": "array",
+              "description": "Ordered fallback selectors for drag target",
+              "items": {
+                "type": "string"
+              }
+            },
             "wait_for_element": {
               "type": "boolean",
               "default": true,
@@ -1293,6 +1439,41 @@
             "frame_selector": {
               "type": "string",
               "description": "CSS selector or frame name/ID"
+            },
+            "frame_identifiers": {
+              "type": "array",
+              "description": "Ordered fallback identifiers for the frame element",
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "value": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "confidence": {
+                        "type": "number"
+                      }
+                    },
+                    "required": [
+                      "value"
+                    ]
+                  }
+                ]
+              }
+            },
+            "frame_selectors": {
+              "type": "array",
+              "description": "Ordered fallback selectors for the frame element",
+              "items": {
+                "type": "string"
+              }
             },
             "frame_index": {
               "type": "integer",
