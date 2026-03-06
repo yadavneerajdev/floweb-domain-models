@@ -12,6 +12,51 @@ from black.debug import T
 from pydantic import AnyUrl, BaseModel, ConfigDict, Field
 
 
+class SemanticExpectedStates(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    checked: bool | None = None
+    disabled: bool | None = None
+    selected: bool | None = None
+    expanded: bool | None = None
+
+
+class SemanticRelation(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    withinFormSelector: str | None = None
+
+
+class SemanticLibraryHints(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    framework: str | None = None
+    uiLibrary: str | None = None
+    component: str | None = None
+
+
+class SemanticTarget(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    tag: str | None = None
+    role: str | None = None
+    inputType: str | None = None
+    name: str | None = None
+    id: str | None = None
+    text: str | None = None
+    placeholder: str | None = None
+    href: str | None = None
+    classTokens: list[str] | None = None
+    attributes: dict[str, str] | None = None
+    libraryHints: SemanticLibraryHints | None = None
+    expectedStates: SemanticExpectedStates | None = None
+    relation: SemanticRelation | None = None
+
+
 class BaseActionConfig(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
@@ -27,6 +72,10 @@ class BaseActionConfig(BaseModel):
     selectors: list[str] | None = None
     """
     Ordered fallback selectors to locate the target element
+    """
+    semanticTarget: SemanticTarget | None = None
+    """
+    Semantic target intent used to validate and heal selector matches
     """
 
 
@@ -890,6 +939,14 @@ class DragAndDropConfig(BaseActionConfig):
     """
     Ordered fallback selectors for drag target
     """
+    sourceSemanticTarget: SemanticTarget | None = None
+    """
+    Semantic target intent for drag source element
+    """
+    targetSemanticTarget: SemanticTarget | None = None
+    """
+    Semantic target intent for drag target element
+    """
     waitForElement: bool | None = True
     """
     Wait for elements to be present
@@ -957,6 +1014,10 @@ class SwitchToFrameConfig(BaseActionConfig):
     frameSelectors: list[str] | None = None
     """
     Ordered fallback selectors for the frame element
+    """
+    frameSemanticTarget: SemanticTarget | None = None
+    """
+    Semantic target intent for the frame element
     """
     frameIndex: Annotated[int | None, Field(ge=0)] = None
     """
@@ -1159,6 +1220,10 @@ class FormField(BaseModel):
     selectors: list[str] | None = None
     """
     Ordered fallback selectors for this field
+    """
+    semanticTarget: SemanticTarget | None = None
+    """
+    Semantic target intent for this field
     """
     name: str | None = None
     """

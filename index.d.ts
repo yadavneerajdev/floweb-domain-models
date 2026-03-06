@@ -230,6 +230,7 @@ export interface BaseActionConfig {
   image?: string;
   identifiers?: Array<string | IdentifierCandidate>;
   selectors?: string[];
+  semanticTarget?: SemanticTarget;
   [key: string]: unknown;
 }
 
@@ -240,6 +241,63 @@ export interface IdentifierCandidate {
   primary?: boolean;
   unique?: boolean;
   [key: string]: unknown;
+}
+
+export interface SemanticExpectedStates {
+  checked?: boolean;
+  disabled?: boolean;
+  selected?: boolean;
+  expanded?: boolean;
+}
+
+export interface SemanticRelation {
+  withinFormSelector?: string;
+}
+
+export interface SemanticLibraryHints {
+  framework?: string;
+  uiLibrary?: string;
+  component?: string;
+}
+
+export interface SemanticTarget {
+  tag?: string;
+  role?: string;
+  inputType?: string;
+  name?: string;
+  id?: string;
+  text?: string;
+  placeholder?: string;
+  href?: string;
+  classTokens?: string[];
+  attributes?: Record<string, string>;
+  libraryHints?: SemanticLibraryHints;
+  expectedStates?: SemanticExpectedStates;
+  relation?: SemanticRelation;
+}
+
+export interface SemanticMatchResult {
+  matched?: boolean;
+  score?: number;
+  threshold?: number;
+  reason?: string;
+  matchedHints?: string[];
+  missedHints?: string[];
+  observed?: {
+    tag?: string;
+    role?: string;
+    inputType?: string;
+    name?: string;
+    id?: string;
+    text?: string;
+    placeholder?: string;
+    href?: string;
+    libraryHints?: SemanticLibraryHints;
+    checked?: boolean;
+    disabled?: boolean;
+    selected?: boolean;
+    expanded?: boolean;
+  };
 }
 
 export interface ClickConfig extends BaseActionConfig {}
@@ -275,6 +333,7 @@ export interface FormField {
   options?: FormFieldOption[];
   identifiers?: Array<string | IdentifierCandidate>;
   selectors?: string[];
+  semanticTarget?: SemanticTarget;
 }
 export interface FormFillConfig extends BaseActionConfig {
   fields?: FormField[];
@@ -304,6 +363,8 @@ export interface DragAndDropConfig extends BaseActionConfig {
   targetIdentifiers?: Array<string | IdentifierCandidate>;
   sourceSelectors?: string[];
   targetSelectors?: string[];
+  sourceSemanticTarget?: SemanticTarget;
+  targetSemanticTarget?: SemanticTarget;
   sourceImage?: string;
   targetImage?: string;
 }
@@ -312,6 +373,7 @@ export interface SwitchToFrameConfig extends BaseActionConfig {
   frameSelector?: string;
   frameIdentifiers?: Array<string | IdentifierCandidate>;
   frameSelectors?: string[];
+  frameSemanticTarget?: SemanticTarget;
 }
 export interface ExitFrameConfig extends BaseActionConfig {}
 export interface SetViewportConfig extends BaseActionConfig {}
@@ -340,6 +402,9 @@ export interface HealedSelectorSuggestion {
   selector: string;
   source?: string;
   confidence?: number;
+  selector_type?: string;
+  selector_category?: string;
+  selector_strategy?: string;
 }
 
 export interface HealedSelectorRecord {
@@ -353,6 +418,10 @@ export interface HealedSelectorRecord {
   confidence?: number;
   attempted_selectors?: string[];
   failed_selectors?: string[];
+  semantic_target?: SemanticTarget;
+  semantic_match?: SemanticMatchResult;
+  semantic_score?: number;
+  semantic_reason?: string;
   suggestions?: HealedSelectorSuggestion[];
 }
 
@@ -365,6 +434,9 @@ export interface SelectorCandidateSuggestion {
   same_target?: boolean;
   match_count?: number;
   unique?: boolean;
+  selector_type?: string;
+  selector_category?: string;
+  selector_strategy?: string;
 }
 
 export interface SelectorCandidateRecord {
@@ -375,6 +447,10 @@ export interface SelectorCandidateRecord {
   primary_selector?: string;
   used_selector?: string;
   used_source?: string;
+  semantic_target?: SemanticTarget;
+  semantic_match?: SemanticMatchResult;
+  semantic_score?: number;
+  semantic_reason?: string;
   best_selector_candidate?: SelectorCandidateSuggestion;
   candidates?: SelectorCandidateSuggestion[];
 }
@@ -818,7 +894,7 @@ export interface AccountDataStore {
 }
 
 export type ReportType = 'flow' | 'performance' | 'parallel' | 'suite';
-export type ReportStatus = 'passed' | 'failed' | 'error' | 'running' | 'pending';
+export type ReportStatus = 'passed' | 'failed' | 'error' | 'running' | 'pending' | 'cancelled';
 
 export interface ExecutionReport {
   id: string;
@@ -835,6 +911,93 @@ export interface ExecutionReport {
   executedByName?: string;
   executedByEmail?: string;
   createdAt: string;
+}
+
+export type SuiteExecutionStatus =
+  | 'pending'
+  | 'queued'
+  | 'running'
+  | 'completed'
+  | 'failed'
+  | 'cancelled'
+  | 'not_run';
+
+export type SuiteExecutionTestStatus =
+  | 'pending'
+  | 'running'
+  | 'passed'
+  | 'failed'
+  | 'cancelled'
+  | 'not_run';
+
+export type SuiteScheduleStatus =
+  | 'scheduled'
+  | 'queued'
+  | 'running'
+  | 'completed'
+  | 'failed'
+  | 'cancelled'
+  | 'not_run';
+
+export type SuiteTriggerType = 'manual' | 'scheduled';
+
+export interface SuiteRunConfig {
+  browser: string;
+  headless: boolean;
+  incognito: boolean;
+}
+
+export interface SuiteExecutionTest {
+  testId: string;
+  flowName?: string | null;
+  status: SuiteExecutionTestStatus;
+  reportId?: string | null;
+  message?: string | null;
+  startedAt?: string | null;
+  finishedAt?: string | null;
+}
+
+export interface SuiteExecution {
+  id: string;
+  accountId: string;
+  label: string;
+  scheduleId?: string | null;
+  triggerType: SuiteTriggerType;
+  status: SuiteExecutionStatus;
+  runConfig: SuiteRunConfig;
+  testIds: string[];
+  tests: SuiteExecutionTest[];
+  createdBy: string;
+  updatedBy: string;
+  startedAt?: string | null;
+  finishedAt?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface SuiteScheduleTest {
+  testId: string;
+  flowName?: string | null;
+}
+
+export interface SuiteSchedule {
+  id: string;
+  accountId: string;
+  label: string;
+  status: SuiteScheduleStatus;
+  runAt: string;
+  runWindowExpiresAt: string;
+  runConfig: SuiteRunConfig;
+  tests: SuiteScheduleTest[];
+  testIds: string[];
+  executionIds: string[];
+  latestExecutionId?: string | null;
+  createdBy: string;
+  updatedBy: string;
+  startedAt?: string | null;
+  finishedAt?: string | null;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface EngineSession {

@@ -165,6 +165,98 @@
           "items": {
             "type": "string"
           }
+        },
+        "semanticTarget": {
+          "$ref": "#/$defs/SemanticTarget"
+        }
+      }
+    },
+    "SemanticExpectedStates": {
+      "type": "object",
+      "properties": {
+        "checked": {
+          "type": "boolean"
+        },
+        "disabled": {
+          "type": "boolean"
+        },
+        "selected": {
+          "type": "boolean"
+        },
+        "expanded": {
+          "type": "boolean"
+        }
+      }
+    },
+    "SemanticRelation": {
+      "type": "object",
+      "properties": {
+        "withinFormSelector": {
+          "type": "string"
+        }
+      }
+    },
+    "SemanticLibraryHints": {
+      "type": "object",
+      "properties": {
+        "framework": {
+          "type": "string"
+        },
+        "uiLibrary": {
+          "type": "string"
+        },
+        "component": {
+          "type": "string"
+        }
+      }
+    },
+    "SemanticTarget": {
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        },
+        "inputType": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string"
+        },
+        "placeholder": {
+          "type": "string"
+        },
+        "href": {
+          "type": "string"
+        },
+        "classTokens": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "attributes": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "libraryHints": {
+          "$ref": "#/$defs/SemanticLibraryHints"
+        },
+        "expectedStates": {
+          "$ref": "#/$defs/SemanticExpectedStates"
+        },
+        "relation": {
+          "$ref": "#/$defs/SemanticRelation"
         }
       }
     },
@@ -516,6 +608,9 @@
           "items": {
             "type": "string"
           }
+        },
+        "semanticTarget": {
+          "$ref": "#/$defs/SemanticTarget"
         },
         "name": {
           "type": "string",
@@ -1406,6 +1501,12 @@
                 "type": "string"
               }
             },
+            "sourceSemanticTarget": {
+              "$ref": "#/$defs/SemanticTarget"
+            },
+            "targetSemanticTarget": {
+              "$ref": "#/$defs/SemanticTarget"
+            },
             "wait_for_element": {
               "type": "boolean",
               "default": true,
@@ -1503,6 +1604,9 @@
               "items": {
                 "type": "string"
               }
+            },
+            "frameSemanticTarget": {
+              "$ref": "#/$defs/SemanticTarget"
             },
             "frame_index": {
               "type": "integer",

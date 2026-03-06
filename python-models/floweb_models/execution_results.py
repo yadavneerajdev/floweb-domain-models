@@ -9,6 +9,83 @@ from typing import Annotated, Any
 from pydantic import BaseModel, ConfigDict, Field
 
 
+class SemanticExpectedStates(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    checked: bool | None = None
+    disabled: bool | None = None
+    selected: bool | None = None
+    expanded: bool | None = None
+
+
+class SemanticRelation(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    withinFormSelector: str | None = None
+
+
+class SemanticLibraryHints(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    framework: str | None = None
+    uiLibrary: str | None = None
+    component: str | None = None
+
+
+class SemanticTarget(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    tag: str | None = None
+    role: str | None = None
+    inputType: str | None = None
+    name: str | None = None
+    id: str | None = None
+    text: str | None = None
+    placeholder: str | None = None
+    href: str | None = None
+    classTokens: list[str] | None = None
+    attributes: dict[str, str] | None = None
+    libraryHints: SemanticLibraryHints | None = None
+    expectedStates: SemanticExpectedStates | None = None
+    relation: SemanticRelation | None = None
+
+
+class SemanticMatchObserved(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    tag: str | None = None
+    role: str | None = None
+    inputType: str | None = None
+    name: str | None = None
+    id: str | None = None
+    text: str | None = None
+    placeholder: str | None = None
+    href: str | None = None
+    libraryHints: SemanticLibraryHints | None = None
+    checked: bool | None = None
+    disabled: bool | None = None
+    selected: bool | None = None
+    expanded: bool | None = None
+
+
+class SemanticMatchResult(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    matched: bool | None = None
+    score: Annotated[float | None, Field(ge=0.0, le=1.0)] = None
+    threshold: Annotated[float | None, Field(ge=0.0, le=1.0)] = None
+    reason: str | None = None
+    matchedHints: list[str] | None = None
+    missedHints: list[str] | None = None
+    observed: SemanticMatchObserved | None = None
+
+
 class ActionResult(BaseModel):
     """
     Result of executing an action
@@ -121,6 +198,9 @@ class HealedSelectorSuggestion(BaseModel):
     selector: str
     source: str | None = None
     confidence: Annotated[float | None, Field(ge=0.0, le=1.0)] = None
+    selector_type: str | None = None
+    selector_category: str | None = None
+    selector_strategy: str | None = None
 
 
 class HealedSelectorRecord(BaseModel):
@@ -141,6 +221,10 @@ class HealedSelectorRecord(BaseModel):
     confidence: Annotated[float | None, Field(ge=0.0, le=1.0)] = None
     attempted_selectors: list[str] | None = []
     failed_selectors: list[str] | None = []
+    semantic_target: SemanticTarget | None = None
+    semantic_match: SemanticMatchResult | None = None
+    semantic_score: Annotated[float | None, Field(ge=0.0, le=1.0)] = None
+    semantic_reason: str | None = None
     suggestions: list[HealedSelectorSuggestion] | None = []
 
 
@@ -160,6 +244,9 @@ class SelectorCandidateSuggestion(BaseModel):
     same_target: bool | None = None
     match_count: Annotated[int | None, Field(ge=0)] = None
     unique: bool | None = None
+    selector_type: str | None = None
+    selector_category: str | None = None
+    selector_strategy: str | None = None
 
 
 class SelectorCandidateRecord(BaseModel):
@@ -177,6 +264,10 @@ class SelectorCandidateRecord(BaseModel):
     primary_selector: str | None = None
     used_selector: str | None = None
     used_source: str | None = None
+    semantic_target: SemanticTarget | None = None
+    semantic_match: SemanticMatchResult | None = None
+    semantic_score: Annotated[float | None, Field(ge=0.0, le=1.0)] = None
+    semantic_reason: str | None = None
     best_selector_candidate: SelectorCandidateSuggestion | None = None
     candidates: list[SelectorCandidateSuggestion] | None = []
 
