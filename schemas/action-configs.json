@@ -1304,7 +1304,37 @@
             },
             "target_selector": {
               "type": "string",
-              "description": "CSS selector for drop target"
+              "description": "CSS selector for drop target (required in element mode)"
+            },
+            "drop_mode": {
+              "type": "string",
+              "enum": [
+                "element",
+                "offset"
+              ],
+              "default": "element",
+              "description": "Drag mode: resolve by target element or by source-relative pointer offset"
+            },
+            "target_offset_x": {
+              "type": "integer",
+              "default": 0,
+              "description": "Horizontal drag offset in pixels for offset mode"
+            },
+            "target_offset_y": {
+              "type": "integer",
+              "default": 0,
+              "description": "Vertical drag offset in pixels for offset mode"
+            },
+            "target_value": {
+              "description": "Explicit target value for range/slider controls",
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                }
+              ]
             },
             "source_identifiers": {
               "type": "array",
@@ -1383,8 +1413,7 @@
             }
           },
           "required": [
-            "sourceSelector",
-            "targetSelector"
+            "sourceSelector"
           ]
         }
       ]

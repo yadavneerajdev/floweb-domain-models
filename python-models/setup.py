@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="floweb-models",
-    version="1.0.22",
+    version="1.0.23",
     description="Shared Floweb Python domain models",
     packages=find_packages(include=["floweb_models", "floweb_models.*"]),
     include_package_data=True,

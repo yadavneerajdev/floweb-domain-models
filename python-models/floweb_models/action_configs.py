@@ -135,6 +135,27 @@ class WaitType(StrEnum):
     interactable = 'interactable'
 
 
+class WaitGeneratedBy(StrEnum):
+    """
+    Source of wait action generation
+    """
+
+    manual = 'manual'
+    auto = 'auto'
+
+
+class WaitReason(StrEnum):
+    """
+    Reason for auto wait insertion
+    """
+
+    navigation = 'navigation'
+    tab_switch = 'tab_switch'
+    dom_transition = 'dom_transition'
+    overlay = 'overlay'
+    network_idle = 'network_idle'
+
+
 class WaitConfig(BaseActionConfig):
     model_config = ConfigDict(
         populate_by_name=True,
@@ -147,7 +168,7 @@ class WaitConfig(BaseActionConfig):
     """
     Duration to wait in milliseconds
     """
-    selector: str
+    selector: str = ''
     """
     CSS selector for element to wait for
     """
@@ -166,6 +187,26 @@ class WaitConfig(BaseActionConfig):
     fallbackDuration: int = 2000
     """
     Duration to wait if fallback triggered
+    """
+    generatedBy: WaitGeneratedBy | None = None
+    """
+    Whether wait was generated manually or automatically
+    """
+    reason: WaitReason | None = None
+    """
+    Reason for automatic wait insertion
+    """
+    triggerActionId: str | None = None
+    """
+    Trigger action ID for auto-generated waits
+    """
+    confidence: Annotated[float | None, Field(ge=0.0, le=1.0)] = None
+    """
+    Confidence score for auto-generated waits
+    """
+    effectiveWaitMs: Annotated[int | None, Field(ge=0)] = None
+    """
+    Observed elapsed wait between trigger and dependent action during recording
     """
 
 
@@ -796,6 +837,15 @@ class LoopConfig(BaseActionConfig):
     """
 
 
+class DragDropMode(StrEnum):
+    """
+    Drag and drop resolution mode
+    """
+
+    element = 'element'
+    offset = 'offset'
+
+
 class DragAndDropConfig(BaseActionConfig):
     model_config = ConfigDict(
         populate_by_name=True,
@@ -804,9 +854,25 @@ class DragAndDropConfig(BaseActionConfig):
     """
     CSS selector for element to drag
     """
-    targetSelector: str
+    targetSelector: str | None = None
     """
-    CSS selector for drop target
+    CSS selector for drop target (required in element mode)
+    """
+    dropMode: DragDropMode = DragDropMode.element
+    """
+    Drag mode: resolve by target element or by source-relative pointer offset
+    """
+    targetOffsetX: int = 0
+    """
+    Horizontal drag offset in pixels for offset mode
+    """
+    targetOffsetY: int = 0
+    """
+    Vertical drag offset in pixels for offset mode
+    """
+    targetValue: str | int | float | None = None
+    """
+    Explicit target value for range/slider controls
     """
     sourceIdentifiers: list[Any] | None = None
     """

@@ -246,7 +246,20 @@ export interface ClickConfig extends BaseActionConfig {}
 export interface InputConfig extends BaseActionConfig {}
 export interface SendKeysConfig extends BaseActionConfig {}
 export interface NavigateConfig extends BaseActionConfig {}
-export interface WaitConfig extends BaseActionConfig {}
+export interface WaitConfig extends BaseActionConfig {
+  waitType?: "duration" | "element" | "interactable";
+  duration?: number;
+  selector?: string;
+  timeout?: number;
+  waitForInteractable?: boolean;
+  fallbackToDuration?: boolean;
+  fallbackDuration?: number;
+  generatedBy?: "manual" | "auto";
+  reason?: "navigation" | "tab_switch" | "dom_transition" | "overlay" | "network_idle";
+  triggerActionId?: string;
+  confidence?: number;
+  effectiveWaitMs?: number;
+}
 export interface ScrollConfig extends BaseActionConfig {}
 export interface ScreenshotConfig extends BaseActionConfig {}
 export interface AssertionConfig extends BaseActionConfig {}
@@ -283,6 +296,10 @@ export interface CustomCodeConfig extends BaseActionConfig {}
 export interface DragAndDropConfig extends BaseActionConfig {
   sourceSelector?: string;
   targetSelector?: string;
+  dropMode?: "element" | "offset";
+  targetOffsetX?: number;
+  targetOffsetY?: number;
+  targetValue?: string | number;
   sourceIdentifiers?: Array<string | IdentifierCandidate>;
   targetIdentifiers?: Array<string | IdentifierCandidate>;
   sourceSelectors?: string[];
