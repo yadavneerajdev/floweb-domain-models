@@ -982,6 +982,19 @@
               "type": "string",
               "description": "JavaScript code to execute"
             },
+            "function_name": {
+              "type": "string",
+              "default": "ExecuteFlowScript",
+              "description": "Main function name to invoke after loading the code"
+            },
+            "input_parameters": {
+              "type": "array",
+              "items": {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              "description": "Input parameter mappings for the main function"
+            },
             "output_variable": {
               "type": "string",
               "default": "customResult",

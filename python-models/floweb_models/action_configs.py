@@ -586,6 +586,14 @@ class CustomCodeConfig(BaseActionConfig):
     """
     JavaScript code to execute
     """
+    functionName: str | None = 'ExecuteFlowScript'
+    """
+    Main function name to invoke after loading the code
+    """
+    inputParameters: list[dict[str, Any]] | None = None
+    """
+    Input parameter mappings for the main function
+    """
     outputVariable: str | None = 'customResult'
     """
     Variable to store result
