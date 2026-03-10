@@ -68,6 +68,24 @@ export interface FlowParameters {
   output: Variable[];
 }
 
+export interface AssistantAuditOperation {
+  tool: string;
+  summary?: string;
+  payload?: AnyObject;
+}
+
+export interface AssistantAuditEntry {
+  id: string;
+  createdAt: string;
+  instruction: string;
+  message?: string;
+  provider?: string;
+  model?: string;
+  source?: string;
+  changes?: string[];
+  operations: AssistantAuditOperation[];
+}
+
 export interface EnvironmentVariable extends Variable {}
 
 export interface Environment {
@@ -108,6 +126,7 @@ export interface Flow {
   lastRun?: string;
   lastResult?: FlowLastResult;
   synced?: boolean;
+  assistantAuditHistory?: AssistantAuditEntry[];
 }
 
 export interface EnvironmentAndGlobalVariablesConfiguration {
