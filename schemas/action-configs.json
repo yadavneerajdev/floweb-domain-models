@@ -111,6 +111,33 @@
             },
             {
               "$ref": "#/$defs/SubflowConfig"
+            },
+            {
+              "$ref": "#/$defs/DesktopWaitForImageConfig"
+            },
+            {
+              "$ref": "#/$defs/DesktopFindImageConfig"
+            },
+            {
+              "$ref": "#/$defs/DesktopClickImageConfig"
+            },
+            {
+              "$ref": "#/$defs/DesktopClickPointConfig"
+            },
+            {
+              "$ref": "#/$defs/DesktopTypeTextConfig"
+            },
+            {
+              "$ref": "#/$defs/DesktopMoveMouseConfig"
+            },
+            {
+              "$ref": "#/$defs/DesktopHotkeyConfig"
+            },
+            {
+              "$ref": "#/$defs/DesktopRunCommandConfig"
+            },
+            {
+              "$ref": "#/$defs/DesktopCaptureScreenConfig"
             }
           ]
         }
@@ -1819,6 +1846,517 @@
               "type": "integer",
               "default": 5000,
               "description": "Timeout in milliseconds"
+            }
+          }
+        }
+      ]
+    },
+    "DesktopVisualBaseConfig": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/BaseActionConfig"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "confidence": {
+              "type": "number",
+              "minimum": 0.1,
+              "maximum": 1,
+              "default": 0.82,
+              "description": "Match threshold used for image detection"
+            },
+            "timeout": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 10000,
+              "description": "Maximum wait time in milliseconds"
+            },
+            "pollIntervalMs": {
+              "type": "integer",
+              "minimum": 50,
+              "default": 400,
+              "description": "Polling interval while waiting for image matches"
+            },
+            "grayscale": {
+              "type": "boolean",
+              "default": true,
+              "description": "Use grayscale matching for better performance"
+            },
+            "useRegion": {
+              "type": "boolean",
+              "default": false,
+              "description": "Limit search to a specific screen region"
+            },
+            "regionX": {
+              "type": "integer",
+              "default": 0,
+              "description": "Region origin X coordinate"
+            },
+            "regionY": {
+              "type": "integer",
+              "default": 0,
+              "description": "Region origin Y coordinate"
+            },
+            "regionWidth": {
+              "type": "integer",
+              "default": 0,
+              "description": "Region width in pixels"
+            },
+            "regionHeight": {
+              "type": "integer",
+              "default": 0,
+              "description": "Region height in pixels"
+            }
+          }
+        }
+      ]
+    },
+    "DesktopWaitForImageConfig": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/DesktopVisualBaseConfig"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "image": {
+              "type": "string",
+              "description": "Base64 encoded reference image to locate on the desktop"
+            },
+            "requireStability": {
+              "type": "boolean",
+              "default": false,
+              "description": "Require the image to remain visible for a stable period"
+            },
+            "stableDurationMs": {
+              "type": "integer",
+              "minimum": 100,
+              "default": 600,
+              "description": "How long the match should remain stable before succeeding"
+            },
+            "outputVariable": {
+              "type": "string",
+              "default": "desktopMatch",
+              "description": "Variable to store desktop match metadata"
+            },
+            "failOnTimeout": {
+              "type": "boolean",
+              "default": true,
+              "description": "Fail action when image does not appear in time"
+            }
+          },
+          "required": [
+            "image"
+          ]
+        }
+      ]
+    },
+    "DesktopFindImageConfig": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/DesktopVisualBaseConfig"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "image": {
+              "type": "string",
+              "description": "Base64 encoded reference image to locate on the desktop"
+            },
+            "waitForImage": {
+              "type": "boolean",
+              "default": false,
+              "description": "Wait for image appearance before returning"
+            },
+            "outputVariable": {
+              "type": "string",
+              "default": "desktopFoundImage",
+              "description": "Variable to store found image match metadata"
+            },
+            "failIfNotFound": {
+              "type": "boolean",
+              "default": false,
+              "description": "Fail action when image cannot be located"
+            }
+          },
+          "required": [
+            "image"
+          ]
+        }
+      ]
+    },
+    "DesktopClickImageConfig": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/DesktopVisualBaseConfig"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "image": {
+              "type": "string",
+              "description": "Base64 encoded reference image to click"
+            },
+            "button": {
+              "type": "string",
+              "enum": [
+                "left",
+                "right",
+                "middle"
+              ],
+              "default": "left",
+              "description": "Mouse button to use for clicking"
+            },
+            "clicks": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1,
+              "description": "Number of mouse clicks"
+            },
+            "intervalMs": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 120,
+              "description": "Delay between multiple clicks in milliseconds"
+            },
+            "offsetX": {
+              "type": "integer",
+              "default": 0,
+              "description": "Horizontal click offset from detected center"
+            },
+            "offsetY": {
+              "type": "integer",
+              "default": 0,
+              "description": "Vertical click offset from detected center"
+            },
+            "waitForImage": {
+              "type": "boolean",
+              "default": true,
+              "description": "Wait until image appears before clicking"
+            },
+            "moveDurationMs": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 120,
+              "description": "Mouse move duration before click"
+            },
+            "postActionWaitMs": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 300,
+              "description": "Delay after click completes"
+            }
+          },
+          "required": [
+            "image"
+          ]
+        }
+      ]
+    },
+    "DesktopClickPointConfig": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/BaseActionConfig"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "x": {
+              "type": "integer",
+              "default": 0,
+              "description": "Target X coordinate"
+            },
+            "y": {
+              "type": "integer",
+              "default": 0,
+              "description": "Target Y coordinate"
+            },
+            "button": {
+              "type": "string",
+              "enum": [
+                "left",
+                "right",
+                "middle"
+              ],
+              "default": "left",
+              "description": "Mouse button to use for clicking"
+            },
+            "clicks": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1,
+              "description": "Number of mouse clicks"
+            },
+            "intervalMs": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 120,
+              "description": "Delay between multiple clicks in milliseconds"
+            },
+            "moveDurationMs": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 120,
+              "description": "Mouse move duration before click"
+            },
+            "postActionWaitMs": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 300,
+              "description": "Delay after click completes"
+            },
+            "outputVariable": {
+              "type": "string",
+              "default": "desktopLastClick",
+              "description": "Variable to store click coordinate metadata"
+            }
+          }
+        }
+      ]
+    },
+    "DesktopTypeTextConfig": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/DesktopVisualBaseConfig"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "text": {
+              "type": "string",
+              "description": "Text to type on the desktop"
+            },
+            "intervalMs": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 25,
+              "description": "Delay between key presses in milliseconds"
+            },
+            "clickImageFirst": {
+              "type": "boolean",
+              "default": false,
+              "description": "Click target image before typing to focus input"
+            },
+            "image": {
+              "type": "string",
+              "description": "Optional target image used when clickImageFirst is enabled"
+            },
+            "waitForImage": {
+              "type": "boolean",
+              "default": true,
+              "description": "Wait for image before attempting focus click"
+            },
+            "clearBeforeType": {
+              "type": "boolean",
+              "default": false,
+              "description": "Select-all and clear before typing"
+            },
+            "submitWithEnter": {
+              "type": "boolean",
+              "default": false,
+              "description": "Press Enter after typing"
+            },
+            "postActionWaitMs": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 300,
+              "description": "Delay after typing completes"
+            }
+          },
+          "required": [
+            "text"
+          ]
+        }
+      ]
+    },
+    "DesktopMoveMouseConfig": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/BaseActionConfig"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "x": {
+              "type": "integer",
+              "default": 0,
+              "description": "Target X coordinate"
+            },
+            "y": {
+              "type": "integer",
+              "default": 0,
+              "description": "Target Y coordinate"
+            },
+            "relative": {
+              "type": "boolean",
+              "default": false,
+              "description": "Treat x and y as offsets from current pointer location"
+            },
+            "moveDurationMs": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 120,
+              "description": "Mouse move duration"
+            },
+            "postActionWaitMs": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 100,
+              "description": "Delay after pointer move completes"
+            },
+            "outputVariable": {
+              "type": "string",
+              "default": "desktopPointer",
+              "description": "Variable to store pointer position metadata"
+            }
+          }
+        }
+      ]
+    },
+    "DesktopHotkeyConfig": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/BaseActionConfig"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "keyCombination": {
+              "type": "string",
+              "description": "Key combination (e.g. ctrl+shift+p)"
+            },
+            "presses": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1,
+              "description": "How many times to trigger the hotkey"
+            },
+            "intervalMs": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 120,
+              "description": "Delay between repeated hotkeys in milliseconds"
+            },
+            "postActionWaitMs": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 150,
+              "description": "Delay after hotkey execution"
+            }
+          },
+          "required": [
+            "keyCombination"
+          ]
+        }
+      ]
+    },
+    "DesktopRunCommandConfig": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/BaseActionConfig"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "command": {
+              "type": "string",
+              "description": "Shell command to execute"
+            },
+            "shell": {
+              "type": "boolean",
+              "default": true,
+              "description": "Run command through shell"
+            },
+            "workingDirectory": {
+              "type": "string",
+              "description": "Optional working directory for command execution"
+            },
+            "timeout": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 60000,
+              "description": "Command timeout in milliseconds"
+            },
+            "captureOutput": {
+              "type": "boolean",
+              "default": true,
+              "description": "Capture stdout and stderr"
+            },
+            "failOnNonZero": {
+              "type": "boolean",
+              "default": true,
+              "description": "Fail action when command exits with non-zero code"
+            },
+            "outputVariable": {
+              "type": "string",
+              "default": "desktopCommandResult",
+              "description": "Variable to store command result details"
+            }
+          },
+          "required": [
+            "command"
+          ]
+        }
+      ]
+    },
+    "DesktopCaptureScreenConfig": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/BaseActionConfig"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "filename": {
+              "type": "string",
+              "default": "desktop-screenshot.png",
+              "description": "Output filename when saving screenshot"
+            },
+            "saveToFile": {
+              "type": "boolean",
+              "default": true,
+              "description": "Persist screenshot to screenshots folder"
+            },
+            "includeTimestamp": {
+              "type": "boolean",
+              "default": true,
+              "description": "Append timestamp to output filename"
+            },
+            "format": {
+              "type": "string",
+              "enum": [
+                "png",
+                "jpg"
+              ],
+              "default": "png",
+              "description": "Screenshot image format"
+            },
+            "useRegion": {
+              "type": "boolean",
+              "default": false,
+              "description": "Capture a specific region of the desktop"
+            },
+            "regionX": {
+              "type": "integer",
+              "default": 0
+            },
+            "regionY": {
+              "type": "integer",
+              "default": 0
+            },
+            "regionWidth": {
+              "type": "integer",
+              "default": 0
+            },
+            "regionHeight": {
+              "type": "integer",
+              "default": 0
+            },
+            "outputVariable": {
+              "type": "string",
+              "default": "desktopScreenshot",
+              "description": "Variable to store screenshot metadata and base64 content"
             }
           }
         }
