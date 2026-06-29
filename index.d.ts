@@ -861,6 +861,7 @@ export interface Account {
   id: string;
   name: string;
   ownerId: string;
+  editLocked?: boolean;
   settings: {
     timezone: string;
     dateFormat: string;

@@ -786,6 +786,10 @@
               "default": "apiResponse",
               "description": "Variable to store response"
             },
+            "response_path": {
+              "type": "string",
+              "description": "Optional path into the response to store in the output variable, e.g. data.token, headers[\"Content-Type\"], data.items[0].id. Applied to the response object {status_code, headers, data, url} (body fields under data.). When empty, the full response object is stored."
+            },
             "timeout": {
               "type": "integer",
               "default": 30000,
