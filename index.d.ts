@@ -582,6 +582,7 @@ export interface ParallelTestsRequest {
   browser?: BrowserName;
   incognito?: boolean;
   max_retries?: number;
+  randomBrowserPool?: string[];
 }
 
 export interface ParallelTestsResult {

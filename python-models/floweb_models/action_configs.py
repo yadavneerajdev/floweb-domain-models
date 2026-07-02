@@ -270,6 +270,7 @@ class AssertType(StrEnum):
     text = 'text'
     value_ = 'value'
     attribute = 'attribute'
+    image = 'image'
 
 
 class AssertionConfig(BaseActionConfig):
@@ -284,9 +285,17 @@ class AssertionConfig(BaseActionConfig):
     """
     Type of assertion
     """
-    expectedValue: str
+    expectedValue: str = ""
     """
-    Expected value for assertion
+    Expected value for text/value/attribute assertions
+    """
+    expectedImageRef: str | None = None
+    """
+    Image reference for image assertion (base64, data URI, or mediaId:xxx resolved to data URI)
+    """
+    imageSimilarityThreshold: float | None = 0.9
+    """
+    Minimum similarity score (0-1) for image assertions
     """
     waitForElement: bool | None = True
     """

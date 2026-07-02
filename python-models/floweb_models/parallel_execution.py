@@ -5,7 +5,7 @@
 from __future__ import annotations
 
 from enum import StrEnum
-from typing import Annotated, Any
+from typing import Annotated, Any, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -175,6 +175,10 @@ class ParallelTestsRequest(BaseModel):
     browser: str = 'chrome'
     """
     Browser type (chrome, firefox, etc.)
+    """
+    random_browser_pool: Optional[list[str]] = Field(default=None, alias="randomBrowserPool")
+    """
+    Eligible browsers when browser='random'. OS-aware filtering applied by the engine.
     """
     max_retries: Annotated[int, Field(ge=0, le=10)] = 3
     """
