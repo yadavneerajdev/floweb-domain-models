@@ -5,13 +5,17 @@
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
-    "build": "tsc",
-    "generate": "node generate-types.js",
-    "generate-python": "node generate-python-models.js",
+    "typecheck": "tsc --noEmit",
+    "generate": "node scripts/generate-ts.cjs",
+    "generate-python": "node scripts/generate-python.cjs",
+    "generate:all": "npm run generate && npm run generate-python",
     "validate": "node scripts/validate-schemas.cjs",
+    "check-breaking": "node scripts/check-breaking-changes.cjs",
+    "build": "npm run validate && npm run generate:all && npm run typecheck && npm run test",
     "test": "jest",
+    "test:python": "python3 -m pytest tests/python -q",
     "docs": "typedoc",
-    "prepublishOnly": "npm run build && npm run test"
+    "prepublishOnly": "npm run build"
   },
   "keywords": [
     "autoweb",

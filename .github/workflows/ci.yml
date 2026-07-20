@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  schema-and-codegen:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # breaking-change gate needs the base ref
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Node deps
+        run: npm ci
+
+      - name: Install Python deps
+        run: pip install "pydantic>=2" "datamodel-code-generator>=0.25" mypy pytest
+
+      - name: Validate schemas + examples (ajv)
+        run: npm run validate
+
+      - name: Regenerate TS + Python and fail on drift
+        run: |
+          npm run generate:all
+          git diff --exit-code -- generated/ python-models/ \
+            || (echo "::error::Generated files are stale — run 'npm run generate:all' and commit." && exit 1)
+
+      - name: Typecheck (tsc strict)
+        run: npm run typecheck
+
+      - name: TypeScript tests (jest)
+        run: npm test
+
+      - name: Python round-trip tests (pytest)
+        run: npm run test:python
+
+      - name: mypy over the coercion base
+        run: mypy python-models/floweb_models/_base.py
+
+      - name: Breaking-change gate
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_REF: origin/${{ github.base_ref }}
+        run: npm run check-breaking

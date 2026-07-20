@@ -387,7 +387,6 @@ export interface DragAndDropConfig extends BaseActionConfig {
   sourceImage?: string;
   targetImage?: string;
 }
-export interface CallToFlowConfig extends BaseActionConfig {}
 export interface SwitchToFrameConfig extends BaseActionConfig {
   frameSelector?: string;
   frameIdentifiers?: Array<string | IdentifierCandidate>;

@@ -1,0 +1,1396 @@
+/* eslint-disable */
+// GENERATED from schemas/ by scripts/generate-ts.cjs — do not edit by hand.
+
+export type ClickConfig = BaseActionConfig & {
+  /**
+   * CSS selector for element to click
+   */
+  selector: string;
+  /**
+   * Wait time in milliseconds
+   */
+  waitTime?: number;
+  /**
+   * Force click even if element not clickable
+   */
+  forceClick?: boolean;
+  /**
+   * Scroll element into view before clicking
+   */
+  scrollIntoView?: boolean;
+  /**
+   * Wait for element to be present
+   */
+  waitForElement?: boolean;
+  /**
+   * Type of click to perform
+   */
+  clickType?: "left" | "right";
+  /**
+   * Number of clicks to perform
+   */
+  clickCount?: number;
+  /**
+   * Whether to click and hold
+   */
+  clickAndHold?: boolean;
+  /**
+   * Duration to hold click in milliseconds
+   */
+  holdDuration?: number;
+};
+export type InputConfig = BaseActionConfig & {
+  /**
+   * CSS selector for input element
+   */
+  selector: string;
+  /**
+   * Text to input
+   */
+  text: string;
+  /**
+   * Clear field before typing
+   */
+  clearFirst?: boolean;
+  /**
+   * Wait for element to be present
+   */
+  waitForElement?: boolean;
+  /**
+   * Scroll element into view
+   */
+  scrollIntoView?: boolean;
+};
+export type SendKeysConfig = SendKeysConfig1 & {
+  /**
+   * Optional key combinations payload used by backend actions
+   */
+  keyCombinations?: unknown[];
+};
+export type SendKeysConfig1 = BaseActionConfig & {
+  /**
+   * CSS selector for element to send keys to
+   */
+  selector?: string;
+  /**
+   * Keys to send
+   */
+  keys: string;
+  /**
+   * Wait for element to be present
+   */
+  waitForElement?: boolean;
+};
+export type WaitConfig = WaitConfig1 & {
+  /**
+   * Whether wait was generated manually or automatically
+   */
+  generatedBy?: "manual" | "auto";
+  /**
+   * Reason for automatic wait insertion
+   */
+  reason?: "navigation" | "tab_switch" | "dom_transition" | "overlay" | "network_idle";
+  /**
+   * Trigger action ID for auto-generated waits
+   */
+  triggerActionId?: string;
+  /**
+   * Observed elapsed wait between trigger and dependent action during recording
+   */
+  effectiveWaitMs?: number;
+};
+export type WaitConfig1 = BaseActionConfig & {
+  /**
+   * Type of wait to perform
+   */
+  waitType?: "duration" | "element" | "interactable";
+  /**
+   * Duration to wait in milliseconds
+   */
+  duration?: number;
+  /**
+   * CSS selector for element to wait for
+   */
+  selector?: string;
+  /**
+   * Maximum time to wait in milliseconds
+   */
+  timeout?: number;
+  /**
+   * Wait for element to be interactable
+   */
+  waitForInteractable?: boolean;
+  /**
+   * Fallback to duration wait if element wait fails
+   */
+  fallbackToDuration?: boolean;
+  /**
+   * Duration to wait if fallback triggered
+   */
+  fallbackDuration?: number;
+};
+export type NavigateConfig = BaseActionConfig & {
+  /**
+   * URL to navigate to
+   */
+  url: string;
+  /**
+   * Wait for page to load
+   */
+  waitForLoad?: boolean;
+  /**
+   * Take screenshot after navigation
+   */
+  takeScreenshot?: boolean;
+};
+export type ScrollConfig = BaseActionConfig & {
+  /**
+   * Scroll direction
+   */
+  direction?: "up" | "down" | "left" | "right";
+  /**
+   * Scroll distance in pixels
+   */
+  distance?: number;
+  /**
+   * Element to scroll (optional, defaults to window)
+   */
+  selector?: string;
+};
+export type ScreenshotConfig = BaseActionConfig & {
+  /**
+   * Type of screenshot to capture
+   */
+  screenshotType?: "viewport" | "fullPage" | "element";
+  /**
+   * CSS selector for element screenshots
+   */
+  selector?: string;
+  /**
+   * Output filename
+   */
+  filename?: string;
+  /**
+   * Save screenshot to file system
+   */
+  saveToFile?: boolean;
+  /**
+   * Include timestamp in filename
+   */
+  includeTimestamp?: boolean;
+  /**
+   * Output format
+   */
+  format?: "png" | "jpg";
+  /**
+   * Wait for element to be present
+   */
+  waitForElement?: boolean;
+  /**
+   * Scroll element into view
+   */
+  scrollIntoView?: boolean;
+  /**
+   * Take full page screenshot
+   */
+  fullPage?: boolean;
+};
+export type AssertionConfig = AssertionConfig1 & {
+  /**
+   * Image reference for image assertion (base64, data URI, or mediaId:xxx resolved to data URI)
+   */
+  expectedImageRef?: string;
+  /**
+   * Minimum similarity score (0-1) for image assertions
+   */
+  imageSimilarityThreshold?: number;
+};
+export type AssertionConfig1 = BaseActionConfig & {
+  /**
+   * CSS selector for element
+   */
+  selector: string;
+  /**
+   * Type of assertion
+   */
+  assertType?: "exists" | "visible" | "text" | "value" | "attribute";
+  /**
+   * Expected value for assertion
+   */
+  expectedValue: string;
+  /**
+   * Wait for element to be present
+   */
+  waitForElement?: boolean;
+  /**
+   * Case sensitive comparison
+   */
+  caseSensitive?: boolean;
+  /**
+   * Allow partial text matching
+   */
+  partialMatch?: boolean;
+};
+export type AssertVisibleConfig = BaseActionConfig & {
+  /**
+   * CSS selector for element to check
+   */
+  selector: string;
+  /**
+   * Timeout in milliseconds
+   */
+  timeout?: number;
+  /**
+   * Wait for element to be present
+   */
+  waitForElement?: boolean;
+};
+export type FormFillConfig = BaseActionConfig & {
+  /**
+   * Array of form field configurations
+   */
+  fields: FormField[];
+  /**
+   * Wait for all form elements to be present
+   */
+  waitForElements?: boolean;
+  /**
+   * Clear existing values before filling
+   */
+  clearFirst?: boolean;
+  /**
+   * Automatically submit form after filling
+   */
+  submitAfterFill?: boolean;
+  /**
+   * Automatically detect field types
+   */
+  smartFieldDetection?: boolean;
+};
+export type ClearInputConfig = ClearInputConfig1 & {
+  /**
+   * Whether to keep focus on element after clearing
+   */
+  maintainFocus?: boolean;
+};
+export type ClearInputConfig1 = BaseActionConfig & {
+  /**
+   * CSS selector for input element
+   */
+  selector: string;
+  /**
+   * Wait for element to be present
+   */
+  waitForElement?: boolean;
+};
+export type OpenNewTabConfig = BaseActionConfig & {
+  /**
+   * URL to open in new tab
+   */
+  url: string;
+};
+export type SwitchTabConfig = SwitchTabConfig1 & {
+  /**
+   * URL of tab to switch to (alternative to index)
+   */
+  tabUrl?: string;
+  /**
+   * Explicit switch method (auto/index/url/title)
+   */
+  switchMethod?: string;
+};
+export type SwitchTabConfig1 = BaseActionConfig & {
+  /**
+   * Tab index to switch to
+   */
+  tabIndex?: number;
+  /**
+   * Tab title to switch to (alternative to index)
+   */
+  tabTitle?: string;
+};
+export type GoForwardConfig = BaseActionConfig & {};
+export type GoBackConfig = BaseActionConfig & {};
+export type RefreshConfig = BaseActionConfig & {};
+export type GetPageInfoConfig = GetPageInfoConfig1 & {
+  /**
+   * Dot-notation path to extract a specific key from the page info object (e.g. 'title', 'url'). If omitted, the full page info object is stored.
+   */
+  outputKey?: string;
+};
+export type GetPageInfoConfig1 = BaseActionConfig & {
+  /**
+   * Variable to store page information
+   */
+  outputVariable?: string;
+};
+export type JunctionConfig = BaseActionConfig & {
+  /**
+   * Condition to evaluate
+   */
+  condition?: string;
+  /**
+   * Path to take if condition is true
+   */
+  truePath?: string;
+  /**
+   * Path to take if condition is false
+   */
+  falsePath?: string;
+};
+export type ApiCallConfig = BaseActionConfig & {
+  /**
+   * HTTP method
+   */
+  method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
+  /**
+   * API endpoint URL
+   */
+  url: string;
+  /**
+   * HTTP headers
+   */
+  headers?: {
+    [k: string]: string;
+  };
+  /**
+   * Request body
+   */
+  body?: string;
+  /**
+   * Variable to store response
+   */
+  outputVariable?: string;
+  /**
+   * Optional path into the response to store in the output variable, e.g. data.token, headers["Content-Type"], data.items[0].id. Applied to the response object {status_code, headers, data, url} (body fields under data.). When empty, the full response object is stored.
+   */
+  responsePath?: string;
+  /**
+   * Request timeout in milliseconds
+   */
+  timeout?: number;
+  /**
+   * Number of retries
+   */
+  retryCount?: number;
+  /**
+   * Parse response as JSON
+   */
+  parseJson?: boolean;
+  /**
+   * Validate HTTP status code
+   */
+  validateStatus?: boolean;
+  /**
+   * Follow HTTP redirects
+   */
+  followRedirects?: boolean;
+  /**
+   * Verify SSL certificates
+   */
+  verifySSL?: boolean;
+  /**
+   * Basic auth username
+   */
+  basicAuthUsername?: string;
+  /**
+   * Basic auth password
+   */
+  basicAuthPassword?: string;
+};
+export type ConditionalConfig = ConditionalConfig1 & {
+  /**
+   * Comparison operator used by editor helpers
+   */
+  operator: string;
+};
+export type ConditionalConfig1 = BaseActionConfig & {
+  /**
+   * JavaScript condition to evaluate
+   */
+  condition: string;
+  /**
+   * Actions to execute if condition is true
+   */
+  thenActions?: {
+    [k: string]: unknown;
+  }[];
+  /**
+   * Actions to execute if condition is false
+   */
+  elseActions?: {
+    [k: string]: unknown;
+  }[];
+};
+export type LoopConfig = BaseActionConfig & {
+  /**
+   * Type of loop
+   */
+  loopType?: "count" | "condition" | "foreach";
+  /**
+   * Number of iterations (for count loops)
+   */
+  count?: number;
+  /**
+   * Condition to continue loop (for condition loops)
+   */
+  condition?: string;
+  /**
+   * Variable containing array to iterate (for foreach loops)
+   */
+  arrayVariable?: string;
+  /**
+   * Variable name for current item (for foreach loops)
+   */
+  itemVariable?: string;
+  /**
+   * Actions to execute in each iteration
+   */
+  actions: {
+    [k: string]: unknown;
+  }[];
+  /**
+   * Maximum iterations to prevent infinite loops
+   */
+  maxIterations?: number;
+};
+export type DatabaseQueryConfig = BaseActionConfig & {
+  /**
+   * Database connection string
+   */
+  connectionString: string;
+  /**
+   * SQL query to execute
+   */
+  query: string;
+  /**
+   * Variable to store result
+   */
+  outputVariable?: string;
+  /**
+   * Log the query being executed
+   */
+  logQuery?: boolean;
+  /**
+   * Validate database connection
+   */
+  validateConnection?: boolean;
+  /**
+   * Query timeout in milliseconds
+   */
+  timeout?: number;
+};
+export type DatabaseInsertConfig = BaseActionConfig & {
+  /**
+   * Database connection string
+   */
+  connectionString: string;
+  /**
+   * Table name to insert into
+   */
+  table: string;
+  /**
+   * Data to insert (column-value pairs)
+   */
+  data: {};
+  /**
+   * Log the insert operation
+   */
+  logOperation?: boolean;
+  /**
+   * Validate database connection
+   */
+  validateConnection?: boolean;
+  /**
+   * Rollback transaction on error
+   */
+  rollbackOnError?: boolean;
+};
+export type CustomCodeConfig = BaseActionConfig & {
+  /**
+   * JavaScript code to execute
+   */
+  code: string;
+  /**
+   * Main function name to invoke after loading the code
+   */
+  functionName?: string;
+  /**
+   * Input parameter mappings for the main function
+   */
+  inputParameters?: {
+    [k: string]: unknown;
+  }[];
+  /**
+   * Variable to store result
+   */
+  outputVariable?: string;
+  /**
+   * Log code execution
+   */
+  logExecution?: boolean;
+  /**
+   * Catch and handle errors
+   */
+  catchErrors?: boolean;
+  /**
+   * Execution timeout in milliseconds
+   */
+  timeout?: number;
+};
+export type DragAndDropConfig = BaseActionConfig & {
+  /**
+   * CSS selector for element to drag
+   */
+  sourceSelector: string;
+  /**
+   * CSS selector for drop target (required in element mode)
+   */
+  targetSelector?: string;
+  /**
+   * Drag mode: resolve by target element or by source-relative pointer offset
+   */
+  dropMode?: "element" | "offset";
+  /**
+   * Horizontal drag offset in pixels for offset mode
+   */
+  targetOffsetX?: number;
+  /**
+   * Vertical drag offset in pixels for offset mode
+   */
+  targetOffsetY?: number;
+  /**
+   * Explicit target value for range/slider controls
+   */
+  targetValue?: string | number;
+  /**
+   * Ordered fallback identifiers for drag source
+   */
+  sourceIdentifiers?: (
+    | string
+    | {
+        value: string;
+        type?: string;
+        confidence?: number;
+      }
+  )[];
+  /**
+   * Ordered fallback selectors for drag source
+   */
+  sourceSelectors?: string[];
+  /**
+   * Ordered fallback identifiers for drag target
+   */
+  targetIdentifiers?: (
+    | string
+    | {
+        value: string;
+        type?: string;
+        confidence?: number;
+      }
+  )[];
+  /**
+   * Ordered fallback selectors for drag target
+   */
+  targetSelectors?: string[];
+  sourceSemanticTarget?: SemanticTarget;
+  targetSemanticTarget?: SemanticTarget;
+  /**
+   * Wait for elements to be present
+   */
+  waitForElement?: boolean;
+};
+export type CallToFlowConfig = BaseActionConfig & {
+  /**
+   * ID of flow to call
+   */
+  flowId: string;
+  /**
+   * Input parameters to pass to subflow
+   */
+  inputParameters?: {
+    [k: string]: unknown;
+  };
+  /**
+   * Variable to store result
+   */
+  outputVariable?: string;
+  /**
+   * Wait for subflow to complete
+   */
+  waitForCompletion?: boolean;
+  /**
+   * Execute subflow asynchronously
+   */
+  async_?: boolean;
+};
+export type SwitchToFrameConfig = SwitchToFrameConfig1 & {
+  /**
+   * Switch strategy (selector/index/name/id)
+   */
+  switchMethod?: string;
+  /**
+   * Frame name (alternative to selector/index)
+   */
+  frameName?: string;
+  /**
+   * Frame id (alternative to selector/index)
+   */
+  frameId?: string;
+  /**
+   * Wait for frame to become available
+   */
+  waitForFrame?: boolean;
+};
+export type SwitchToFrameConfig1 = BaseActionConfig & {
+  /**
+   * CSS selector or frame name/ID
+   */
+  frameSelector?: string;
+  /**
+   * Ordered fallback identifiers for the frame element
+   */
+  frameIdentifiers?: (
+    | string
+    | {
+        value: string;
+        type?: string;
+        confidence?: number;
+      }
+  )[];
+  /**
+   * Ordered fallback selectors for the frame element
+   */
+  frameSelectors?: string[];
+  frameSemanticTarget?: SemanticTarget;
+  /**
+   * Frame index (alternative to selector)
+   */
+  frameIndex?: number;
+};
+export type ExitFrameConfig = ExitFrameConfig1 & {
+  /**
+   * Exit strategy (parent/main/levels)
+   */
+  exitMethod?: string;
+  /**
+   * Number of parent levels when exitMethod is levels
+   */
+  levels?: number;
+  /**
+   * Force returning to main content after exit
+   */
+  returnToMain?: boolean;
+};
+export type ExitFrameConfig1 = BaseActionConfig & {};
+export type SetViewportConfig = BaseActionConfig & {
+  /**
+   * Type of viewport configuration
+   */
+  viewportType?: "preset" | "device" | "responsive" | "custom";
+  /**
+   * Viewport width in pixels
+   */
+  width: number;
+  /**
+   * Viewport height in pixels
+   */
+  height: number;
+  /**
+   * Preset screen size name
+   */
+  screenSizePreset?: string;
+  /**
+   * Device name for emulation
+   */
+  deviceName?: string;
+  /**
+   * Device scale factor
+   */
+  deviceScaleFactor?: number;
+  /**
+   * Emulate mobile device
+   */
+  isMobile?: boolean;
+  /**
+   * Enable touch events
+   */
+  hasTouch?: boolean;
+  /**
+   * Use landscape orientation
+   */
+  isLandscape?: boolean;
+  /**
+   * Custom user agent string
+   */
+  userAgent?: string;
+  /**
+   * Wait after viewport resize
+   */
+  waitAfterResize?: boolean;
+  /**
+   * Take screenshot after resize
+   */
+  takeScreenshot?: boolean;
+  /**
+   * Preserve cookies across viewport changes
+   */
+  preserveCookies?: boolean;
+  /**
+   * Preserve local storage across viewport changes
+   */
+  preserveLocalStorage?: boolean;
+  /**
+   * Preserve session storage across viewport changes
+   */
+  preserveSessionStorage?: boolean;
+};
+export type GetElementPropertiesConfig = BaseActionConfig & {
+  /**
+   * CSS selector for element
+   */
+  selector: string;
+  /**
+   * Properties to retrieve
+   */
+  properties: (
+    | "text"
+    | "value"
+    | "class"
+    | "id"
+    | "tagName"
+    | "innerHTML"
+    | "outerHTML"
+    | "attributes"
+    | "rect"
+    | "visible"
+    | "enabled"
+    | "selected"
+  )[];
+  /**
+   * Variable to store properties
+   */
+  outputVariable?: string;
+  /**
+   * Wait for element to be present
+   */
+  waitForElement?: boolean;
+};
+export type HandlePopupConfig = BaseActionConfig & {
+  /**
+   * Action to perform on popup
+   */
+  action?: "accept" | "dismiss" | "text";
+  /**
+   * Text to enter in prompt popup
+   */
+  text?: string;
+  /**
+   * Wait for popup to appear
+   */
+  waitForPopup?: boolean;
+  /**
+   * Timeout in milliseconds
+   */
+  timeout?: number;
+};
+export type FileUploadConfig = BaseActionConfig & {
+  /**
+   * CSS selector for file input
+   */
+  selector: string;
+  /**
+   * Path to file to upload
+   */
+  filePath: string;
+  /**
+   * Wait for element to be present
+   */
+  waitForElement?: boolean;
+  /**
+   * Scroll element into view
+   */
+  scrollIntoView?: boolean;
+  /**
+   * Validate file exists before upload
+   */
+  validateFile?: boolean;
+};
+export type FileDownloadConfig = BaseActionConfig & {
+  /**
+   * CSS selector for download link
+   */
+  selector: string;
+  /**
+   * Path to save downloaded file
+   */
+  downloadPath: string;
+  /**
+   * Wait for element to be present
+   */
+  waitForElement?: boolean;
+  /**
+   * Validate download completed
+   */
+  validateDownload?: boolean;
+  /**
+   * Overwrite existing files
+   */
+  overwriteExisting?: boolean;
+};
+export type SubflowConfig = BaseActionConfig & {
+  /**
+   * ID of flow to call
+   */
+  flowId: string;
+  /**
+   * Name of flow to call
+   */
+  flowName?: string;
+  /**
+   * Input parameters for subflow
+   */
+  inputParameters?: {}[];
+  /**
+   * Output parameters from subflow
+   */
+  outputParameters?: {}[];
+  /**
+   * Variable to store result
+   */
+  outputVariable?: string;
+  /**
+   * Wait for flow to complete
+   */
+  waitForCompletion?: boolean;
+  /**
+   * Log flow execution
+   */
+  logExecution?: boolean;
+  /**
+   * Propagate errors from subflow
+   */
+  propagateErrors?: boolean;
+};
+export type DesktopWaitForImageConfig = DesktopVisualBaseConfig & {
+  /**
+   * Base64 encoded reference image to locate on the desktop
+   */
+  image: string;
+  /**
+   * Require the image to remain visible for a stable period
+   */
+  requireStability?: boolean;
+  /**
+   * How long the match should remain stable before succeeding
+   */
+  stableDurationMs?: number;
+  /**
+   * Variable to store desktop match metadata
+   */
+  outputVariable?: string;
+  /**
+   * Fail action when image does not appear in time
+   */
+  failOnTimeout?: boolean;
+};
+export type DesktopVisualBaseConfig = BaseActionConfig & {
+  /**
+   * Match threshold used for image detection
+   */
+  confidence?: number;
+  /**
+   * Maximum wait time in milliseconds
+   */
+  timeout?: number;
+  /**
+   * Polling interval while waiting for image matches
+   */
+  pollIntervalMs?: number;
+  /**
+   * Use grayscale matching for better performance
+   */
+  grayscale?: boolean;
+  /**
+   * Limit search to a specific screen region
+   */
+  useRegion?: boolean;
+  /**
+   * Region origin X coordinate
+   */
+  regionX?: number;
+  /**
+   * Region origin Y coordinate
+   */
+  regionY?: number;
+  /**
+   * Region width in pixels
+   */
+  regionWidth?: number;
+  /**
+   * Region height in pixels
+   */
+  regionHeight?: number;
+};
+export type DesktopFindImageConfig = DesktopVisualBaseConfig & {
+  /**
+   * Base64 encoded reference image to locate on the desktop
+   */
+  image: string;
+  /**
+   * Wait for image appearance before returning
+   */
+  waitForImage?: boolean;
+  /**
+   * Variable to store found image match metadata
+   */
+  outputVariable?: string;
+  /**
+   * Fail action when image cannot be located
+   */
+  failIfNotFound?: boolean;
+};
+export type DesktopClickImageConfig = DesktopVisualBaseConfig & {
+  /**
+   * Base64 encoded reference image to click
+   */
+  image: string;
+  /**
+   * Mouse button to use for clicking
+   */
+  button?: "left" | "right" | "middle";
+  /**
+   * Number of mouse clicks
+   */
+  clicks?: number;
+  /**
+   * Delay between multiple clicks in milliseconds
+   */
+  intervalMs?: number;
+  /**
+   * Horizontal click offset from detected center
+   */
+  offsetX?: number;
+  /**
+   * Vertical click offset from detected center
+   */
+  offsetY?: number;
+  /**
+   * Wait until image appears before clicking
+   */
+  waitForImage?: boolean;
+  /**
+   * Mouse move duration before click
+   */
+  moveDurationMs?: number;
+  /**
+   * Delay after click completes
+   */
+  postActionWaitMs?: number;
+};
+export type DesktopClickPointConfig = BaseActionConfig & {
+  /**
+   * Target X coordinate
+   */
+  x?: number;
+  /**
+   * Target Y coordinate
+   */
+  y?: number;
+  /**
+   * Mouse button to use for clicking
+   */
+  button?: "left" | "right" | "middle";
+  /**
+   * Number of mouse clicks
+   */
+  clicks?: number;
+  /**
+   * Delay between multiple clicks in milliseconds
+   */
+  intervalMs?: number;
+  /**
+   * Mouse move duration before click
+   */
+  moveDurationMs?: number;
+  /**
+   * Delay after click completes
+   */
+  postActionWaitMs?: number;
+  /**
+   * Variable to store click coordinate metadata
+   */
+  outputVariable?: string;
+};
+export type DesktopTypeTextConfig = DesktopVisualBaseConfig & {
+  /**
+   * Text to type on the desktop
+   */
+  text: string;
+  /**
+   * Delay between key presses in milliseconds
+   */
+  intervalMs?: number;
+  /**
+   * Click target image before typing to focus input
+   */
+  clickImageFirst?: boolean;
+  /**
+   * Optional target image used when clickImageFirst is enabled
+   */
+  image?: string;
+  /**
+   * Wait for image before attempting focus click
+   */
+  waitForImage?: boolean;
+  /**
+   * Select-all and clear before typing
+   */
+  clearBeforeType?: boolean;
+  /**
+   * Press Enter after typing
+   */
+  submitWithEnter?: boolean;
+  /**
+   * Delay after typing completes
+   */
+  postActionWaitMs?: number;
+};
+export type DesktopMoveMouseConfig = BaseActionConfig & {
+  /**
+   * Target X coordinate
+   */
+  x?: number;
+  /**
+   * Target Y coordinate
+   */
+  y?: number;
+  /**
+   * Treat x and y as offsets from current pointer location
+   */
+  relative?: boolean;
+  /**
+   * Mouse move duration
+   */
+  moveDurationMs?: number;
+  /**
+   * Delay after pointer move completes
+   */
+  postActionWaitMs?: number;
+  /**
+   * Variable to store pointer position metadata
+   */
+  outputVariable?: string;
+};
+export type DesktopHotkeyConfig = BaseActionConfig & {
+  /**
+   * Key combination (e.g. ctrl+shift+p)
+   */
+  keyCombination: string;
+  /**
+   * How many times to trigger the hotkey
+   */
+  presses?: number;
+  /**
+   * Delay between repeated hotkeys in milliseconds
+   */
+  intervalMs?: number;
+  /**
+   * Delay after hotkey execution
+   */
+  postActionWaitMs?: number;
+};
+export type DesktopRunCommandConfig = BaseActionConfig & {
+  /**
+   * Shell command to execute
+   */
+  command: string;
+  /**
+   * Run command through shell
+   */
+  shell?: boolean;
+  /**
+   * Optional working directory for command execution
+   */
+  workingDirectory?: string;
+  /**
+   * Command timeout in milliseconds
+   */
+  timeout?: number;
+  /**
+   * Capture stdout and stderr
+   */
+  captureOutput?: boolean;
+  /**
+   * Fail action when command exits with non-zero code
+   */
+  failOnNonZero?: boolean;
+  /**
+   * Variable to store command result details
+   */
+  outputVariable?: string;
+};
+export type DesktopCaptureScreenConfig = BaseActionConfig & {
+  /**
+   * Output filename when saving screenshot
+   */
+  filename?: string;
+  /**
+   * Persist screenshot to screenshots folder
+   */
+  saveToFile?: boolean;
+  /**
+   * Append timestamp to output filename
+   */
+  includeTimestamp?: boolean;
+  /**
+   * Screenshot image format
+   */
+  format?: "png" | "jpg";
+  /**
+   * Capture a specific region of the desktop
+   */
+  useRegion?: boolean;
+  regionX?: number;
+  regionY?: number;
+  regionWidth?: number;
+  regionHeight?: number;
+  /**
+   * Variable to store screenshot metadata and base64 content
+   */
+  outputVariable?: string;
+};
+
+export interface ActionConfigurationsSchema {
+  actionConfigs?: {
+    /**
+     * This interface was referenced by `undefined`'s JSON-Schema definition
+     * via the `patternProperty` ".*".
+     */
+    [k: string]:
+      | ClickConfig
+      | InputConfig
+      | SendKeysConfig
+      | WaitConfig
+      | NavigateConfig
+      | ScrollConfig
+      | ScreenshotConfig
+      | AssertionConfig
+      | AssertVisibleConfig
+      | FormFillConfig
+      | ClearInputConfig
+      | OpenNewTabConfig
+      | SwitchTabConfig
+      | GoForwardConfig
+      | GoBackConfig
+      | RefreshConfig
+      | GetPageInfoConfig
+      | JunctionConfig
+      | ApiCallConfig
+      | ConditionalConfig
+      | LoopConfig
+      | DatabaseQueryConfig
+      | DatabaseInsertConfig
+      | CustomCodeConfig
+      | DragAndDropConfig
+      | CallToFlowConfig
+      | SwitchToFrameConfig
+      | ExitFrameConfig
+      | SetViewportConfig
+      | GetElementPropertiesConfig
+      | HandlePopupConfig
+      | FileUploadConfig
+      | FileDownloadConfig
+      | SubflowConfig
+      | DesktopWaitForImageConfig
+      | DesktopFindImageConfig
+      | DesktopClickImageConfig
+      | DesktopClickPointConfig
+      | DesktopTypeTextConfig
+      | DesktopMoveMouseConfig
+      | DesktopHotkeyConfig
+      | DesktopRunCommandConfig
+      | DesktopCaptureScreenConfig;
+  };
+  BaseActionConfig?: BaseActionConfig;
+  SemanticExpectedStates?: SemanticExpectedStates;
+  SemanticRelation?: SemanticRelation;
+  SemanticLibraryHints?: SemanticLibraryHints;
+  SemanticTarget?: SemanticTarget;
+  ClickConfig?: ClickConfig;
+  InputConfig?: InputConfig;
+  NavigateConfig?: NavigateConfig;
+  WaitConfig?: WaitConfig1;
+  AssertionConfig?: AssertionConfig1;
+  ScreenshotConfig?: ScreenshotConfig;
+  FormField?: FormField;
+  FormFieldOption?: FormFieldOption;
+  FormFillConfig?: FormFillConfig;
+  ApiCallConfig?: ApiCallConfig;
+  DatabaseQueryConfig?: DatabaseQueryConfig;
+  DatabaseInsertConfig?: DatabaseInsertConfig;
+  FileUploadConfig?: FileUploadConfig;
+  FileDownloadConfig?: FileDownloadConfig;
+  CustomCodeConfig?: CustomCodeConfig;
+  SubflowConfig?: SubflowConfig;
+  SendKeysConfig?: SendKeysConfig1;
+  ScrollConfig?: ScrollConfig;
+  AssertVisibleConfig?: AssertVisibleConfig;
+  ClearInputConfig?: ClearInputConfig1;
+  OpenNewTabConfig?: OpenNewTabConfig;
+  SwitchTabConfig?: SwitchTabConfig1;
+  GoForwardConfig?: GoForwardConfig;
+  GoBackConfig?: GoBackConfig;
+  RefreshConfig?: RefreshConfig;
+  GetPageInfoConfig?: GetPageInfoConfig1;
+  JunctionConfig?: JunctionConfig;
+  ConditionalConfig?: ConditionalConfig1;
+  LoopConfig?: LoopConfig;
+  DragAndDropConfig?: DragAndDropConfig;
+  CallToFlowConfig?: CallToFlowConfig;
+  SwitchToFrameConfig?: SwitchToFrameConfig1;
+  ExitFrameConfig?: ExitFrameConfig1;
+  SetViewportConfig?: SetViewportConfig;
+  GetElementPropertiesConfig?: GetElementPropertiesConfig;
+  HandlePopupConfig?: HandlePopupConfig;
+  DesktopVisualBaseConfig?: DesktopVisualBaseConfig;
+  DesktopWaitForImageConfig?: DesktopWaitForImageConfig;
+  DesktopFindImageConfig?: DesktopFindImageConfig;
+  DesktopClickImageConfig?: DesktopClickImageConfig;
+  DesktopClickPointConfig?: DesktopClickPointConfig;
+  DesktopTypeTextConfig?: DesktopTypeTextConfig;
+  DesktopMoveMouseConfig?: DesktopMoveMouseConfig;
+  DesktopHotkeyConfig?: DesktopHotkeyConfig;
+  DesktopRunCommandConfig?: DesktopRunCommandConfig;
+  DesktopCaptureScreenConfig?: DesktopCaptureScreenConfig;
+}
+export interface BaseActionConfig {
+  /**
+   * Base64 encoded reference image
+   */
+  image?: string;
+  /**
+   * Ordered fallback identifiers to locate the target element
+   */
+  identifiers?: (
+    | string
+    | {
+        value: string;
+        type?: string;
+        confidence?: number;
+        primary?: boolean;
+        unique?: boolean;
+      }
+  )[];
+  /**
+   * Ordered fallback selectors to locate the target element
+   */
+  selectors?: string[];
+  semanticTarget?: SemanticTarget;
+}
+export interface SemanticTarget {
+  tag?: string;
+  role?: string;
+  inputType?: string;
+  name?: string;
+  id?: string;
+  text?: string;
+  placeholder?: string;
+  href?: string;
+  classTokens?: string[];
+  attributes?: {
+    [k: string]: string;
+  };
+  libraryHints?: SemanticLibraryHints;
+  expectedStates?: SemanticExpectedStates;
+  relation?: SemanticRelation;
+}
+export interface SemanticLibraryHints {
+  framework?: string;
+  uiLibrary?: string;
+  component?: string;
+}
+export interface SemanticExpectedStates {
+  checked?: boolean;
+  disabled?: boolean;
+  selected?: boolean;
+  expanded?: boolean;
+}
+export interface SemanticRelation {
+  withinFormSelector?: string;
+}
+export interface FormField {
+  /**
+   * CSS selector to target form field
+   */
+  selector: string;
+  /**
+   * Value to fill
+   */
+  value: {
+    [k: string]: unknown;
+  };
+  /**
+   * Optional screenshot path
+   */
+  image?: string;
+  /**
+   * Ordered fallback identifiers for this field
+   */
+  identifiers?: (
+    | string
+    | {
+        value: string;
+        type?: string;
+        confidence?: number;
+      }
+  )[];
+  /**
+   * Ordered fallback selectors for this field
+   */
+  selectors?: string[];
+  semanticTarget?: SemanticTarget;
+  /**
+   * Human-readable field name
+   */
+  name?: string;
+  /**
+   * Type of form field
+   */
+  type?:
+    | "text"
+    | "password"
+    | "email"
+    | "number"
+    | "tel"
+    | "textarea"
+    | "date"
+    | "time"
+    | "datetime-local"
+    | "checkbox"
+    | "radio"
+    | "select"
+    | "file";
+  /**
+   * Options for select/radio fields
+   */
+  options?: FormFieldOption[];
+  /**
+   * Whether checkbox is checked
+   */
+  checked?: boolean;
+  /**
+   * Whether select allows multiple selections
+   */
+  multiple?: boolean;
+}
+export interface FormFieldOption {
+  /**
+   * Option value
+   */
+  value: string;
+  /**
+   * Option label
+   */
+  label: string;
+}

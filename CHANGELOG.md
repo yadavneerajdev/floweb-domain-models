@@ -4,6 +4,45 @@ All notable changes to the domain-models schemas are recorded here. Versions
 refer to the `$version` field carried by every schema (independent of the npm/PyPI
 package version until the consumption switch in the package plan Phase 4).
 
+## Phase 2 — 2026-07-20 — mandatory, non-destructive codegen
+
+Codegen is now the only way to change generated models/types, and it is
+deterministic (a CI diff-gate fails on any hand edit of generated output).
+
+### Added
+- `scripts/generate-python.cjs` — regenerates all `python-models/floweb_models/*.py`
+  from `schemas/` via `datamodel-codegen` (dir mode, `--disable-timestamp` for a
+  stable diff). Surgically wires `BaseActionConfig` to the hand-written coercion
+  base `_base.FlowebActionBaseModel` (helper models stay on `BaseModel`, matching
+  the prior contract) and builds a collision-safe `__init__.py`.
+- `scripts/generate-ts.cjs` — generates `generated/ts/*.d.ts` (one per schema, all
+  `$defs` emitted, cross-file refs inlined).
+- `scripts/check-breaking-changes.cjs` — fails a PR that drops a required field or
+  a `$def` without a MAJOR `$version` bump (base ref via `$BASE_REF`).
+- `.github/workflows/ci.yml` — validate → regen-and-diff → tsc strict → jest →
+  pytest → mypy(`_base`) → breaking-change gate.
+- `tests/python/test_package_imports.py` — guards the package import.
+- Build pipeline: `npm run build` = validate → generate:all → typecheck → test;
+  `prepublishOnly` runs it.
+
+### Fixed / Removed
+- Regenerating drops the stray `from engine.server.ws.handlers import flow` that
+  broke `import floweb_models`.
+- Deleted orphan `python-models/floweb_models/debug_models.py` (duplicate of
+  `debug.py`, never imported).
+- Deleted stale generators `generate-types.js` (wrote to a non-existent `types/`)
+  and `generate-python-models.js` (per-file, destructive).
+- Removed the duplicate empty `CallToFlowConfig` in `index.d.ts`.
+
+### Deferred to Phase 3 (documented, not skipped)
+- Full replacement of hand-written `index.d.ts` with a single generated file.
+  Blocked because ~25 exported types have no schema (Suite family, User/Account/
+  Folder/MediaItem, StoredTest*, PaginatedResponse, ...) and 7 `$defs`
+  (`Variable`/`Environment`/`GlobalVariable`/`Semantic*`) are defined in two
+  schemas with diverging shapes. Both are resolved when Phase 3 adds the missing
+  entity schemas and canonicalizes the shared defs. `generated/ts/` is the
+  diff-gated bridge until then; `index.d.ts` remains the stable entry point.
+
 ## [schema 1.1.0] — 2026-07-20 — Phase 1: source-of-truth alignment
 
 Phase 1 of the platform refactor. The schemas are now the source of truth and

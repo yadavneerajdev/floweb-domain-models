@@ -137,7 +137,19 @@ function validateAll() {
   return failures;
 }
 
-module.exports = { EXAMPLE_FOR, compileSchema, validateAll, loadExample, loadSchema };
+// Return a self-contained (cross-file refs inlined) copy of a schema by filename.
+function inlineSchema(schemaFile) {
+  return inline(loadSchema(schemaFile));
+}
+
+module.exports = {
+  EXAMPLE_FOR,
+  compileSchema,
+  validateAll,
+  loadExample,
+  loadSchema,
+  inlineSchema,
+};
 
 if (require.main === module) {
   const failures = validateAll();
