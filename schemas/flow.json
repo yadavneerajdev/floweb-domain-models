@@ -1,6 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://floweb.com/schemas/flow.json",
+  "$version": "1.1.0",
   "title": "Flow",
   "description": "Complete flow definition for automation workflows",
   "type": "object",
@@ -25,12 +26,20 @@
       "description": "Tags for categorization and filtering"
     },
     "parentID": {
-      "type": ["string", "null"],
+      "type": [
+        "string",
+        "null"
+      ],
       "description": "Parent folder ID for organization"
     },
     "type": {
       "type": "string",
-      "enum": ["flow", "test", "performance"],
+      "enum": [
+        "flow",
+        "test",
+        "performance"
+      ],
+      "default": "flow",
       "description": "Type of the flow"
     },
     "actions": {
@@ -63,10 +72,12 @@
     },
     "variables": {
       "$ref": "#/$defs/FlowVariables",
+      "default": null,
       "description": "Flow input and output variables"
     },
     "parameters": {
       "$ref": "#/$defs/FlowParameters",
+      "default": null,
       "description": "Flow parameters for configuration"
     },
     "environment": {
@@ -91,12 +102,104 @@
     },
     "lastResult": {
       "type": "string",
-      "enum": ["passed", "failed", "pending", "running"],
+      "enum": [
+        "passed",
+        "failed",
+        "pending",
+        "running"
+      ],
       "description": "Result of last execution"
+    },
+    "assistantAuditHistory": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/AssistantAuditEntry"
+      },
+      "description": "History of AI-assistant edits applied to this flow"
     }
   },
-  "required": ["id", "name", "actions", "edges"],
+  "required": [
+    "id",
+    "name",
+    "actions",
+    "edges"
+  ],
   "$defs": {
+    "AssistantAuditOperation": {
+      "type": "object",
+      "description": "A single tool operation performed by the AI assistant",
+      "properties": {
+        "tool": {
+          "type": "string",
+          "description": "Tool name that was invoked"
+        },
+        "summary": {
+          "type": "string",
+          "description": "Human-readable summary of the operation"
+        },
+        "payload": {
+          "type": "object",
+          "description": "Tool invocation payload"
+        }
+      },
+      "required": [
+        "tool"
+      ]
+    },
+    "AssistantAuditEntry": {
+      "type": "object",
+      "description": "Audit record of an AI-assistant edit applied to the flow",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique audit entry identifier"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp when the entry was recorded"
+        },
+        "instruction": {
+          "type": "string",
+          "description": "User instruction that triggered the assistant"
+        },
+        "message": {
+          "type": "string",
+          "description": "Assistant response message"
+        },
+        "provider": {
+          "type": "string",
+          "description": "LLM provider used"
+        },
+        "model": {
+          "type": "string",
+          "description": "LLM model used"
+        },
+        "source": {
+          "type": "string",
+          "description": "Origin of the assistant invocation"
+        },
+        "changes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Summaries of changes applied"
+        },
+        "operations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/AssistantAuditOperation"
+          },
+          "description": "Tool operations performed"
+        }
+      },
+      "required": [
+        "id",
+        "createdAt",
+        "instruction",
+        "operations"
+      ]
+    },
     "Position": {
       "type": "object",
       "properties": {
@@ -109,7 +212,10 @@
           "description": "Y coordinate"
         }
       },
-      "required": ["x", "y"]
+      "required": [
+        "x",
+        "y"
+      ]
     },
     "ActionData": {
       "type": "object",
@@ -125,9 +231,25 @@
         "config": {
           "type": "object",
           "description": "Action-specific configuration"
+        },
+        "image": {
+          "type": "string",
+          "description": "Screenshot or icon associated with the action"
+        },
+        "status": {
+          "type": "string",
+          "description": "Last known execution status of the action"
+        },
+        "expanded": {
+          "type": "boolean",
+          "description": "Whether the node is expanded in the canvas UI"
         }
       },
-      "required": ["label", "type", "config"]
+      "required": [
+        "label",
+        "type",
+        "config"
+      ]
     },
     "Action": {
       "type": "object",
@@ -147,7 +269,12 @@
           "$ref": "#/$defs/ActionData"
         }
       },
-      "required": ["id", "type", "position", "data"]
+      "required": [
+        "id",
+        "type",
+        "position",
+        "data"
+      ]
     },
     "Edge": {
       "type": "object",
@@ -161,16 +288,22 @@
           "description": "Source action ID"
         },
         "sourceHandle": {
-          "type": "string",
-          "description": "Source handle identifier"
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Source handle identifier (null when attached to the default handle)"
         },
         "target": {
           "type": "string",
           "description": "Target action ID"
         },
         "targetHandle": {
-          "type": "string",
-          "description": "Target handle identifier"
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Target handle identifier (null when attached to the default handle)"
         },
         "type": {
           "type": "string",
@@ -182,7 +315,11 @@
           "description": "Additional edge data"
         }
       },
-      "required": ["id", "source", "target"]
+      "required": [
+        "id",
+        "source",
+        "target"
+      ]
     },
     "Zoom": {
       "type": "object",
@@ -200,7 +337,11 @@
           "description": "Zoom level"
         }
       },
-      "required": ["x", "y", "zoom"]
+      "required": [
+        "x",
+        "y",
+        "zoom"
+      ]
     },
     "Variable": {
       "type": "object",
@@ -218,8 +359,7 @@
           "description": "Variable data type"
         },
         "value": {
-          "type": "string",
-          "description": "Variable value"
+          "description": "Variable value; any JSON value is allowed (decision 2026-07: runtime stores structured values, aligned with TS JsonValue rather than the old string-only contract)"
         },
         "description": {
           "type": "string",
@@ -230,7 +370,12 @@
           "description": "Whether this is an output variable"
         }
       },
-      "required": ["id", "name", "type", "value"]
+      "required": [
+        "id",
+        "name",
+        "type",
+        "value"
+      ]
     },
     "FlowVariables": {
       "type": "object",
@@ -250,7 +395,10 @@
           "description": "Output variables"
         }
       },
-      "required": ["input", "output"]
+      "required": [
+        "input",
+        "output"
+      ]
     },
     "FlowParameters": {
       "type": "object",
@@ -268,9 +416,28 @@
             "$ref": "#/$defs/Variable"
           },
           "description": "Output parameters"
+        },
+        "parameterBefore": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Variable"
+          },
+          "default": [],
+          "description": "Parameters to be set before execution"
+        },
+        "variableBefore": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Variable"
+          },
+          "default": [],
+          "description": "Variables to be set before execution"
         }
       },
-      "required": ["input", "output"]
+      "required": [
+        "input",
+        "output"
+      ]
     },
     "EnvironmentVariable": {
       "type": "object",
@@ -288,15 +455,19 @@
           "description": "Variable data type"
         },
         "value": {
-          "type": "string",
-          "description": "Variable value"
+          "description": "Variable value; any JSON value is allowed (aligned with TS JsonValue)"
         },
         "description": {
           "type": "string",
           "description": "Optional description"
         }
       },
-      "required": ["id", "name", "type", "value"]
+      "required": [
+        "id",
+        "name",
+        "type",
+        "value"
+      ]
     },
     "Environment": {
       "type": "object",
@@ -312,9 +483,17 @@
         "variables": {
           "type": "array",
           "items": {
-            "$ref": "#/$defs/EnvironmentVariable"
+            "anyOf": [
+              {
+                "$ref": "#/$defs/EnvironmentVariable"
+              },
+              {
+                "$ref": "#/$defs/Variable"
+              }
+            ]
           },
-          "description": "Environment variables"
+          "default": null,
+          "description": "Environment variables; historical payloads may carry full Variable objects, so both shapes are accepted"
         },
         "description": {
           "type": "string",
@@ -339,7 +518,10 @@
           "description": "Last update timestamp"
         }
       },
-      "required": ["id", "name", "variables"]
+      "required": [
+        "id",
+        "name"
+      ]
     },
     "GlobalVariable": {
       "type": "object",
@@ -357,8 +539,7 @@
           "description": "Variable data type"
         },
         "value": {
-          "type": "string",
-          "description": "Variable value"
+          "description": "Variable value; any JSON value is allowed (aligned with TS JsonValue)"
         },
         "description": {
           "type": "string",
@@ -375,7 +556,12 @@
           "description": "Last update timestamp"
         }
       },
-      "required": ["id", "name", "type", "value"]
+      "required": [
+        "id",
+        "name",
+        "type",
+        "value"
+      ]
     }
   }
 }

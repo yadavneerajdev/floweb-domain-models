@@ -1,0 +1,13 @@
+{
+  "sessionId": "debug-session-1",
+  "flowId": "flow-123",
+  "breakpoints": ["action-1", "action-3"],
+  "state": "paused",
+  "currentActionId": "action-1",
+  "currentActionIndex": 0,
+  "executedActions": [],
+  "pauseRequested": false,
+  "stopRequested": false,
+  "createdAt": 1710000000000,
+  "lastUpdated": 1710000005000
+}

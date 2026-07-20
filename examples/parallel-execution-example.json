@@ -1,0 +1,34 @@
+{
+  "tests": [
+    {
+      "flow": {
+        "id": "flow-123",
+        "name": "Checkout smoke test",
+        "actions": [
+          {
+            "id": "action-1",
+            "type": "click",
+            "position": { "x": 100, "y": 200 },
+            "data": {
+              "label": "Click submit",
+              "type": "click",
+              "config": { "selector": "#submit-button" }
+            }
+          }
+        ],
+        "edges": []
+      },
+      "mode": "full",
+      "metadata": {}
+    }
+  ],
+  "data": {},
+  "max_parallel": 5,
+  "stop_on_failure": false,
+  "cleanup_after": true,
+  "browser_mode": "headless",
+  "browser": "chrome",
+  "incognito": false,
+  "max_retries": 2,
+  "randomBrowserPool": ["chrome", "firefox"]
+}

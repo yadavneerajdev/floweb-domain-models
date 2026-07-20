@@ -1,0 +1,9 @@
+{
+  "selector": "#submit-button",
+  "waitTime": 500,
+  "forceClick": false,
+  "scrollIntoView": true,
+  "waitForElement": true,
+  "clickType": "left",
+  "clickCount": 1
+}

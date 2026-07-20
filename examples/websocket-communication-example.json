@@ -1,0 +1,21 @@
+{
+  "command": "run",
+  "flow": {
+    "id": "flow-123",
+    "name": "Checkout smoke test",
+    "actions": [
+      {
+        "id": "action-1",
+        "type": "click",
+        "position": { "x": 100, "y": 200 },
+        "data": {
+          "label": "Click submit",
+          "type": "click",
+          "config": { "selector": "#submit-button" }
+        }
+      }
+    ],
+    "edges": []
+  },
+  "mode": "full"
+}

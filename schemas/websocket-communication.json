@@ -1,6 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://floweb.com/schemas/websocket-communication.json",
+  "$version": "1.1.0",
   "title": "WebSocket Communication Models",
   "description": "Schema for WebSocket API commands and responses",
   "type": "object",
@@ -163,6 +164,10 @@
         "browser": {
           "type": "string",
           "description": "Browser type"
+        },
+        "flowName": {
+          "type": "string",
+          "description": "Flow name"
         },
         "startedAt": {
           "type": "integer",

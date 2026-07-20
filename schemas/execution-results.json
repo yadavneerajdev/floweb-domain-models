@@ -1,6 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://floweb.com/schemas/execution-results.json",
+  "$version": "1.1.0",
   "title": "Execution Results Models",
   "description": "Schema for action execution results and flow reports",
   "type": "object",
@@ -80,165 +81,380 @@
           "additionalProperties": true
         }
       },
-      "required": ["node_id", "action_type", "config", "start_time", "end_time", "duration_seconds", "success", "message"]
+      "required": [
+        "node_id",
+        "action_type",
+        "config",
+        "start_time",
+        "end_time",
+        "duration_seconds",
+        "success",
+        "message"
+      ]
     },
     "SemanticExpectedStates": {
       "type": "object",
       "properties": {
-        "checked": { "type": "boolean" },
-        "disabled": { "type": "boolean" },
-        "selected": { "type": "boolean" },
-        "expanded": { "type": "boolean" }
+        "checked": {
+          "type": "boolean"
+        },
+        "disabled": {
+          "type": "boolean"
+        },
+        "selected": {
+          "type": "boolean"
+        },
+        "expanded": {
+          "type": "boolean"
+        }
       }
     },
     "SemanticRelation": {
       "type": "object",
       "properties": {
-        "withinFormSelector": { "type": "string" }
+        "withinFormSelector": {
+          "type": "string"
+        }
       }
     },
     "SemanticLibraryHints": {
       "type": "object",
       "properties": {
-        "framework": { "type": "string" },
-        "uiLibrary": { "type": "string" },
-        "component": { "type": "string" }
+        "framework": {
+          "type": "string"
+        },
+        "uiLibrary": {
+          "type": "string"
+        },
+        "component": {
+          "type": "string"
+        }
       }
     },
     "SemanticTarget": {
       "type": "object",
       "properties": {
-        "tag": { "type": "string" },
-        "role": { "type": "string" },
-        "inputType": { "type": "string" },
-        "name": { "type": "string" },
-        "id": { "type": "string" },
-        "text": { "type": "string" },
-        "placeholder": { "type": "string" },
-        "href": { "type": "string" },
+        "tag": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        },
+        "inputType": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string"
+        },
+        "placeholder": {
+          "type": "string"
+        },
+        "href": {
+          "type": "string"
+        },
         "classTokens": {
           "type": "array",
-          "items": { "type": "string" }
+          "items": {
+            "type": "string"
+          }
         },
         "attributes": {
           "type": "object",
-          "additionalProperties": { "type": "string" }
+          "additionalProperties": {
+            "type": "string"
+          }
         },
-        "libraryHints": { "$ref": "#/$defs/SemanticLibraryHints" },
-        "expectedStates": { "$ref": "#/$defs/SemanticExpectedStates" },
-        "relation": { "$ref": "#/$defs/SemanticRelation" }
+        "libraryHints": {
+          "$ref": "#/$defs/SemanticLibraryHints"
+        },
+        "expectedStates": {
+          "$ref": "#/$defs/SemanticExpectedStates"
+        },
+        "relation": {
+          "$ref": "#/$defs/SemanticRelation"
+        }
       }
     },
     "SemanticMatchObserved": {
       "type": "object",
       "properties": {
-        "tag": { "type": "string" },
-        "role": { "type": "string" },
-        "inputType": { "type": "string" },
-        "name": { "type": "string" },
-        "id": { "type": "string" },
-        "text": { "type": "string" },
-        "placeholder": { "type": "string" },
-        "href": { "type": "string" },
-        "libraryHints": { "$ref": "#/$defs/SemanticLibraryHints" },
-        "checked": { "type": "boolean" },
-        "disabled": { "type": "boolean" },
-        "selected": { "type": "boolean" },
-        "expanded": { "type": "boolean" }
+        "tag": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        },
+        "inputType": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string"
+        },
+        "placeholder": {
+          "type": "string"
+        },
+        "href": {
+          "type": "string"
+        },
+        "libraryHints": {
+          "$ref": "#/$defs/SemanticLibraryHints"
+        },
+        "checked": {
+          "type": "boolean"
+        },
+        "disabled": {
+          "type": "boolean"
+        },
+        "selected": {
+          "type": "boolean"
+        },
+        "expanded": {
+          "type": "boolean"
+        }
       }
     },
     "SemanticMatchResult": {
       "type": "object",
       "properties": {
-        "matched": { "type": "boolean" },
-        "score": { "type": "number", "minimum": 0, "maximum": 1 },
-        "threshold": { "type": "number", "minimum": 0, "maximum": 1 },
-        "reason": { "type": "string" },
+        "matched": {
+          "type": "boolean"
+        },
+        "score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "threshold": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "reason": {
+          "type": "string"
+        },
         "matchedHints": {
           "type": "array",
-          "items": { "type": "string" }
+          "items": {
+            "type": "string"
+          }
         },
         "missedHints": {
           "type": "array",
-          "items": { "type": "string" }
+          "items": {
+            "type": "string"
+          }
         },
-        "observed": { "$ref": "#/$defs/SemanticMatchObserved" }
+        "observed": {
+          "$ref": "#/$defs/SemanticMatchObserved"
+        }
       }
     },
     "HealedSelectorSuggestion": {
       "type": "object",
       "properties": {
-        "selector": { "type": "string" },
-        "source": { "type": "string" },
-        "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
-        "selector_type": { "type": "string" },
-        "selector_category": { "type": "string" },
-        "selector_strategy": { "type": "string" }
+        "selector": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "selector_type": {
+          "type": "string"
+        },
+        "selector_category": {
+          "type": "string"
+        },
+        "selector_strategy": {
+          "type": "string"
+        }
       },
-      "required": ["selector"]
+      "required": [
+        "selector"
+      ]
     },
     "HealedSelectorRecord": {
       "type": "object",
       "properties": {
-        "node_id": { "type": "string" },
-        "action_type": { "type": "string" },
-        "selector_key": { "type": "string" },
-        "selectors_key": { "type": "string" },
-        "original_selector": { "type": "string" },
-        "healed_selector": { "type": "string" },
-        "source": { "type": "string" },
-        "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
-        "attempted_selectors": { "type": "array", "items": { "type": "string" } },
-        "failed_selectors": { "type": "array", "items": { "type": "string" } },
-        "semantic_target": { "$ref": "#/$defs/SemanticTarget" },
-        "semantic_match": { "$ref": "#/$defs/SemanticMatchResult" },
-        "semantic_score": { "type": "number", "minimum": 0, "maximum": 1 },
-        "semantic_reason": { "type": "string" },
+        "node_id": {
+          "type": "string"
+        },
+        "action_type": {
+          "type": "string"
+        },
+        "selector_key": {
+          "type": "string"
+        },
+        "selectors_key": {
+          "type": "string"
+        },
+        "original_selector": {
+          "type": "string"
+        },
+        "healed_selector": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "attempted_selectors": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "failed_selectors": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "semantic_target": {
+          "$ref": "#/$defs/SemanticTarget"
+        },
+        "semantic_match": {
+          "$ref": "#/$defs/SemanticMatchResult"
+        },
+        "semantic_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "semantic_reason": {
+          "type": "string"
+        },
         "suggestions": {
           "type": "array",
-          "items": { "$ref": "#/$defs/HealedSelectorSuggestion" }
+          "items": {
+            "$ref": "#/$defs/HealedSelectorSuggestion"
+          }
         }
       },
-      "required": ["node_id", "action_type", "healed_selector"]
+      "required": [
+        "node_id",
+        "action_type",
+        "healed_selector"
+      ]
     },
     "SelectorCandidateSuggestion": {
       "type": "object",
       "properties": {
-        "selector": { "type": "string" },
-        "source": { "type": "string" },
-        "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
-        "score": { "type": "number", "minimum": 0, "maximum": 1 },
-        "discovered": { "type": "boolean" },
-        "same_target": { "type": "boolean" },
-        "match_count": { "type": "integer", "minimum": 0 },
-        "unique": { "type": "boolean" },
-        "selector_type": { "type": "string" },
-        "selector_category": { "type": "string" },
-        "selector_strategy": { "type": "string" }
+        "selector": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "discovered": {
+          "type": "boolean"
+        },
+        "same_target": {
+          "type": "boolean"
+        },
+        "match_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unique": {
+          "type": "boolean"
+        },
+        "selector_type": {
+          "type": "string"
+        },
+        "selector_category": {
+          "type": "string"
+        },
+        "selector_strategy": {
+          "type": "string"
+        }
       },
-      "required": ["selector"]
+      "required": [
+        "selector"
+      ]
     },
     "SelectorCandidateRecord": {
       "type": "object",
       "properties": {
-        "node_id": { "type": "string" },
-        "action_type": { "type": "string" },
-        "selector_key": { "type": "string" },
-        "selectors_key": { "type": "string" },
-        "primary_selector": { "type": "string" },
-        "used_selector": { "type": "string" },
-        "used_source": { "type": "string" },
-        "semantic_target": { "$ref": "#/$defs/SemanticTarget" },
-        "semantic_match": { "$ref": "#/$defs/SemanticMatchResult" },
-        "semantic_score": { "type": "number", "minimum": 0, "maximum": 1 },
-        "semantic_reason": { "type": "string" },
-        "best_selector_candidate": { "$ref": "#/$defs/SelectorCandidateSuggestion" },
+        "node_id": {
+          "type": "string"
+        },
+        "action_type": {
+          "type": "string"
+        },
+        "selector_key": {
+          "type": "string"
+        },
+        "selectors_key": {
+          "type": "string"
+        },
+        "primary_selector": {
+          "type": "string"
+        },
+        "used_selector": {
+          "type": "string"
+        },
+        "used_source": {
+          "type": "string"
+        },
+        "semantic_target": {
+          "$ref": "#/$defs/SemanticTarget"
+        },
+        "semantic_match": {
+          "$ref": "#/$defs/SemanticMatchResult"
+        },
+        "semantic_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "semantic_reason": {
+          "type": "string"
+        },
+        "best_selector_candidate": {
+          "$ref": "#/$defs/SelectorCandidateSuggestion"
+        },
         "candidates": {
           "type": "array",
-          "items": { "$ref": "#/$defs/SelectorCandidateSuggestion" }
+          "items": {
+            "$ref": "#/$defs/SelectorCandidateSuggestion"
+          }
         }
       },
-      "required": ["node_id", "action_type"]
+      "required": [
+        "node_id",
+        "action_type"
+      ]
     },
     "FlowReport": {
       "type": "object",
@@ -283,6 +499,24 @@
                 "additionalProperties": true
               },
               "default": []
+            },
+            "parameterBefore": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": true
+              },
+              "default": [],
+              "description": "Parameters captured before execution"
+            },
+            "variableBefore": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": true
+              },
+              "default": [],
+              "description": "Variables captured before execution"
             }
           },
           "default": {
@@ -347,9 +581,15 @@
           "type": "object",
           "description": "Browser information",
           "properties": {
-            "name": {"type": "string"},
-            "version": {"type": "string"},
-            "user_agent": {"type": "string"}
+            "name": {
+              "type": "string"
+            },
+            "version": {
+              "type": "string"
+            },
+            "user_agent": {
+              "type": "string"
+            }
           }
         },
         "run_config": {
@@ -365,17 +605,29 @@
               "items": {
                 "type": "object",
                 "properties": {
-                  "browser": { "type": "string" },
+                  "browser": {
+                    "type": "string"
+                  },
                   "mode": {
                     "type": "string",
-                    "enum": ["normal", "incognito"]
+                    "enum": [
+                      "normal",
+                      "incognito"
+                    ]
                   },
                   "browser_mode": {
                     "type": "string",
-                    "enum": ["headful", "headless"]
+                    "enum": [
+                      "headful",
+                      "headless"
+                    ]
                   }
                 },
-                "required": ["browser", "mode", "browser_mode"]
+                "required": [
+                  "browser",
+                  "mode",
+                  "browser_mode"
+                ]
               }
             }
           }
@@ -384,12 +636,30 @@
           "type": "object",
           "description": "Performance metrics collected during execution",
           "properties": {
-            "total_actions": {"type": "integer", "minimum": 0},
-            "successful_actions": {"type": "integer", "minimum": 0},
-            "failed_actions": {"type": "integer", "minimum": 0},
-            "average_action_time": {"type": "number", "minimum": 0},
-            "total_network_requests": {"type": "integer", "minimum": 0},
-            "total_data_transferred": {"type": "integer", "minimum": 0}
+            "total_actions": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "successful_actions": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "failed_actions": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "average_action_time": {
+              "type": "number",
+              "minimum": 0
+            },
+            "total_network_requests": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "total_data_transferred": {
+              "type": "integer",
+              "minimum": 0
+            }
           }
         },
         "healed_selectors": {
@@ -405,7 +675,12 @@
           }
         }
       },
-      "required": ["actions", "variables", "parameters", "output"]
+      "required": [
+        "actions",
+        "variables",
+        "parameters",
+        "output"
+      ]
     }
   }
 }

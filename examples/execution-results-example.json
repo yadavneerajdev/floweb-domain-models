@@ -1,0 +1,31 @@
+{
+  "actions": [
+    {
+      "node_id": "action-1",
+      "action_type": "click",
+      "config": { "selector": "#submit-button" },
+      "start_time": 1710000000000,
+      "end_time": 1710000000420,
+      "duration_seconds": 0.42,
+      "success": true,
+      "message": "Clicked #submit-button",
+      "data": {}
+    }
+  ],
+  "variables": {},
+  "parameters": { "input": [], "output": [] },
+  "output": {},
+  "flow_id": "flow-123",
+  "flow_name": "Checkout smoke test",
+  "start_time": 1710000000000,
+  "end_time": 1710000001000,
+  "total_duration": 1.0,
+  "success": true,
+  "browser_info": { "name": "chrome", "version": "133.0", "user_agent": "Mozilla/5.0" },
+  "performance_metrics": {
+    "total_actions": 1,
+    "successful_actions": 1,
+    "failed_actions": 0,
+    "average_action_time": 0.42
+  }
+}

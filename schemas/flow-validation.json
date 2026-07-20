@@ -1,6 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://floweb.com/schemas/flow-validation.json",
+  "$version": "1.1.0",
   "title": "Flow Validation Models",
   "description": "Schema for flow validation warnings and errors",
   "type": "object",
@@ -89,7 +90,13 @@
         },
         "category": {
           "type": "string",
-          "enum": ["logic", "performance", "security", "usability", "compatibility"],
+          "enum": [
+            "logic",
+            "performance",
+            "security",
+            "usability",
+            "compatibility"
+          ],
           "description": "Category of the warning"
         },
         "createdAt": {
@@ -98,11 +105,24 @@
           "description": "When the warning was detected"
         }
       },
-      "required": ["id", "type", "severity", "nodeId", "nodeName", "message", "description"]
+      "required": [
+        "id",
+        "type",
+        "severity",
+        "nodeId",
+        "nodeName",
+        "message",
+        "description"
+      ]
     },
     "WarningSeverity": {
       "type": "string",
-      "enum": ["minor", "medium", "critical", "info"],
+      "enum": [
+        "minor",
+        "medium",
+        "critical",
+        "info"
+      ],
       "description": "Severity level of the warning"
     },
     "LoopDetectionResult": {
@@ -131,7 +151,10 @@
           "description": "Number of potentially infinite loops"
         }
       },
-      "required": ["hasLoops", "loops"]
+      "required": [
+        "hasLoops",
+        "loops"
+      ]
     },
     "LoopInfo": {
       "type": "object",
@@ -164,7 +187,12 @@
           "description": "Whether this appears to be an infinite loop"
         }
       },
-      "required": ["nodes", "hasExitCondition", "severity", "description"]
+      "required": [
+        "nodes",
+        "hasExitCondition",
+        "severity",
+        "description"
+      ]
     },
     "FlowValidationResult": {
       "type": "object",
@@ -210,7 +238,13 @@
           "description": "Time taken for validation in seconds"
         }
       },
-      "required": ["flowId", "isValid", "warnings", "errors", "summary"]
+      "required": [
+        "flowId",
+        "isValid",
+        "warnings",
+        "errors",
+        "summary"
+      ]
     },
     "ValidationSummary": {
       "type": "object",
@@ -253,14 +287,31 @@
           "type": "object",
           "description": "Count of warnings by severity",
           "properties": {
-            "minor": {"type": "integer", "minimum": 0},
-            "medium": {"type": "integer", "minimum": 0},
-            "critical": {"type": "integer", "minimum": 0},
-            "info": {"type": "integer", "minimum": 0}
+            "minor": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "medium": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "critical": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "info": {
+              "type": "integer",
+              "minimum": 0
+            }
           }
         }
       },
-      "required": ["totalNodes", "totalEdges", "warningCount", "errorCount"]
+      "required": [
+        "totalNodes",
+        "totalEdges",
+        "warningCount",
+        "errorCount"
+      ]
     },
     "NodeValidationResult": {
       "type": "object",
@@ -289,23 +340,35 @@
           "type": "object",
           "description": "Validation of node configuration",
           "properties": {
-            "isValid": {"type": "boolean"},
+            "isValid": {
+              "type": "boolean"
+            },
             "missingFields": {
               "type": "array",
-              "items": {"type": "string"}
+              "items": {
+                "type": "string"
+              }
             },
             "invalidFields": {
               "type": "array",
-              "items": {"type": "string"}
+              "items": {
+                "type": "string"
+              }
             },
             "typeErrors": {
               "type": "array",
-              "items": {"type": "string"}
+              "items": {
+                "type": "string"
+              }
             }
           }
         }
       },
-      "required": ["nodeId", "nodeType", "isValid"]
+      "required": [
+        "nodeId",
+        "nodeType",
+        "isValid"
+      ]
     }
   }
 }

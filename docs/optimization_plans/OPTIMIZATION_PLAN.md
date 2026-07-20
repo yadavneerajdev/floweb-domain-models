@@ -60,6 +60,15 @@
 
 **Resolution (Phase 1)**: camelCase is the winner (it is what ships over the wire and what 3 of 4 consumers encode). Rewrite all 9 schemas to camelCase, add the missing `generatedBy`/`reason` (and every other field present in committed models but absent from schemas), then make codegen non-destructive and mandatory.
 
+> **ERRATA (Phase 1 execution, 2026-07-20).** The premise "the real platform contract is uniformly camelCase" is only true for `action-configs` and the pure-camel schemas (`flow`, `environment`, `flow-validation`, `debug`). Verified against the running code, the wire contract is **mixed**, and forcing uniform camelCase would break it:
+> - `websocket-communication` commands are **snake_case** on the wire (`flow_id`, `session_id`, `test_id`, `auth_config`) — the frontend literally sends `session_id` in `useEngine.ts`; only `SessionInfo` is camelCase.
+> - `execution-results` is **mixed** — `FlowReport`/`ActionResult` bodies are snake_case (`node_id`, `action_type`, `start_time`), while the wrapping `actionResults`/`flowReports` are camel. The engine emits `"executedActions"` and `"action_type"` side by side in `backend/engine/core/core.py`.
+> - `parallel-execution` is **snake_case** (`max_parallel`, `browser_mode`, `executed_actions`).
+> - 12 field names ship with BOTH spellings platform-wide (see `CHANGELOG.md`).
+>
+> Phase 1 therefore aligned each schema to the **verified per-surface casing** (so the schemas regenerate the committed contract and round-trip real payloads — which is exactly what step 4 below requires). Unifying the wire on camelCase remains the canonical target but is a breaking change owned by backend Phase 2 (typed WS boundary) and frontend Phase 3 (domain adoption), not Phase 1.
+> Also fixed a pre-existing broken ref (`parallel-execution.json` → `flow.json#/$defs/Flow`, which does not exist; `Flow` is the file root) and recorded a stray backend import in the committed `websocket_communication.py` (`from engine.server.ws.handlers import flow`) that breaks the package import until Phase 2 regen.
+
 ### 2.2 Hand-edits inside "generated" Python models
 
 These edits exist in committed models but not in schemas — they must be folded INTO the schemas during Phase 1 so regen preserves them:

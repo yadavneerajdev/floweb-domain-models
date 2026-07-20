@@ -1,11 +1,12 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://floweb.com/schemas/action-configs.json",
+  "$version": "1.1.0",
   "title": "Action Configurations",
   "description": "Configuration schemas for all automation actions",
   "type": "object",
   "properties": {
-    "action_configs": {
+    "actionConfigs": {
       "type": "object",
       "patternProperties": {
         ".*": {
@@ -299,27 +300,27 @@
               "type": "string",
               "description": "CSS selector for element to click"
             },
-            "wait_time": {
+            "waitTime": {
               "type": "integer",
               "default": 1000,
               "description": "Wait time in milliseconds"
             },
-            "force_click": {
+            "forceClick": {
               "type": "boolean",
               "default": false,
               "description": "Force click even if element not clickable"
             },
-            "scroll_into_view": {
+            "scrollIntoView": {
               "type": "boolean",
               "default": true,
               "description": "Scroll element into view before clicking"
             },
-            "wait_for_element": {
+            "waitForElement": {
               "type": "boolean",
               "default": true,
               "description": "Wait for element to be present"
             },
-            "click_type": {
+            "clickType": {
               "type": "string",
               "enum": [
                 "left",
@@ -328,18 +329,18 @@
               "default": "left",
               "description": "Type of click to perform"
             },
-            "click_count": {
+            "clickCount": {
               "type": "integer",
               "default": 1,
               "minimum": 1,
               "description": "Number of clicks to perform"
             },
-            "click_and_hold": {
+            "clickAndHold": {
               "type": "boolean",
               "default": false,
               "description": "Whether to click and hold"
             },
-            "hold_duration": {
+            "holdDuration": {
               "type": "integer",
               "default": 1000,
               "description": "Duration to hold click in milliseconds"
@@ -367,17 +368,17 @@
               "type": "string",
               "description": "Text to input"
             },
-            "clear_first": {
+            "clearFirst": {
               "type": "boolean",
               "default": true,
               "description": "Clear field before typing"
             },
-            "wait_for_element": {
+            "waitForElement": {
               "type": "boolean",
               "default": true,
               "description": "Wait for element to be present"
             },
-            "scroll_into_view": {
+            "scrollIntoView": {
               "type": "boolean",
               "default": true,
               "description": "Scroll element into view"
@@ -403,12 +404,12 @@
               "format": "uri",
               "description": "URL to navigate to"
             },
-            "wait_for_load": {
+            "waitForLoad": {
               "type": "boolean",
               "default": true,
               "description": "Wait for page to load"
             },
-            "take_screenshot": {
+            "takeScreenshot": {
               "type": "boolean",
               "default": false,
               "description": "Take screenshot after navigation"
@@ -428,7 +429,7 @@
         {
           "type": "object",
           "properties": {
-            "wait_type": {
+            "waitType": {
               "type": "string",
               "enum": [
                 "duration",
@@ -452,24 +453,54 @@
               "default": 10000,
               "description": "Maximum time to wait in milliseconds"
             },
-            "wait_for_interactable": {
+            "waitForInteractable": {
               "type": "boolean",
               "default": false,
               "description": "Wait for element to be interactable"
             },
-            "fallback_to_duration": {
+            "fallbackToDuration": {
               "type": "boolean",
               "default": true,
               "description": "Fallback to duration wait if element wait fails"
             },
-            "fallback_duration": {
+            "fallbackDuration": {
               "type": "integer",
               "default": 2000,
               "description": "Duration to wait if fallback triggered"
             }
           }
         }
-      ]
+      ],
+      "properties": {
+        "generatedBy": {
+          "type": "string",
+          "enum": [
+            "manual",
+            "auto"
+          ],
+          "description": "Whether wait was generated manually or automatically"
+        },
+        "reason": {
+          "type": "string",
+          "enum": [
+            "navigation",
+            "tab_switch",
+            "dom_transition",
+            "overlay",
+            "network_idle"
+          ],
+          "description": "Reason for automatic wait insertion"
+        },
+        "triggerActionId": {
+          "type": "string",
+          "description": "Trigger action ID for auto-generated waits"
+        },
+        "effectiveWaitMs": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Observed elapsed wait between trigger and dependent action during recording"
+        }
+      }
     },
     "AssertionConfig": {
       "allOf": [
@@ -483,7 +514,7 @@
               "type": "string",
               "description": "CSS selector for element"
             },
-            "assert_type": {
+            "assertType": {
               "type": "string",
               "enum": [
                 "exists",
@@ -495,21 +526,21 @@
               "default": "exists",
               "description": "Type of assertion"
             },
-            "expected_value": {
+            "expectedValue": {
               "type": "string",
               "description": "Expected value for assertion"
             },
-            "wait_for_element": {
+            "waitForElement": {
               "type": "boolean",
               "default": true,
               "description": "Wait for element to be present"
             },
-            "case_sensitive": {
+            "caseSensitive": {
               "type": "boolean",
               "default": false,
               "description": "Case sensitive comparison"
             },
-            "partial_match": {
+            "partialMatch": {
               "type": "boolean",
               "default": false,
               "description": "Allow partial text matching"
@@ -520,7 +551,18 @@
             "expectedValue"
           ]
         }
-      ]
+      ],
+      "properties": {
+        "expectedImageRef": {
+          "type": "string",
+          "description": "Image reference for image assertion (base64, data URI, or mediaId:xxx resolved to data URI)"
+        },
+        "imageSimilarityThreshold": {
+          "type": "number",
+          "default": 0.9,
+          "description": "Minimum similarity score (0-1) for image assertions"
+        }
+      }
     },
     "ScreenshotConfig": {
       "allOf": [
@@ -530,7 +572,7 @@
         {
           "type": "object",
           "properties": {
-            "screenshot_type": {
+            "screenshotType": {
               "type": "string",
               "enum": [
                 "viewport",
@@ -549,12 +591,12 @@
               "default": "screenshot.png",
               "description": "Output filename"
             },
-            "save_to_file": {
+            "saveToFile": {
               "type": "boolean",
               "default": true,
               "description": "Save screenshot to file system"
             },
-            "include_timestamp": {
+            "includeTimestamp": {
               "type": "boolean",
               "default": true,
               "description": "Include timestamp in filename"
@@ -568,17 +610,17 @@
               "default": "png",
               "description": "Output format"
             },
-            "wait_for_element": {
+            "waitForElement": {
               "type": "boolean",
               "default": true,
               "description": "Wait for element to be present"
             },
-            "scroll_into_view": {
+            "scrollIntoView": {
               "type": "boolean",
               "default": true,
               "description": "Scroll element into view"
             },
-            "full_page": {
+            "fullPage": {
               "type": "boolean",
               "default": false,
               "description": "Take full page screenshot"
@@ -718,22 +760,22 @@
               },
               "description": "Array of form field configurations"
             },
-            "wait_for_elements": {
+            "waitForElements": {
               "type": "boolean",
               "default": true,
               "description": "Wait for all form elements to be present"
             },
-            "clear_first": {
+            "clearFirst": {
               "type": "boolean",
               "default": true,
               "description": "Clear existing values before filling"
             },
-            "submit_after_fill": {
+            "submitAfterFill": {
               "type": "boolean",
               "default": false,
               "description": "Automatically submit form after filling"
             },
-            "smart_field_detection": {
+            "smartFieldDetection": {
               "type": "boolean",
               "default": true,
               "description": "Automatically detect field types"
@@ -781,12 +823,12 @@
               "type": "string",
               "description": "Request body"
             },
-            "output_variable": {
+            "outputVariable": {
               "type": "string",
               "default": "apiResponse",
               "description": "Variable to store response"
             },
-            "response_path": {
+            "responsePath": {
               "type": "string",
               "description": "Optional path into the response to store in the output variable, e.g. data.token, headers[\"Content-Type\"], data.items[0].id. Applied to the response object {status_code, headers, data, url} (body fields under data.). When empty, the full response object is stored."
             },
@@ -795,36 +837,36 @@
               "default": 30000,
               "description": "Request timeout in milliseconds"
             },
-            "retry_count": {
+            "retryCount": {
               "type": "integer",
               "default": 0,
               "description": "Number of retries"
             },
-            "parse_json": {
+            "parseJson": {
               "type": "boolean",
               "default": true,
               "description": "Parse response as JSON"
             },
-            "validate_status": {
+            "validateStatus": {
               "type": "boolean",
               "default": true,
               "description": "Validate HTTP status code"
             },
-            "follow_redirects": {
+            "followRedirects": {
               "type": "boolean",
               "default": true,
               "description": "Follow HTTP redirects"
             },
-            "verify_ssl": {
+            "verifySSL": {
               "type": "boolean",
               "default": true,
               "description": "Verify SSL certificates"
             },
-            "basic_auth_username": {
+            "basicAuthUsername": {
               "type": "string",
               "description": "Basic auth username"
             },
-            "basic_auth_password": {
+            "basicAuthPassword": {
               "type": "string",
               "description": "Basic auth password"
             }
@@ -843,7 +885,7 @@
         {
           "type": "object",
           "properties": {
-            "connection_string": {
+            "connectionString": {
               "type": "string",
               "description": "Database connection string"
             },
@@ -851,17 +893,17 @@
               "type": "string",
               "description": "SQL query to execute"
             },
-            "output_variable": {
+            "outputVariable": {
               "type": "string",
               "default": "queryResult",
               "description": "Variable to store result"
             },
-            "log_query": {
+            "logQuery": {
               "type": "boolean",
               "default": true,
               "description": "Log the query being executed"
             },
-            "validate_connection": {
+            "validateConnection": {
               "type": "boolean",
               "default": true,
               "description": "Validate database connection"
@@ -887,7 +929,7 @@
         {
           "type": "object",
           "properties": {
-            "connection_string": {
+            "connectionString": {
               "type": "string",
               "description": "Database connection string"
             },
@@ -899,17 +941,17 @@
               "type": "object",
               "description": "Data to insert (column-value pairs)"
             },
-            "log_operation": {
+            "logOperation": {
               "type": "boolean",
               "default": true,
               "description": "Log the insert operation"
             },
-            "validate_connection": {
+            "validateConnection": {
               "type": "boolean",
               "default": true,
               "description": "Validate database connection"
             },
-            "rollback_on_error": {
+            "rollbackOnError": {
               "type": "boolean",
               "default": true,
               "description": "Rollback transaction on error"
@@ -935,21 +977,21 @@
               "type": "string",
               "description": "CSS selector for file input"
             },
-            "file_path": {
+            "filePath": {
               "type": "string",
               "description": "Path to file to upload"
             },
-            "wait_for_element": {
+            "waitForElement": {
               "type": "boolean",
               "default": true,
               "description": "Wait for element to be present"
             },
-            "scroll_into_view": {
+            "scrollIntoView": {
               "type": "boolean",
               "default": true,
               "description": "Scroll element into view"
             },
-            "validate_file": {
+            "validateFile": {
               "type": "boolean",
               "default": true,
               "description": "Validate file exists before upload"
@@ -974,21 +1016,21 @@
               "type": "string",
               "description": "CSS selector for download link"
             },
-            "download_path": {
+            "downloadPath": {
               "type": "string",
               "description": "Path to save downloaded file"
             },
-            "wait_for_element": {
+            "waitForElement": {
               "type": "boolean",
               "default": true,
               "description": "Wait for element to be present"
             },
-            "validate_download": {
+            "validateDownload": {
               "type": "boolean",
               "default": true,
               "description": "Validate download completed"
             },
-            "overwrite_existing": {
+            "overwriteExisting": {
               "type": "boolean",
               "default": false,
               "description": "Overwrite existing files"
@@ -1013,12 +1055,12 @@
               "type": "string",
               "description": "JavaScript code to execute"
             },
-            "function_name": {
+            "functionName": {
               "type": "string",
               "default": "ExecuteFlowScript",
               "description": "Main function name to invoke after loading the code"
             },
-            "input_parameters": {
+            "inputParameters": {
               "type": "array",
               "items": {
                 "additionalProperties": true,
@@ -1026,17 +1068,17 @@
               },
               "description": "Input parameter mappings for the main function"
             },
-            "output_variable": {
+            "outputVariable": {
               "type": "string",
               "default": "customResult",
               "description": "Variable to store result"
             },
-            "log_execution": {
+            "logExecution": {
               "type": "boolean",
               "default": true,
               "description": "Log code execution"
             },
-            "catch_errors": {
+            "catchErrors": {
               "type": "boolean",
               "default": true,
               "description": "Catch and handle errors"
@@ -1061,44 +1103,44 @@
         {
           "type": "object",
           "properties": {
-            "flow_id": {
+            "flowId": {
               "type": "string",
               "description": "ID of flow to call"
             },
-            "flow_name": {
+            "flowName": {
               "type": "string",
               "description": "Name of flow to call"
             },
-            "input_parameters": {
+            "inputParameters": {
               "type": "array",
               "items": {
                 "type": "object"
               },
               "description": "Input parameters for subflow"
             },
-            "output_parameters": {
+            "outputParameters": {
               "type": "array",
               "items": {
                 "type": "object"
               },
               "description": "Output parameters from subflow"
             },
-            "output_variable": {
+            "outputVariable": {
               "type": "string",
               "default": "flowResult",
               "description": "Variable to store result"
             },
-            "wait_for_completion": {
+            "waitForCompletion": {
               "type": "boolean",
               "default": true,
               "description": "Wait for flow to complete"
             },
-            "log_execution": {
+            "logExecution": {
               "type": "boolean",
               "default": true,
               "description": "Log flow execution"
             },
-            "propagate_errors": {
+            "propagateErrors": {
               "type": "boolean",
               "default": true,
               "description": "Propagate errors from subflow"
@@ -1126,7 +1168,7 @@
               "type": "string",
               "description": "Keys to send"
             },
-            "wait_for_element": {
+            "waitForElement": {
               "type": "boolean",
               "default": true,
               "description": "Wait for element to be present"
@@ -1136,7 +1178,13 @@
             "keys"
           ]
         }
-      ]
+      ],
+      "properties": {
+        "keyCombinations": {
+          "type": "array",
+          "description": "Optional key combinations payload used by backend actions"
+        }
+      }
     },
     "ScrollConfig": {
       "allOf": [
@@ -1187,7 +1235,7 @@
               "default": 5000,
               "description": "Timeout in milliseconds"
             },
-            "wait_for_element": {
+            "waitForElement": {
               "type": "boolean",
               "default": true,
               "description": "Wait for element to be present"
@@ -1211,7 +1259,7 @@
               "type": "string",
               "description": "CSS selector for input element"
             },
-            "wait_for_element": {
+            "waitForElement": {
               "type": "boolean",
               "default": true,
               "description": "Wait for element to be present"
@@ -1221,7 +1269,14 @@
             "selector"
           ]
         }
-      ]
+      ],
+      "properties": {
+        "maintainFocus": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether to keep focus on element after clearing"
+        }
+      }
     },
     "OpenNewTabConfig": {
       "allOf": [
@@ -1250,18 +1305,29 @@
         {
           "type": "object",
           "properties": {
-            "tab_index": {
+            "tabIndex": {
               "type": "integer",
               "minimum": 0,
               "description": "Tab index to switch to"
             },
-            "tab_title": {
+            "tabTitle": {
               "type": "string",
               "description": "Tab title to switch to (alternative to index)"
             }
           }
         }
-      ]
+      ],
+      "properties": {
+        "tabUrl": {
+          "type": "string",
+          "description": "URL of tab to switch to (alternative to index)"
+        },
+        "switchMethod": {
+          "type": "string",
+          "default": "auto",
+          "description": "Explicit switch method (auto/index/url/title)"
+        }
+      }
     },
     "GoForwardConfig": {
       "allOf": [
@@ -1304,14 +1370,20 @@
         {
           "type": "object",
           "properties": {
-            "output_variable": {
+            "outputVariable": {
               "type": "string",
               "default": "pageInfo",
               "description": "Variable to store page information"
             }
           }
         }
-      ]
+      ],
+      "properties": {
+        "outputKey": {
+          "type": "string",
+          "description": "Dot-notation path to extract a specific key from the page info object (e.g. 'title', 'url'). If omitted, the full page info object is stored."
+        }
+      }
     },
     "JunctionConfig": {
       "allOf": [
@@ -1325,11 +1397,11 @@
               "type": "string",
               "description": "Condition to evaluate"
             },
-            "true_path": {
+            "truePath": {
               "type": "string",
               "description": "Path to take if condition is true"
             },
-            "false_path": {
+            "falsePath": {
               "type": "string",
               "description": "Path to take if condition is false"
             }
@@ -1349,7 +1421,7 @@
               "type": "string",
               "description": "JavaScript condition to evaluate"
             },
-            "then_actions": {
+            "thenActions": {
               "type": "array",
               "items": {
                 "type": "object",
@@ -1357,7 +1429,7 @@
               },
               "description": "Actions to execute if condition is true"
             },
-            "else_actions": {
+            "elseActions": {
               "type": "array",
               "items": {
                 "type": "object",
@@ -1370,6 +1442,15 @@
             "condition"
           ]
         }
+      ],
+      "properties": {
+        "operator": {
+          "type": "string",
+          "description": "Comparison operator used by editor helpers"
+        }
+      },
+      "required": [
+        "operator"
       ]
     },
     "LoopConfig": {
@@ -1380,7 +1461,7 @@
         {
           "type": "object",
           "properties": {
-            "loop_type": {
+            "loopType": {
               "type": "string",
               "enum": [
                 "count",
@@ -1399,11 +1480,11 @@
               "type": "string",
               "description": "Condition to continue loop (for condition loops)"
             },
-            "array_variable": {
+            "arrayVariable": {
               "type": "string",
               "description": "Variable containing array to iterate (for foreach loops)"
             },
-            "item_variable": {
+            "itemVariable": {
               "type": "string",
               "default": "item",
               "description": "Variable name for current item (for foreach loops)"
@@ -1416,7 +1497,7 @@
               },
               "description": "Actions to execute in each iteration"
             },
-            "max_iterations": {
+            "maxIterations": {
               "type": "integer",
               "minimum": 1,
               "default": 100,
@@ -1437,15 +1518,15 @@
         {
           "type": "object",
           "properties": {
-            "source_selector": {
+            "sourceSelector": {
               "type": "string",
               "description": "CSS selector for element to drag"
             },
-            "target_selector": {
+            "targetSelector": {
               "type": "string",
               "description": "CSS selector for drop target (required in element mode)"
             },
-            "drop_mode": {
+            "dropMode": {
               "type": "string",
               "enum": [
                 "element",
@@ -1454,17 +1535,17 @@
               "default": "element",
               "description": "Drag mode: resolve by target element or by source-relative pointer offset"
             },
-            "target_offset_x": {
+            "targetOffsetX": {
               "type": "integer",
               "default": 0,
               "description": "Horizontal drag offset in pixels for offset mode"
             },
-            "target_offset_y": {
+            "targetOffsetY": {
               "type": "integer",
               "default": 0,
               "description": "Vertical drag offset in pixels for offset mode"
             },
-            "target_value": {
+            "targetValue": {
               "description": "Explicit target value for range/slider controls",
               "oneOf": [
                 {
@@ -1475,7 +1556,7 @@
                 }
               ]
             },
-            "source_identifiers": {
+            "sourceIdentifiers": {
               "type": "array",
               "description": "Ordered fallback identifiers for drag source",
               "items": {
@@ -1503,14 +1584,14 @@
                 ]
               }
             },
-            "source_selectors": {
+            "sourceSelectors": {
               "type": "array",
               "description": "Ordered fallback selectors for drag source",
               "items": {
                 "type": "string"
               }
             },
-            "target_identifiers": {
+            "targetIdentifiers": {
               "type": "array",
               "description": "Ordered fallback identifiers for drag target",
               "items": {
@@ -1538,7 +1619,7 @@
                 ]
               }
             },
-            "target_selectors": {
+            "targetSelectors": {
               "type": "array",
               "description": "Ordered fallback selectors for drag target",
               "items": {
@@ -1551,7 +1632,7 @@
             "targetSemanticTarget": {
               "$ref": "#/$defs/SemanticTarget"
             },
-            "wait_for_element": {
+            "waitForElement": {
               "type": "boolean",
               "default": true,
               "description": "Wait for elements to be present"
@@ -1571,26 +1652,26 @@
         {
           "type": "object",
           "properties": {
-            "flow_id": {
+            "flowId": {
               "type": "string",
               "description": "ID of flow to call"
             },
-            "input_parameters": {
+            "inputParameters": {
               "type": "object",
               "description": "Input parameters to pass to subflow",
               "additionalProperties": true
             },
-            "output_variable": {
+            "outputVariable": {
               "type": "string",
               "default": "flowResult",
               "description": "Variable to store result"
             },
-            "wait_for_completion": {
+            "waitForCompletion": {
               "type": "boolean",
               "default": true,
               "description": "Wait for subflow to complete"
             },
-            "async": {
+            "async_": {
               "type": "boolean",
               "default": false,
               "description": "Execute subflow asynchronously"
@@ -1610,11 +1691,11 @@
         {
           "type": "object",
           "properties": {
-            "frame_selector": {
+            "frameSelector": {
               "type": "string",
               "description": "CSS selector or frame name/ID"
             },
-            "frame_identifiers": {
+            "frameIdentifiers": {
               "type": "array",
               "description": "Ordered fallback identifiers for the frame element",
               "items": {
@@ -1642,7 +1723,7 @@
                 ]
               }
             },
-            "frame_selectors": {
+            "frameSelectors": {
               "type": "array",
               "description": "Ordered fallback selectors for the frame element",
               "items": {
@@ -1652,14 +1733,34 @@
             "frameSemanticTarget": {
               "$ref": "#/$defs/SemanticTarget"
             },
-            "frame_index": {
+            "frameIndex": {
               "type": "integer",
               "minimum": 0,
               "description": "Frame index (alternative to selector)"
             }
           }
         }
-      ]
+      ],
+      "properties": {
+        "switchMethod": {
+          "type": "string",
+          "default": "selector",
+          "description": "Switch strategy (selector/index/name/id)"
+        },
+        "frameName": {
+          "type": "string",
+          "description": "Frame name (alternative to selector/index)"
+        },
+        "frameId": {
+          "type": "string",
+          "description": "Frame id (alternative to selector/index)"
+        },
+        "waitForFrame": {
+          "type": "boolean",
+          "default": true,
+          "description": "Wait for frame to become available"
+        }
+      }
     },
     "ExitFrameConfig": {
       "allOf": [
@@ -1670,7 +1771,25 @@
           "type": "object",
           "properties": {}
         }
-      ]
+      ],
+      "properties": {
+        "exitMethod": {
+          "type": "string",
+          "default": "parent",
+          "description": "Exit strategy (parent/main/levels)"
+        },
+        "levels": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 1,
+          "description": "Number of parent levels when exitMethod is levels"
+        },
+        "returnToMain": {
+          "type": "boolean",
+          "default": false,
+          "description": "Force returning to main content after exit"
+        }
+      }
     },
     "SetViewportConfig": {
       "allOf": [
@@ -1680,7 +1799,7 @@
         {
           "type": "object",
           "properties": {
-            "viewport_type": {
+            "viewportType": {
               "type": "string",
               "enum": [
                 "preset",
@@ -1701,61 +1820,61 @@
               "minimum": 1,
               "description": "Viewport height in pixels"
             },
-            "screen_size_preset": {
+            "screenSizePreset": {
               "type": "string",
               "description": "Preset screen size name"
             },
-            "device_name": {
+            "deviceName": {
               "type": "string",
               "description": "Device name for emulation"
             },
-            "device_scale_factor": {
+            "deviceScaleFactor": {
               "type": "number",
               "minimum": 0.1,
               "maximum": 5,
               "default": 1.0,
               "description": "Device scale factor"
             },
-            "is_mobile": {
+            "isMobile": {
               "type": "boolean",
               "default": false,
               "description": "Emulate mobile device"
             },
-            "has_touch": {
+            "hasTouch": {
               "type": "boolean",
               "default": false,
               "description": "Enable touch events"
             },
-            "is_landscape": {
+            "isLandscape": {
               "type": "boolean",
               "default": false,
               "description": "Use landscape orientation"
             },
-            "user_agent": {
+            "userAgent": {
               "type": "string",
               "description": "Custom user agent string"
             },
-            "wait_after_resize": {
+            "waitAfterResize": {
               "type": "boolean",
               "default": true,
               "description": "Wait after viewport resize"
             },
-            "take_screenshot": {
+            "takeScreenshot": {
               "type": "boolean",
               "default": false,
               "description": "Take screenshot after resize"
             },
-            "preserve_cookies": {
+            "preserveCookies": {
               "type": "boolean",
               "default": false,
               "description": "Preserve cookies across viewport changes"
             },
-            "preserve_local_storage": {
+            "preserveLocalStorage": {
               "type": "boolean",
               "default": false,
               "description": "Preserve local storage across viewport changes"
             },
-            "preserve_session_storage": {
+            "preserveSessionStorage": {
               "type": "boolean",
               "default": false,
               "description": "Preserve session storage across viewport changes"
@@ -1801,12 +1920,12 @@
               },
               "description": "Properties to retrieve"
             },
-            "output_variable": {
+            "outputVariable": {
               "type": "string",
               "default": "elementProps",
               "description": "Variable to store properties"
             },
-            "wait_for_element": {
+            "waitForElement": {
               "type": "boolean",
               "default": true,
               "description": "Wait for element to be present"
@@ -1841,7 +1960,7 @@
               "type": "string",
               "description": "Text to enter in prompt popup"
             },
-            "wait_for_popup": {
+            "waitForPopup": {
               "type": "boolean",
               "default": true,
               "description": "Wait for popup to appear"
