@@ -1,0 +1,225 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://floweb.com/schemas/collab-protocol.json",
+  "$version": "1.1.0",
+  "title": "Collaboration Protocol",
+  "description": "WebSocket protocol for real-time flow collaboration (ws /ws/collab/:testId). Field names are camelCase; message `type` discriminators are snake_case. Messages are asymmetric: server relays enrich client messages with sender identity. Op/node/edge/state payloads are opaque pass-throughs.",
+  "type": "object",
+  "properties": {
+    "clientMessage": {
+      "description": "Any message a client may send",
+      "oneOf": [
+        { "$ref": "#/$defs/CollabAuth" },
+        { "$ref": "#/$defs/CollabCursorClient" },
+        { "$ref": "#/$defs/CollabChangeClient" },
+        { "$ref": "#/$defs/CollabCursorHide" },
+        { "$ref": "#/$defs/CollabSnapshotClient" },
+        { "$ref": "#/$defs/CollabTypingClient" },
+        { "$ref": "#/$defs/CollabPing" }
+      ]
+    },
+    "serverMessage": {
+      "description": "Any message the server may send",
+      "oneOf": [
+        { "$ref": "#/$defs/CollabPresence" },
+        { "$ref": "#/$defs/CollabUserJoined" },
+        { "$ref": "#/$defs/CollabUserLeft" },
+        { "$ref": "#/$defs/CollabCursorServer" },
+        { "$ref": "#/$defs/CollabChangeServer" },
+        { "$ref": "#/$defs/CollabSnapshotServer" },
+        { "$ref": "#/$defs/CollabTypingServer" },
+        { "$ref": "#/$defs/CollabPong" }
+      ]
+    }
+  },
+  "$defs": {
+    "CollabUser": {
+      "type": "object",
+      "description": "A participant in a collab room",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "color": { "type": "string", "description": "Hex color, e.g. #3b82f6" },
+        "nodeId": { "type": ["string", "null"], "description": "Currently focused node, or null" }
+      },
+      "required": ["id", "name", "color", "nodeId"]
+    },
+    "CollabOp": {
+      "type": "object",
+      "description": "A single collaborative edit operation. Discriminated by `type`; payload fields (node/edge/variable/patch) are opaque and relayed unvalidated.",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "add_node", "update_node", "delete_node",
+            "add_edge", "delete_edge",
+            "add_variable", "update_variable", "delete_variable",
+            "add_parameter", "update_parameter", "delete_parameter"
+          ]
+        }
+      },
+      "required": ["type"],
+      "additionalProperties": true
+    },
+    "CollabAuth": {
+      "type": "object",
+      "description": "client->server: first message; authenticates the socket (5s timeout)",
+      "properties": {
+        "type": { "const": "auth" },
+        "token": { "type": "string", "description": "JWT access token" }
+      },
+      "required": ["type", "token"]
+    },
+    "CollabCursorClient": {
+      "type": "object",
+      "description": "client->server: cursor selection and/or pointer position",
+      "properties": {
+        "type": { "const": "cursor" },
+        "nodeId": { "type": ["string", "null"] },
+        "x": { "type": "number" },
+        "y": { "type": "number" },
+        "selectedNodes": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["type"]
+    },
+    "CollabChangeClient": {
+      "type": "object",
+      "description": "client->server: a batch of edit operations",
+      "properties": {
+        "type": { "const": "change" },
+        "ops": { "type": "array", "items": { "$ref": "#/$defs/CollabOp" } }
+      },
+      "required": ["type", "ops"]
+    },
+    "CollabCursorHide": {
+      "type": "object",
+      "description": "client->server: hide this user's cursor",
+      "properties": {
+        "type": { "const": "cursor_hide" }
+      },
+      "required": ["type"]
+    },
+    "CollabSnapshotClient": {
+      "type": "object",
+      "description": "client->server: room leader sends current state to a newly joined peer",
+      "properties": {
+        "type": { "const": "snapshot" },
+        "to": { "type": "string", "description": "Target userId" },
+        "state": { "type": "object", "additionalProperties": true, "description": "Opaque snapshot of nodes/edges/variables/parameters" }
+      },
+      "required": ["type", "to", "state"]
+    },
+    "CollabTypingClient": {
+      "type": "object",
+      "description": "client->server: user is editing a node (nodeId null on blur)",
+      "properties": {
+        "type": { "const": "typing" },
+        "nodeId": { "type": ["string", "null"] }
+      },
+      "required": ["type"]
+    },
+    "CollabPing": {
+      "type": "object",
+      "description": "client->server: keepalive (every 25s)",
+      "properties": {
+        "type": { "const": "ping" }
+      },
+      "required": ["type"]
+    },
+    "CollabPresence": {
+      "type": "object",
+      "description": "server->client: full roster sent on join",
+      "properties": {
+        "type": { "const": "presence" },
+        "users": { "type": "array", "items": { "$ref": "#/$defs/CollabUser" } }
+      },
+      "required": ["type", "users"]
+    },
+    "CollabUserJoined": {
+      "type": "object",
+      "description": "server->client: broadcast when a peer joins",
+      "properties": {
+        "type": { "const": "user_joined" },
+        "user": {
+          "type": "object",
+          "description": "The joiner (no nodeId on this object)",
+          "properties": {
+            "id": { "type": "string" },
+            "name": { "type": "string" },
+            "color": { "type": "string" }
+          },
+          "required": ["id", "name", "color"]
+        },
+        "users": { "type": "array", "items": { "$ref": "#/$defs/CollabUser" } }
+      },
+      "required": ["type", "user", "users"]
+    },
+    "CollabUserLeft": {
+      "type": "object",
+      "description": "server->client: broadcast when a peer leaves",
+      "properties": {
+        "type": { "const": "user_left" },
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "users": { "type": "array", "items": { "$ref": "#/$defs/CollabUser" } }
+      },
+      "required": ["type", "userId", "userName", "users"]
+    },
+    "CollabCursorServer": {
+      "type": "object",
+      "description": "server->client: relayed cursor with sender identity",
+      "properties": {
+        "type": { "const": "cursor" },
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "userColor": { "type": "string" },
+        "nodeId": { "type": ["string", "null"] },
+        "x": { "type": ["number", "null"] },
+        "y": { "type": ["number", "null"] },
+        "selectedNodes": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["type", "userId", "userName", "userColor", "nodeId", "x", "y", "selectedNodes"]
+    },
+    "CollabChangeServer": {
+      "type": "object",
+      "description": "server->client: relayed change with sender and room version",
+      "properties": {
+        "type": { "const": "change" },
+        "ops": { "type": "array", "items": { "$ref": "#/$defs/CollabOp" } },
+        "userId": { "type": "string" },
+        "version": { "type": "integer", "description": "Monotonic room version" }
+      },
+      "required": ["type", "ops", "userId", "version"]
+    },
+    "CollabSnapshotServer": {
+      "type": "object",
+      "description": "server->client: snapshot delivered to the target peer",
+      "properties": {
+        "type": { "const": "snapshot" },
+        "state": { "type": "object", "additionalProperties": true },
+        "version": { "type": "integer" }
+      },
+      "required": ["type", "state", "version"]
+    },
+    "CollabTypingServer": {
+      "type": "object",
+      "description": "server->client: relayed typing indicator with sender identity",
+      "properties": {
+        "type": { "const": "typing" },
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "userColor": { "type": "string" },
+        "nodeId": { "type": ["string", "null"] }
+      },
+      "required": ["type", "userId", "userName", "userColor", "nodeId"]
+    },
+    "CollabPong": {
+      "type": "object",
+      "description": "server->client: reply to ping",
+      "properties": {
+        "type": { "const": "pong" }
+      },
+      "required": ["type"]
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "id": "suite-1",
+  "accountId": "acct-1",
+  "name": "Regression suite",
+  "description": "Core regression tests",
+  "tags": ["regression", "smoke"],
+  "runConfig": {
+    "browser": "chrome",
+    "headless": true,
+    "incognito": false,
+    "environmentId": null,
+    "parallel": true,
+    "maxParallel": 5,
+    "stopOnFailure": false
+  },
+  "tests": [
+    { "testId": "test-1", "flowName": "Login" },
+    { "testId": "test-2", "flowName": "Checkout" }
+  ],
+  "testIds": ["test-1", "test-2"],
+  "createdBy": "user-1",
+  "updatedBy": "user-1",
+  "createdAt": "2026-07-20T10:00:00Z",
+  "updatedAt": "2026-07-20T10:00:00Z"
+}

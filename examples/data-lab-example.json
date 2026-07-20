@@ -1,0 +1,9 @@
+{
+  "prompt": "checkout flow with payment",
+  "batchSize": 5,
+  "minActions": 5,
+  "maxActions": 12,
+  "includeAdvancedActions": true,
+  "allowNearDuplicates": false,
+  "generationMode": "hybrid"
+}

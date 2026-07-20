@@ -1,0 +1,157 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://floweb.com/schemas/data-lab.json",
+  "$version": "1.1.0",
+  "title": "Data Lab",
+  "description": "Data-generation-lab API contracts (floweb-server data-lab module). camelCase throughout; persistence is file-based JSON. Generated dataset items are discriminated by datasetType; their prompt/output/metadata bodies are open objects.",
+  "type": "object",
+  "properties": {
+    "generateTestsRequest": { "$ref": "#/$defs/GenerateTestsRequest" },
+    "batchResponse": { "$ref": "#/$defs/DatasetBatchResponse" },
+    "statusResponse": { "$ref": "#/$defs/DataLabStatusResponse" }
+  },
+  "$defs": {
+    "DatasetType": {
+      "type": "string",
+      "description": "Kind of generated dataset item",
+      "enum": ["test-scenario", "xpath-selector"]
+    },
+    "DataLabGenerationMode": {
+      "type": "string",
+      "description": "How items are generated (anything else falls back to hybrid)",
+      "enum": ["ai", "synthetic", "hybrid"]
+    },
+    "GenerateTestsRequest": {
+      "type": "object",
+      "description": "POST /data-lab/generate-tests body (all fields optional; server applies defaults)",
+      "properties": {
+        "prompt": { "type": "string", "default": "" },
+        "batchSize": { "type": "integer", "minimum": 1, "maximum": 40, "default": 5 },
+        "minActions": { "type": "integer", "minimum": 3, "maximum": 18, "default": 5 },
+        "maxActions": { "type": "integer", "minimum": 4, "maximum": 24, "default": 12 },
+        "includeAdvancedActions": { "type": "boolean", "default": true },
+        "allowNearDuplicates": { "type": "boolean", "default": false },
+        "generationMode": { "$ref": "#/$defs/DataLabGenerationMode" },
+        "provider": { "$ref": "ai-contracts.json#/$defs/AIProviderConfig" }
+      }
+    },
+    "GenerateXPathRequest": {
+      "type": "object",
+      "description": "POST /data-lab/generate-xpath body",
+      "properties": {
+        "prompt": { "type": "string", "default": "" },
+        "batchSize": { "type": "integer", "minimum": 1, "maximum": 40, "default": 5 },
+        "allowNearDuplicates": { "type": "boolean", "default": false },
+        "generationMode": { "$ref": "#/$defs/DataLabGenerationMode" },
+        "provider": { "$ref": "ai-contracts.json#/$defs/AIProviderConfig" }
+      }
+    },
+    "GenerateXPathFromSnippetRequest": {
+      "type": "object",
+      "description": "POST /data-lab/generate-xpath-from-snippet body",
+      "properties": {
+        "domSnippet": { "type": "string", "description": "Required; DOM to derive selectors from" },
+        "targetInstruction": { "type": "string", "description": "Required; what to select" },
+        "contextHint": { "type": "string", "default": "" },
+        "allowNearDuplicates": { "type": "boolean", "default": false },
+        "generationMode": { "$ref": "#/$defs/DataLabGenerationMode" },
+        "provider": { "$ref": "ai-contracts.json#/$defs/AIProviderConfig" }
+      },
+      "required": ["domSnippet", "targetInstruction"]
+    },
+    "DatasetItemResponse": {
+      "type": "object",
+      "description": "A generated dataset item (also the persisted on-disk JSON shape). prompt/output/metadata shapes are discriminated by datasetType.",
+      "properties": {
+        "id": { "type": "string" },
+        "datasetType": { "$ref": "#/$defs/DatasetType" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "signature": { "type": "string", "description": "20-char sha256 hex slice" },
+        "prompt": { "type": "object", "additionalProperties": true },
+        "output": { "type": "object", "additionalProperties": true },
+        "metadata": { "type": "object", "additionalProperties": true },
+        "fileName": { "type": "string" },
+        "relativePath": { "type": "string" }
+      },
+      "required": ["id", "datasetType", "createdAt", "signature", "prompt", "output", "metadata", "fileName", "relativePath"]
+    },
+    "DatasetBatchResponse": {
+      "type": "object",
+      "description": "Response for all three generate endpoints",
+      "properties": {
+        "outputDir": { "type": "string" },
+        "generatedCount": { "type": "integer", "minimum": 0 },
+        "duplicatesSkipped": { "type": "integer", "minimum": 0 },
+        "totals": {
+          "type": "object",
+          "properties": {
+            "generated": { "type": "integer", "minimum": 0 },
+            "duplicatesSkipped": { "type": "integer", "minimum": 0 }
+          },
+          "required": ["generated", "duplicatesSkipped"]
+        },
+        "items": { "type": "array", "items": { "$ref": "#/$defs/DatasetItemResponse" } }
+      },
+      "required": ["outputDir", "generatedCount", "duplicatesSkipped", "totals", "items"]
+    },
+    "DatasetManifestItem": {
+      "type": "object",
+      "description": "A recent dataset entry in the status manifest",
+      "properties": {
+        "id": { "type": "string" },
+        "fileName": { "type": "string" },
+        "relativePath": { "type": "string" },
+        "signature": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "label": { "type": "string" }
+      },
+      "required": ["id", "fileName", "relativePath", "signature", "createdAt", "label"]
+    },
+    "DataLabKindStatus": {
+      "type": "object",
+      "description": "Per-kind status counters. actionCoverage is present only for the tests kind.",
+      "properties": {
+        "generated": { "type": "integer", "minimum": 0 },
+        "duplicatesSkipped": { "type": "integer", "minimum": 0 },
+        "uniqueSignatures": { "type": "integer", "minimum": 0 },
+        "actionCoverage": { "type": "object", "additionalProperties": { "type": "integer" } },
+        "recent": { "type": "array", "items": { "$ref": "#/$defs/DatasetManifestItem" } }
+      },
+      "required": ["generated", "duplicatesSkipped", "uniqueSignatures", "recent"]
+    },
+    "DataLabStatusResponse": {
+      "type": "object",
+      "description": "GET /data-lab/status response",
+      "properties": {
+        "outputDir": { "type": "string" },
+        "tests": { "$ref": "#/$defs/DataLabKindStatus" },
+        "xpath": { "$ref": "#/$defs/DataLabKindStatus" }
+      },
+      "required": ["outputDir", "tests", "xpath"]
+    },
+    "SelectorCandidate": {
+      "type": "object",
+      "description": "A candidate selector inside an xpath-selector item's output",
+      "properties": {
+        "type": { "type": "string", "enum": ["xpath", "css"] },
+        "value": { "type": "string" },
+        "robustness": { "type": "number", "minimum": 0, "maximum": 100 },
+        "uniquenessEstimate": { "type": "string", "enum": ["high", "medium", "low"] },
+        "reason": { "type": "string" }
+      },
+      "required": ["type", "value", "robustness", "uniquenessEstimate", "reason"]
+    },
+    "GeneratedActionObject": {
+      "type": "object",
+      "description": "A synthesized action inside a test-scenario item's output",
+      "properties": {
+        "id": { "type": "string", "description": "action-<n>" },
+        "type": { "$ref": "action-types.json#/$defs/ActionType" },
+        "label": { "type": "string" },
+        "config": { "type": "object", "additionalProperties": true },
+        "rationale": { "type": "string" }
+      },
+      "required": ["id", "type", "label", "config", "rationale"]
+    }
+  }
+}

@@ -638,6 +638,329 @@ class DebugResponse(WebSocketResponse):
     """
 
 
+class SuiteRunConfigWire(BaseModel):
+    """
+    run_suite nested run_config. Interior is camelCase (exception to the snake_case wire); the engine also accepts snake_case aliases for the parallel flags.
+    """
+
+    model_config = ConfigDict(
+        extra='allow',
+        populate_by_name=True,
+    )
+    browser: str | None = None
+    headless: bool | None = None
+    incognito: bool | None = None
+    recordExecution: bool | None = None
+    environmentId: str | None = None
+    randomBrowserPool: list[str] | None = None
+
+
+class SuiteTestResultWire(BaseModel):
+    """
+    Per-test result entry in run_suite responses/progress (snake_case)
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    test_id: str
+    flow_name: str
+    status: str
+    report_id: str | None = None
+    message: str | None = None
+
+
+class TriggerType(StrEnum):
+    manual = 'manual'
+    scheduled = 'scheduled'
+
+
+class RunSuiteCommand(WebSocketMessage):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    command: Literal['run_suite']
+    """
+    Command type
+    """
+    suite_id: str
+    schedule_id: str | None = None
+    trigger_type: TriggerType | None = None
+    label: str | None = None
+    run_config: SuiteRunConfigWire | None = None
+    parallel: bool | None = None
+    maxParallel: int | None = None
+    stopOnFailure: bool | None = None
+
+
+class CancelSuiteCommand(WebSocketMessage):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    command: Literal['cancel_suite']
+    """
+    Command type
+    """
+    suite_id: str
+    running_test_ids: list[str]
+
+
+class WaitType(StrEnum):
+    duration = 'duration'
+    element = 'element'
+    interactable = 'interactable'
+
+
+class AddRecordingWaitCommand(WebSocketMessage):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    command: Literal['add_recording_wait']
+    """
+    Command type
+    """
+    session_id: str
+    wait_type: WaitType
+    duration: float | None = None
+    """
+    ms; default 3000, min 100
+    """
+    timeout: float | None = None
+    """
+    ms; default 10000
+    """
+    selector: str | None = None
+    """
+    Required when wait_type is element or interactable
+    """
+    fallback_to_duration: bool | None = True
+    fallback_duration: float | None = None
+    """
+    ms; default 2000
+    """
+
+
+class AuthenticateCommand(WebSocketMessage):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    command: Literal['authenticate']
+    """
+    Command type
+    """
+    token: str
+    account_id: str | None = None
+    """
+    Sent by the client but not consumed by the engine (account derived from token)
+    """
+    server_url: str | None = None
+
+
+class Status(StrEnum):
+    completed = 'completed'
+    failed = 'failed'
+    cancelled = 'cancelled'
+
+
+class RunSuiteResponse(WebSocketResponse):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    command: Literal['run_suite']
+    """
+    Command that was executed
+    """
+    success: bool
+    """
+    Whether the command succeeded
+    """
+    suite_id: str | None = None
+    suite_execution_id: str | None = None
+    status: Status | None = None
+    total: int | None = None
+    completed: int | None = None
+    passed: int | None = None
+    failed: int | None = None
+    cancelled: int | None = None
+    test_results: list[SuiteTestResultWire] | None = None
+    message: str | None = None
+    """
+    Response message
+    """
+    code: str | None = None
+    error: str | None = None
+
+
+class CancelSuiteResponse(WebSocketResponse):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    command: Literal['cancel_suite']
+    """
+    Command that was executed
+    """
+    success: bool
+    """
+    Whether the command succeeded
+    """
+    suite_id: str
+    signalled: bool
+
+
+class AddRecordingWaitResponse(WebSocketResponse):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    command: Literal['add_recording_wait']
+    """
+    Command that was executed
+    """
+    success: bool
+    """
+    Whether the command succeeded
+    """
+    session_id: str
+    wait_action: dict[str, Any] | None = None
+    message: str | None = None
+    """
+    Response message
+    """
+    error: str | None = None
+
+
+class Code(StrEnum):
+    ENGINE_TOKEN_MISSING = 'ENGINE_TOKEN_MISSING'
+    ENGINE_TOKEN_INVALID = 'ENGINE_TOKEN_INVALID'
+    ENGINE_CONNECTION_REFUSED = 'ENGINE_CONNECTION_REFUSED'
+
+
+class AuthenticateResponse(WebSocketResponse):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    command: Literal['authenticate']
+    """
+    Command that was executed
+    """
+    success: bool
+    """
+    Whether the command succeeded
+    """
+    account_id: str | None = None
+    message: str | None = None
+    """
+    Response message
+    """
+    code: Code | None = None
+
+
+class Runtime(BaseModel):
+    model_config = ConfigDict(
+        extra='allow',
+        populate_by_name=True,
+    )
+    is_docker: bool | None = None
+    platform: str | None = None
+
+
+class ConnectedResponse(WebSocketResponse):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    command: Literal['connected']
+    """
+    Command that was executed
+    """
+    success: bool
+    """
+    Whether the command succeeded
+    """
+    host: str
+    ws_port: int
+    http_port: int
+    runtime: Runtime
+
+
+class RunSuiteProgressResponse(WebSocketResponse):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    command: Literal['run_suite_progress']
+    """
+    Command that was executed
+    """
+    success: bool
+    """
+    Whether the command succeeded
+    """
+    suite_id: str
+    suite_execution_id: str
+    status: Literal['running']
+    total: int
+    completed: int
+    passed: int
+    failed: int
+    cancelled: int
+    running: list[str]
+    current: SuiteTestResultWire | None = None
+
+
+class Data(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    waitActionId: str
+    triggerActionId: str
+    dependentActionId: str
+    dependentActionType: str
+    reason: str
+    confidence: float | None
+    waitType: str
+    duration: int
+    effectiveWaitMs: int
+    selector: str
+    selectors: list[str]
+
+
+class RecordingSmartWaitDecision(BaseModel):
+    """
+    engine->frontend diagnostic emitted when a smart wait is inserted during recording. Top-level is snake_case; the data sub-object is camelCase (exception to the wire convention).
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    event: Literal['recording_smart_wait_decision']
+    command: Literal['recording_smart_wait_decision']
+    action_type: Literal['smart_wait_decision']
+    timestamp: int
+    """
+    epoch ms
+    """
+    session_id: str
+    flow_id: str
+    data: Data
+
+
+class ErrorResponse(WebSocketResponse):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    command: str
+    """
+    Command that was executed
+    """
+    success: bool
+    """
+    Whether the command succeeded
+    """
+    message: str
+    """
+    Response message
+    """
+    error: str
+
+
 class WebsocketCommunication(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
@@ -671,6 +994,10 @@ class WebsocketCommunication(BaseModel):
             | DebugContinueCommand
             | DebugPauseCommand
             | DebugStopCommand
+            | RunSuiteCommand
+            | CancelSuiteCommand
+            | AddRecordingWaitCommand
+            | AuthenticateCommand
         ]
         | None
     ) = None
@@ -684,6 +1011,14 @@ class WebsocketCommunication(BaseModel):
             | ListRecordingsResponse
             | DebugResponse
             | WebSocketResponse
+            | RunSuiteResponse
+            | CancelSuiteResponse
+            | AddRecordingWaitResponse
+            | AuthenticateResponse
+            | ConnectedResponse
+            | RunSuiteProgressResponse
+            | RecordingSmartWaitDecision
+            | ErrorResponse
         ]
         | None
     ) = None

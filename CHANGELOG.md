@@ -4,6 +4,57 @@ All notable changes to the domain-models schemas are recorded here. Versions
 refer to the `$version` field carried by every schema (independent of the npm/PyPI
 package version until the consumption switch in the package plan Phase 4).
 
+## Phase 3 — 2026-07-20 — missing entity schemas
+
+Added the six missing entity schemas and extended the WS protocol, each authored
+from the real source-of-truth in the consuming repos (cross-repo research).
+`floweb_models` now exports 311 names (was 198); TS generated into `generated/ts/`.
+
+### Added
+- `action-types.json` — canonical `ActionType` registry (50 identifiers: 33 web +
+  17 desktop) plus `DesktopActionType`. The runtime strings were already uniform
+  camelCase across all consumers; divergence is only in config *class* names
+  (`fillForm`→FormFillConfig, `dbQuery`→DatabaseQueryConfig, …), tracked in the
+  backend/action-configs plans.
+- `suite.json` — `Suite`/`SuiteExecution`/`SuiteSchedule`/`SuiteRunConfig` +
+  status enums, from floweb-server suite.model.ts (the persisted 7-field
+  `SuiteRunConfig`, resolving the drift where domain had only 3 fields; added the
+  denormalized suiteId/suiteName/… and `SuiteExecutionTest.browser`).
+- `collab-protocol.json` — full client/server collab WS message union (camelCase
+  fields, snake_case `type` discriminators; asymmetric relay shapes).
+- `server-entities.json` — User/Account/Folder/MediaItem/ExecutionReport/
+  StoredTest*/TestCatalogItem/TestRecentRun/EngineSession/PaginatedResponse/
+  ImageUploadResponse. `ReportStatus` is the full 6-value set; recorded the drift
+  that test.recentRuns persists only 4.
+- `ai-contracts.json` — all 7 AI routes (generate-flow, assistant-actions,
+  fix-locator, analyze-failure, optimize-recording, vibe-next-action, vibe-verify)
+  + shared AIProviderConfig/AIRequestMetadata/AIResponseMetadata. Authored
+  canonical camelCase. NOTE: no `generate-tests` route exists (plan drift — the
+  extra routes are the two vibe endpoints).
+- `data-lab.json` — generate-tests/xpath request/response contracts + status,
+  referencing `action-types.json` ActionType and `ai-contracts.json`
+  AIProviderConfig.
+- `websocket-communication.json` extended with commands `run_suite`,
+  `cancel_suite`, `add_recording_wait`, `authenticate` and responses `connected`,
+  `run_suite_progress`, `recording_smart_wait_decision`, `error` — snake_case wire
+  (documented camelCase exceptions: run_suite.run_config.* and
+  recording_smart_wait_decision.data.*).
+- Examples + conformance/round-trip tests for every new schema (jest 22, pytest 15).
+
+### Deferred (now unblocked, tracked)
+- Single-file `index.d.ts` consolidation and `Variable`/`Environment` cross-schema
+  canonicalization (flow.json Variable.value is JsonValue+isOutput; environment.json
+  Variable.value is string). The new schemas removed the schema-coverage blocker;
+  the merge itself remains follow-up (it needs the shared-def collision resolved and
+  risks regressing the published type surface). `generated/ts/` per-schema files are
+  the diff-gated bridge.
+- `action-configs.json` still lacks 8 desktop config *shapes* (DesktopVerifyImage/
+  RunScript/FocusWindow/OpenApplication/SwitchDesktop/ListProcesses/OpenPath/
+  DragAndDrop) that live only in backend engine types; `JunctionConfig` is absent
+  from the AI catalog. Config-shape completeness is backend-owned (plan §2.4).
+- Consumer adoption (frontend/server/ai-service deleting local redefinitions) is
+  tracked in those repos' plans (frontend P3, server P5, ai-service P3).
+
 ## Phase 2 — 2026-07-20 — mandatory, non-destructive codegen
 
 Codegen is now the only way to change generated models/types, and it is

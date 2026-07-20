@@ -25,6 +25,12 @@ const EXAMPLE_FOR = {
   "websocket-communication.json": { example: "websocket-communication-example.json", def: "RunCommand" },
   "flow-validation.json": { example: "flow-validation-example.json", def: "FlowValidationResult" },
   "debug.json": { example: "debug-example.json", def: "DebugSession" },
+  "action-types.json": { example: "action-types-example.json", def: "ActionType" },
+  "suite.json": { example: "suite-example.json", def: "Suite" },
+  "collab-protocol.json": { example: "collab-protocol-example.json", def: "CollabPresence" },
+  "server-entities.json": { example: "server-entities-example.json", def: "User" },
+  "ai-contracts.json": { example: "ai-contracts-example.json", def: "GenerateFlowRequest" },
+  "data-lab.json": { example: "data-lab-example.json", def: "GenerateTestsRequest" },
 };
 
 const CROSS_FILE = /^([\w-]+\.json)#\/\$defs\/(.+)$/;

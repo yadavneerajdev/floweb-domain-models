@@ -198,6 +198,53 @@ export type DebugStopCommand = WebSocketMessage & {
    */
   session_id: string;
 };
+export type RunSuiteCommand = WebSocketMessage & {
+  command: "run_suite";
+  suite_id: string;
+  schedule_id?: string;
+  trigger_type?: "manual" | "scheduled";
+  label?: string;
+  run_config?: SuiteRunConfigWire;
+  parallel?: boolean;
+  maxParallel?: number;
+  stopOnFailure?: boolean;
+};
+export type CancelSuiteCommand = WebSocketMessage & {
+  command: "cancel_suite";
+  suite_id: string;
+  running_test_ids: string[];
+};
+export type AddRecordingWaitCommand = WebSocketMessage & {
+  command: "add_recording_wait";
+  session_id: string;
+  wait_type: "duration" | "element" | "interactable";
+  /**
+   * ms; default 3000, min 100
+   */
+  duration?: number;
+  /**
+   * ms; default 10000
+   */
+  timeout?: number;
+  /**
+   * Required when wait_type is element or interactable
+   */
+  selector?: string;
+  fallback_to_duration?: boolean;
+  /**
+   * ms; default 2000
+   */
+  fallback_duration?: number;
+};
+export type AuthenticateCommand = WebSocketMessage & {
+  command: "authenticate";
+  token: string;
+  /**
+   * Sent by the client but not consumed by the engine (account derived from token)
+   */
+  account_id?: string;
+  server_url?: string;
+};
 export type RunResponse = WebSocketResponse & {
   command: "run";
   mode: "full" | "partial";
@@ -265,6 +312,78 @@ export type DebugResponse = WebSocketResponse & {
    */
   error?: string;
 };
+export type RunSuiteResponse = WebSocketResponse & {
+  command: "run_suite";
+  success: boolean;
+  suite_id?: string;
+  suite_execution_id?: string;
+  status?: "completed" | "failed" | "cancelled";
+  total?: number;
+  completed?: number;
+  passed?: number;
+  failed?: number;
+  cancelled?: number;
+  test_results?: SuiteTestResultWire[];
+  message?: string;
+  code?: string;
+  error?: string;
+};
+export type CancelSuiteResponse = WebSocketResponse & {
+  command: "cancel_suite";
+  success: boolean;
+  suite_id: string;
+  signalled: boolean;
+};
+export type AddRecordingWaitResponse = WebSocketResponse & {
+  command: "add_recording_wait";
+  success: boolean;
+  session_id: string;
+  wait_action?: {
+    [k: string]: unknown;
+  } | null;
+  message?: string;
+  error?: string;
+};
+export type AuthenticateResponse = WebSocketResponse & {
+  command: "authenticate";
+  success: boolean;
+  account_id?: string;
+  message?: string;
+  code?: "ENGINE_TOKEN_MISSING" | "ENGINE_TOKEN_INVALID" | "ENGINE_CONNECTION_REFUSED";
+};
+export type ConnectedResponse = WebSocketResponse & {
+  command: "connected";
+  success: boolean;
+  host: string;
+  ws_port: number;
+  http_port: number;
+  runtime: {
+    is_docker?: boolean;
+    platform?: string;
+    [k: string]: unknown;
+  };
+};
+export type RunSuiteProgressResponse = WebSocketResponse & {
+  command: "run_suite_progress";
+  success: boolean;
+  suite_id: string;
+  suite_execution_id: string;
+  status: "running";
+  total: number;
+  completed: number;
+  passed: number;
+  failed: number;
+  cancelled: number;
+  running: string[];
+  current?: SuiteTestResultWire;
+};
+export type ErrorResponse = WebSocketResponse & {
+  command: string;
+  success: boolean;
+  message: string;
+  error: string;
+  [k: string]: unknown;
+};
 
 export interface WebSocketCommunicationModelsSchema {
   websocketCommunication?: {
@@ -296,6 +415,10 @@ export interface WebSocketCommunicationModelsSchema {
       | DebugContinueCommand
       | DebugPauseCommand
       | DebugStopCommand
+      | RunSuiteCommand
+      | CancelSuiteCommand
+      | AddRecordingWaitCommand
+      | AuthenticateCommand
     )[];
     responses?: (
       | RunResponse
@@ -306,6 +429,14 @@ export interface WebSocketCommunicationModelsSchema {
       | ListRecordingsResponse
       | DebugResponse
       | WebSocketResponse
+      | RunSuiteResponse
+      | CancelSuiteResponse
+      | AddRecordingWaitResponse
+      | AuthenticateResponse
+      | ConnectedResponse
+      | RunSuiteProgressResponse
+      | RecordingSmartWaitDecision
+      | ErrorResponse
     )[];
   };
   WebSocketMessage?: WebSocketMessage;
@@ -345,6 +476,20 @@ export interface WebSocketCommunicationModelsSchema {
   DebugPauseCommand?: DebugPauseCommand;
   DebugStopCommand?: DebugStopCommand;
   DebugResponse?: DebugResponse;
+  SuiteRunConfigWire?: SuiteRunConfigWire;
+  SuiteTestResultWire?: SuiteTestResultWire;
+  RunSuiteCommand?: RunSuiteCommand;
+  CancelSuiteCommand?: CancelSuiteCommand;
+  AddRecordingWaitCommand?: AddRecordingWaitCommand;
+  AuthenticateCommand?: AuthenticateCommand;
+  RunSuiteResponse?: RunSuiteResponse;
+  CancelSuiteResponse?: CancelSuiteResponse;
+  AddRecordingWaitResponse?: AddRecordingWaitResponse;
+  AuthenticateResponse?: AuthenticateResponse;
+  ConnectedResponse?: ConnectedResponse;
+  RunSuiteProgressResponse?: RunSuiteProgressResponse;
+  RecordingSmartWaitDecision?: RecordingSmartWaitDecision;
+  ErrorResponse?: ErrorResponse;
 }
 /**
  * Base WebSocket message structure
@@ -358,6 +503,18 @@ export interface WebSocketMessage {
    * Flow ID for the command
    */
   flow_id?: string;
+}
+/**
+ * run_suite nested run_config. Interior is camelCase (exception to the snake_case wire); the engine also accepts snake_case aliases for the parallel flags.
+ */
+export interface SuiteRunConfigWire {
+  browser?: string;
+  headless?: boolean;
+  incognito?: boolean;
+  recordExecution?: boolean;
+  environmentId?: string | null;
+  randomBrowserPool?: string[];
+  [k: string]: unknown;
 }
 /**
  * Base WebSocket response structure
@@ -400,4 +557,41 @@ export interface SessionInfo {
    * Start timestamp
    */
   startedAt: number;
+}
+/**
+ * Per-test result entry in run_suite responses/progress (snake_case)
+ */
+export interface SuiteTestResultWire {
+  test_id: string;
+  flow_name: string;
+  status: string;
+  report_id?: string | null;
+  message?: string;
+}
+/**
+ * engine->frontend diagnostic emitted when a smart wait is inserted during recording. Top-level is snake_case; the data sub-object is camelCase (exception to the wire convention).
+ */
+export interface RecordingSmartWaitDecision {
+  event: "recording_smart_wait_decision";
+  command: "recording_smart_wait_decision";
+  action_type: "smart_wait_decision";
+  /**
+   * epoch ms
+   */
+  timestamp: number;
+  session_id: string;
+  flow_id: string;
+  data: {
+    waitActionId: string;
+    triggerActionId: string;
+    dependentActionId: string;
+    dependentActionType: string;
+    reason: string;
+    confidence: number | null;
+    waitType: string;
+    duration: number;
+    effectiveWaitMs: number;
+    selector: string;
+    selectors: string[];
+  };
 }

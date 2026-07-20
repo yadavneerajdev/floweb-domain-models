@@ -31,6 +31,11 @@ CASES = [
     ("websocket-communication-example.json", "websocket_communication", "RunCommand"),
     ("flow-validation-example.json", "flow_validation", "FlowValidationResult"),
     ("debug-example.json", "debug", "DebugSession"),
+    ("suite-example.json", "suite", "Suite"),
+    ("collab-protocol-example.json", "collab_protocol", "CollabPresence"),
+    ("server-entities-example.json", "server_entities", "User"),
+    ("ai-contracts-example.json", "ai_contracts", "GenerateFlowRequest"),
+    ("data-lab-example.json", "data_lab", "GenerateTestsRequest"),
 ]
 
 PKG = "gen_domain_models"

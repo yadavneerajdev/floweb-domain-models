@@ -1,0 +1,148 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://floweb.com/schemas/suite.json",
+  "$version": "1.1.0",
+  "title": "Suite",
+  "description": "Test suites, their scheduled runs, and execution records. Field-level source of truth is floweb-server suite.model.ts (persisted shape); dates are ISO strings on the wire.",
+  "type": "object",
+  "properties": {
+    "suite": { "$ref": "#/$defs/Suite" },
+    "execution": { "$ref": "#/$defs/SuiteExecution" },
+    "schedule": { "$ref": "#/$defs/SuiteSchedule" }
+  },
+  "$defs": {
+    "SuiteExecutionStatus": {
+      "type": "string",
+      "description": "Lifecycle status of a suite execution",
+      "enum": ["pending", "queued", "running", "completed", "failed", "cancelled", "not_run"]
+    },
+    "SuiteExecutionTestStatus": {
+      "type": "string",
+      "description": "Status of a single test within a suite execution",
+      "enum": ["pending", "running", "passed", "failed", "cancelled", "not_run"]
+    },
+    "SuiteScheduleStatus": {
+      "type": "string",
+      "description": "Status of a scheduled suite run",
+      "enum": ["scheduled", "queued", "running", "completed", "failed", "cancelled", "not_run"]
+    },
+    "SuiteTriggerType": {
+      "type": "string",
+      "description": "What triggered a suite execution",
+      "enum": ["manual", "scheduled"]
+    },
+    "SuiteRunConfig": {
+      "type": "object",
+      "description": "Run configuration for a suite. The persisted fields are browser/headless/incognito/environmentId/parallel/maxParallel/stopOnFailure (floweb-server normalizeRunConfig); recordExecution and randomBrowserPool are accepted from the client but not persisted.",
+      "properties": {
+        "browser": { "type": "string", "default": "chrome", "description": "Browser to run with" },
+        "headless": { "type": "boolean", "default": false, "description": "Run headless" },
+        "incognito": { "type": "boolean", "default": false, "description": "Run in incognito/private mode" },
+        "environmentId": { "type": ["string", "null"], "default": null, "description": "Environment applied to the run" },
+        "parallel": { "type": "boolean", "default": false, "description": "Run suite tests in parallel" },
+        "maxParallel": { "type": "integer", "minimum": 1, "maximum": 15, "default": 5, "description": "Max parallel workers (clamped 1-15 by the server)" },
+        "stopOnFailure": { "type": "boolean", "default": false, "description": "Stop the suite on first failure" },
+        "recordExecution": { "type": "boolean", "description": "Client hint to record the run (not persisted server-side)" },
+        "randomBrowserPool": { "type": "array", "items": { "type": "string" }, "description": "Eligible browsers when browser='random' (client-only, not persisted)" }
+      },
+      "required": ["browser", "headless", "incognito", "environmentId", "parallel", "maxParallel", "stopOnFailure"]
+    },
+    "SuiteTestRef": {
+      "type": "object",
+      "description": "Reference to a test within a suite or schedule",
+      "properties": {
+        "testId": { "type": "string", "description": "Referenced test id" },
+        "flowName": { "type": ["string", "null"], "default": null, "description": "Denormalized flow name" }
+      },
+      "required": ["testId"]
+    },
+    "Suite": {
+      "type": "object",
+      "description": "A test suite definition",
+      "properties": {
+        "id": { "type": "string", "description": "Suite id (Mongoose _id mapped to id on the wire)" },
+        "accountId": { "type": "string", "description": "Owning account" },
+        "name": { "type": "string", "maxLength": 300, "description": "Suite name" },
+        "description": { "type": ["string", "null"], "default": null, "maxLength": 2000, "description": "Suite description" },
+        "tags": { "type": "array", "items": { "type": "string" }, "default": [], "description": "Suite tags" },
+        "runConfig": { "$ref": "#/$defs/SuiteRunConfig" },
+        "tests": { "type": "array", "items": { "$ref": "#/$defs/SuiteTestRef" }, "default": [], "description": "Tests in the suite" },
+        "testIds": { "type": "array", "items": { "type": "string" }, "description": "Ordered test ids" },
+        "createdBy": { "type": "string", "description": "Creator user id" },
+        "updatedBy": { "type": "string", "description": "Last updater user id" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Last update timestamp" }
+      },
+      "required": ["id", "accountId", "name", "runConfig", "tests", "testIds", "createdBy", "updatedBy"]
+    },
+    "SuiteExecutionTest": {
+      "type": "object",
+      "description": "Per-test record within a suite execution",
+      "properties": {
+        "testId": { "type": "string", "description": "Referenced test id" },
+        "flowName": { "type": ["string", "null"], "default": null, "description": "Denormalized flow name" },
+        "status": { "$ref": "#/$defs/SuiteExecutionTestStatus" },
+        "reportId": { "type": ["string", "null"], "default": null, "description": "Execution report id" },
+        "message": { "type": ["string", "null"], "default": null, "description": "Status message" },
+        "browser": { "type": ["string", "null"], "default": null, "description": "Browser used for this test" },
+        "startedAt": { "type": ["string", "null"], "format": "date-time", "default": null, "description": "Start timestamp" },
+        "finishedAt": { "type": ["string", "null"], "format": "date-time", "default": null, "description": "Finish timestamp" }
+      },
+      "required": ["testId", "status"]
+    },
+    "SuiteExecution": {
+      "type": "object",
+      "description": "A suite execution record",
+      "properties": {
+        "id": { "type": "string", "description": "Execution id" },
+        "accountId": { "type": "string", "description": "Owning account" },
+        "suiteId": { "type": "string", "description": "Suite this execution belongs to" },
+        "label": { "type": "string", "maxLength": 300, "description": "Execution label" },
+        "suiteName": { "type": ["string", "null"], "default": null, "description": "Denormalized suite name" },
+        "suiteDescription": { "type": ["string", "null"], "default": null, "description": "Denormalized suite description" },
+        "suiteTags": { "type": "array", "items": { "type": "string" }, "default": [], "description": "Denormalized suite tags" },
+        "scheduleId": { "type": ["string", "null"], "default": null, "description": "Schedule that triggered this execution, if any" },
+        "triggerType": { "$ref": "#/$defs/SuiteTriggerType" },
+        "status": { "$ref": "#/$defs/SuiteExecutionStatus" },
+        "runConfig": { "$ref": "#/$defs/SuiteRunConfig" },
+        "testIds": { "type": "array", "items": { "type": "string" }, "description": "Ordered test ids" },
+        "tests": { "type": "array", "items": { "$ref": "#/$defs/SuiteExecutionTest" }, "default": [], "description": "Per-test records" },
+        "createdBy": { "type": "string", "description": "Creator user id" },
+        "updatedBy": { "type": "string", "description": "Last updater user id" },
+        "startedAt": { "type": ["string", "null"], "format": "date-time", "default": null, "description": "Start timestamp" },
+        "finishedAt": { "type": ["string", "null"], "format": "date-time", "default": null, "description": "Finish timestamp" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Last update timestamp" }
+      },
+      "required": ["id", "accountId", "suiteId", "label", "triggerType", "status", "runConfig", "testIds", "tests", "createdBy", "updatedBy", "createdAt", "updatedAt"]
+    },
+    "SuiteSchedule": {
+      "type": "object",
+      "description": "A scheduled suite run",
+      "properties": {
+        "id": { "type": "string", "description": "Schedule id" },
+        "accountId": { "type": "string", "description": "Owning account" },
+        "suiteId": { "type": "string", "description": "Suite this schedule targets" },
+        "label": { "type": "string", "maxLength": 300, "description": "Schedule label" },
+        "suiteName": { "type": ["string", "null"], "default": null, "description": "Denormalized suite name" },
+        "suiteDescription": { "type": ["string", "null"], "default": null, "description": "Denormalized suite description" },
+        "suiteTags": { "type": "array", "items": { "type": "string" }, "default": [], "description": "Denormalized suite tags" },
+        "status": { "$ref": "#/$defs/SuiteScheduleStatus" },
+        "runAt": { "type": "string", "format": "date-time", "description": "When the run is due" },
+        "runWindowExpiresAt": { "type": "string", "format": "date-time", "description": "When the run window expires" },
+        "runConfig": { "$ref": "#/$defs/SuiteRunConfig" },
+        "tests": { "type": "array", "items": { "$ref": "#/$defs/SuiteTestRef" }, "default": [], "description": "Scheduled tests" },
+        "testIds": { "type": "array", "items": { "type": "string" }, "description": "Ordered test ids" },
+        "executionIds": { "type": "array", "items": { "type": "string" }, "description": "Executions spawned by this schedule" },
+        "latestExecutionId": { "type": ["string", "null"], "default": null, "description": "Most recent execution id" },
+        "createdBy": { "type": "string", "description": "Creator user id" },
+        "updatedBy": { "type": "string", "description": "Last updater user id" },
+        "startedAt": { "type": ["string", "null"], "format": "date-time", "default": null, "description": "Start timestamp" },
+        "finishedAt": { "type": ["string", "null"], "format": "date-time", "default": null, "description": "Finish timestamp" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Last update timestamp" }
+      },
+      "required": ["id", "accountId", "suiteId", "label", "status", "runAt", "runWindowExpiresAt", "runConfig", "tests", "testIds", "executionIds", "createdBy", "updatedBy", "createdAt", "updatedAt"]
+    }
+  }
+}

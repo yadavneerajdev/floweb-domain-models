@@ -19,12 +19,18 @@ const MODULE_ORDER = [
   "flow",
   "environment",
   "action_configs",
+  "action_types",
   "execution_results",
   "flow_validation",
   "parallel_execution",
   "performance_test",
   "websocket_communication",
   "debug",
+  "suite",
+  "collab_protocol",
+  "server_entities",
+  "ai_contracts",
+  "data_lab",
 ];
 
 function generateInto(tmp) {
