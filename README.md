@@ -6,6 +6,16 @@ A professional domain model package for Floweb Desktop, providing centralized ty
 
 This package contains JSON Schema definitions that serve as the single source of truth for all domain objects in the Floweb ecosystem. The schemas are used to generate type-safe interfaces for TypeScript and Pydantic models for Python, ensuring consistency across the entire application stack.
 
+## Package identity (three names, one package)
+
+| Surface | Name | Import |
+|---|---|---|
+| npm | `@autoweb/domain-models` | `import { Flow } from '@autoweb/domain-models'` (JSON schemas via `@autoweb/domain-models/schemas/<name>.json`) |
+| PyPI | `floweb-domain-models` | (distribution name) |
+| Python import | `floweb_models` | `from floweb_models import Flow` |
+
+**Local consumption (in this monorepo)**: consumers depend on the local package, not a registry — frontend/floweb-server use `"@autoweb/domain-models": "file:../domain-models"`; backend/floweb-ai-service install it editable (`pip install -e ../domain-models`). Builds/installs fail without it — the coupling is intentional. Generated artifacts (`index.d.ts`, `python-models/floweb_models/`, `generated/ts/`) are committed and kept fresh by the CI regen-diff gate, so no codegen runs on consumer install.
+
 ## Features
 
 - **Single Source of Truth**: All domain models defined in JSON Schema
