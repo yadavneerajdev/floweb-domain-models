@@ -210,6 +210,10 @@ export interface ActionData {
    * Whether the node is expanded in the canvas UI
    */
   expanded?: boolean;
+  /**
+   * Human-readable description of the action (carried on generated/AI nodes)
+   */
+  description?: string;
 }
 export interface Edge {
   /**

@@ -243,6 +243,10 @@
         "expanded": {
           "type": "boolean",
           "description": "Whether the node is expanded in the canvas UI"
+        },
+        "description": {
+          "type": "string",
+          "description": "Human-readable description of the action (carried on generated/AI nodes)"
         }
       },
       "required": [

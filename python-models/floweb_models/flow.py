@@ -140,6 +140,10 @@ class ActionData(BaseModel):
     """
     Whether the node is expanded in the canvas UI
     """
+    description: str | None = None
+    """
+    Human-readable description of the action (carried on generated/AI nodes)
+    """
 
 
 class Action(BaseModel):
