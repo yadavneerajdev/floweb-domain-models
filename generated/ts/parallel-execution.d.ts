@@ -29,6 +29,10 @@ export interface ParallelExecutionModelsSchema {
  */
 export interface ParallelTestsRequest {
   /**
+   * WS command discriminator
+   */
+  command?: "run_tests";
+  /**
    * List of tests to execute
    */
   tests: FlowExecutionRequest[];
@@ -510,7 +514,7 @@ export interface FlowExecutionResult {
   /**
    * Execution status
    */
-  status: "completed" | "error" | "stopped" | "running" | "pending";
+  status: "completed" | "error" | "stopped" | "running" | "pending" | "failed" | "skipped";
   /**
    * Total actions in the flow
    */

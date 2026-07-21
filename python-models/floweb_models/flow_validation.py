@@ -4,7 +4,7 @@
 from __future__ import annotations
 
 from enum import StrEnum
-from typing import Annotated
+from typing import Annotated, Any
 
 from pydantic import AwareDatetime, BaseModel, ConfigDict, Field
 
@@ -197,6 +197,10 @@ class FlowWarning(BaseModel):
     createdAt: AwareDatetime | None = None
     """
     When the warning was detected
+    """
+    details: dict[str, Any] | None = None
+    """
+    Optional structured detail payload for the warning
     """
 
 

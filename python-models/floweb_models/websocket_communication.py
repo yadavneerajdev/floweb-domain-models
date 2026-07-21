@@ -585,7 +585,7 @@ class DebugStopCommand(WebSocketMessage):
     """
 
 
-class Command1(StrEnum):
+class Command2(StrEnum):
     """
     Command that was executed
     """
@@ -616,7 +616,7 @@ class DebugResponse(WebSocketResponse):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    command: Command1
+    command: Command2
     """
     Command that was executed
     """

@@ -153,6 +153,7 @@ from .flow_validation import (
 
 from .parallel_execution import (
     Browser,
+    Command,
     FlowExecutionRequest,
     FlowExecutionResult,
     ParallelExecution,
@@ -197,8 +198,7 @@ from .websocket_communication import (
     CloseEngineCommand,
     CloseSessionCommand,
     Code,
-    Command,
-    Command1,
+    Command2,
     ConnectedResponse,
     ConvertRecordingToFlowCommand,
     Data,
@@ -438,7 +438,7 @@ __all__ = [
     "CollabUserLeft",
     "CollaborationProtocol",
     "Command",
-    "Command1",
+    "Command2",
     "ConditionalConfig",
     "ConfigValidation",
     "ConnectedResponse",

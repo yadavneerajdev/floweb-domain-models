@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://floweb.com/schemas/parallel-execution.json",
-  "$version": "1.1.0",
+  "$version": "2.0.2",
   "title": "Parallel Execution Models",
   "description": "Schema for parallel test execution requests and results",
   "type": "object",
@@ -81,7 +81,9 @@
             "error",
             "stopped",
             "running",
-            "pending"
+            "pending",
+            "failed",
+            "skipped"
           ],
           "description": "Execution status"
         },
@@ -137,6 +139,13 @@
       "type": "object",
       "description": "Request to execute multiple tests in parallel",
       "properties": {
+        "command": {
+          "type": "string",
+          "enum": [
+            "run_tests"
+          ],
+          "description": "WS command discriminator"
+        },
         "tests": {
           "type": "array",
           "items": {
@@ -204,7 +213,7 @@
             "type": "string"
           },
           "default": null,
-          "description": "Eligible browsers when browser='random'. OS-aware filtering applied by the engine. (Wire name is camelCase per the committed model alias; sibling fields remain snake_case \u2014 see CHANGELOG casing note.)"
+          "description": "Eligible browsers when browser='random'. OS-aware filtering applied by the engine. (Wire name is camelCase per the committed model alias; sibling fields remain snake_case — see CHANGELOG casing note.)"
         }
       },
       "required": [

@@ -4,6 +4,45 @@ All notable changes to the domain-models schemas are recorded here. Versions
 refer to the `$version` field carried by every schema (independent of the npm/PyPI
 package version until the consumption switch in the package plan Phase 4).
 
+## Phase 4 — 2026-07-21 — STEP 2: `index.d.ts` is now generated from schemas
+
+The published TypeScript surface (`index.d.ts`) is no longer hand-written — it is
+bundled from `schemas/` by `scripts/generate-index.cjs` (wired into `npm run
+generate`), so it can no longer drift from the schemas. Both consumers (frontend,
+floweb-server) typecheck clean against it, and the frontend strict-tsc ratchet
+went **218 → 217** (no regression; one latent error fixed).
+
+### How it works
+- Merges every schema's (transitively-inlined) `$defs` into one compile pass so
+  each shared type is emitted once; a post-processor collapses the 22 structurally
+  identical `Name<digit>` duplicates json-schema-to-typescript produces and
+  de-exports the `allOf`-intermediate leftovers.
+- A hand-written preamble supplies the ~13 TS-only types with no schema
+  (`JsonValue`/`Primitive`/`AnyObject`, `TestFlowData`, `PaginatedResponse<T>`
+  generic, `RuntimeContext`/`EngineAuthPayload`/`AuthenticatedRunCommand`,
+  `StoredEnvironment`/`StoredGlobalVariable`, `VariableType`, `IdentifierCandidate`,
+  `EnvironmentVariable = Variable`, `BrowserMode`/`BrowserName`, `SuiteScheduleTest`).
+- Targeted generator overrides keep the published surface matching the consumed
+  contract while schemas stay strict for ajv/Python validation: `value` →
+  `JsonValue`, `Variable.type` → `VariableType` (open), `Environment.variables`
+  non-optional, `ActionData` index signature + `config: AnyObject`,
+  `StoredTest*.flowData` → `TestFlowData`, `ParallelTestsRequest` browser/data,
+  `WarningSeverity` narrowed to the 3 consumed members. `{ [k: string]: unknown }`
+  any-object fields render as `AnyObject`.
+
+### Schema completeness fixes (real gaps found via downstream typecheck)
+- `parallel-execution.json`: `ParallelTestsRequest.command` added; `FlowExecutionResult.status` enum gained `failed`/`skipped`.
+- `flow-validation.json`: `FlowWarning.details` added.
+
+### Frontend adoption (minimal)
+- `performanceTestSlice` local `RecordedRequest`/`LoadTestConfiguration` now `Omit`
+  the enriched domain fields (`resourceType`, `authConfig`) they intentionally
+  re-declare.
+
+Gates: ajv ✓, tsc ✓ (domain + frontend + floweb-server all 0), jest 22, pytest 15,
+frontend ratchet 217/218, frontend vitest 121, server vitest 7, check-breaking
+clean, index.d.ts deterministic across runs.
+
 ## Phase 4 — 2026-07-21 — canonicalize duplicated Variable/Environment/GlobalVariable $defs
 
 Prerequisite for the single-source `index.d.ts` consolidation. `Variable`,

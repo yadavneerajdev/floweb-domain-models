@@ -15,7 +15,7 @@
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "generate": "node scripts/generate-ts.cjs",
+    "generate": "node scripts/generate-ts.cjs && node scripts/generate-index.cjs",
     "generate-python": "node scripts/generate-python.cjs",
     "generate:all": "npm run generate && npm run generate-python",
     "validate": "node scripts/validate-schemas.cjs",

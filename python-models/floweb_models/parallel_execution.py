@@ -30,6 +30,8 @@ class Status(StrEnum):
     stopped = 'stopped'
     running = 'running'
     pending = 'pending'
+    failed = 'failed'
+    skipped = 'skipped'
 
 
 class FlowExecutionResult(BaseModel):
@@ -84,6 +86,14 @@ class FlowExecutionResult(BaseModel):
     """
     Additional test metadata
     """
+
+
+class Command(StrEnum):
+    """
+    WS command discriminator
+    """
+
+    run_tests = 'run_tests'
 
 
 class BrowserMode(StrEnum):
@@ -178,6 +188,10 @@ class ParallelTestsRequest(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
+    command: Command | None = None
+    """
+    WS command discriminator
+    """
     tests: list[FlowExecutionRequest]
     """
     List of tests to execute

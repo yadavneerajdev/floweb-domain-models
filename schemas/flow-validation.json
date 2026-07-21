@@ -103,6 +103,10 @@
           "type": "string",
           "format": "date-time",
           "description": "When the warning was detected"
+        },
+        "details": {
+          "type": "object",
+          "description": "Optional structured detail payload for the warning"
         }
       },
       "required": [

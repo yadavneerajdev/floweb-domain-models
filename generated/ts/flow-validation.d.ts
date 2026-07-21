@@ -78,6 +78,10 @@ export interface FlowWarning {
    * When the warning was detected
    */
   createdAt?: string;
+  /**
+   * Optional structured detail payload for the warning
+   */
+  details?: {};
 }
 /**
  * Result of loop detection analysis
