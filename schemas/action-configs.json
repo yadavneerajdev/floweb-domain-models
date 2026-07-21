@@ -1208,11 +1208,26 @@
             "distance": {
               "type": "integer",
               "default": 100,
-              "description": "Scroll distance in pixels"
+              "description": "Legacy scroll distance in pixels; the engine prefers `pixels` and falls back to this"
             },
             "selector": {
               "type": "string",
               "description": "Element to scroll (optional, defaults to window)"
+            },
+            "pixels": {
+              "type": "integer",
+              "default": 500,
+              "description": "Scroll amount in pixels (canonical; the engine reads this first)"
+            },
+            "smooth": {
+              "type": "boolean",
+              "default": false,
+              "description": "Use smooth scrolling behavior"
+            },
+            "waitAfterScroll": {
+              "type": "boolean",
+              "default": true,
+              "description": "Wait for content to settle after scrolling"
             }
           }
         }

@@ -891,11 +891,23 @@ class ScrollConfig(BaseActionConfig):
     """
     distance: int | None = 100
     """
-    Scroll distance in pixels
+    Legacy scroll distance in pixels; the engine prefers `pixels` and falls back to this
     """
     selector: str | None = None
     """
     Element to scroll (optional, defaults to window)
+    """
+    pixels: int | None = 500
+    """
+    Scroll amount in pixels (canonical; the engine reads this first)
+    """
+    smooth: bool | None = False
+    """
+    Use smooth scrolling behavior
+    """
+    waitAfterScroll: bool | None = True
+    """
+    Wait for content to settle after scrolling
     """
 
 

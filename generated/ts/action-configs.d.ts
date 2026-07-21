@@ -149,13 +149,25 @@ export type ScrollConfig = BaseActionConfig & {
    */
   direction?: "up" | "down" | "left" | "right";
   /**
-   * Scroll distance in pixels
+   * Legacy scroll distance in pixels; the engine prefers `pixels` and falls back to this
    */
   distance?: number;
   /**
    * Element to scroll (optional, defaults to window)
    */
   selector?: string;
+  /**
+   * Scroll amount in pixels (canonical; the engine reads this first)
+   */
+  pixels?: number;
+  /**
+   * Use smooth scrolling behavior
+   */
+  smooth?: boolean;
+  /**
+   * Wait for content to settle after scrolling
+   */
+  waitAfterScroll?: boolean;
 };
 export type ScreenshotConfig = BaseActionConfig & {
   /**
