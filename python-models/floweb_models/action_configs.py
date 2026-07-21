@@ -1822,6 +1822,139 @@ class DesktopCaptureScreenConfig(BaseActionConfig):
     """
 
 
+class DesktopDragAndDropConfig(BaseActionConfig):
+    """
+    Drag from desktop image/coordinates to image/coordinates.
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    button: str | None = 'left'
+    confidence: float | None = 0.82
+    dragDurationMs: int | None = 450
+    dropImage: str | None = ''
+    dropX: int | None = 0
+    dropY: int | None = 0
+    failIfTargetNotFound: bool | None = True
+    grayscale: bool | None = True
+    holdAtDropMs: int | None = 80
+    holdBeforeDragMs: int | None = 120
+    moveDurationMs: int | None = 120
+    outputVariable: str | None = 'desktopDragDrop'
+    pollIntervalMs: int | None = 300
+    postActionWaitMs: int | None = 250
+    regionHeight: int | None = 0
+    regionWidth: int | None = 0
+    regionX: int | None = 0
+    regionY: int | None = 0
+    startImage: str | None = ''
+    startX: int | None = 0
+    startY: int | None = 0
+    timeout: int | None = 10000
+    useRegion: bool | None = False
+    waitForImage: bool | None = True
+
+
+class DesktopFocusWindowConfig(BaseActionConfig):
+    """
+    Focus a desktop window by matching title text.
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    caseSensitive: bool | None = False
+    failIfNotFound: bool | None = True
+    matchMode: str | None = 'contains'
+    outputVariable: str | None = 'desktopFocusedWindow'
+    pollIntervalMs: int | None = 250
+    timeout: int | None = 5000
+    title: str | None = ''
+
+
+class DesktopListProcessesConfig(BaseActionConfig):
+    """
+    List running processes with detailed metadata.
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    includeCommandLine: bool | None = True
+    outputVariable: str | None = 'desktopProcesses'
+
+
+class DesktopOpenApplicationConfig(BaseActionConfig):
+    """
+    Open a desktop application or executable, with optional fuzzy matching.
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    application: str | None = ''
+    applicationMatchMode: str | None = 'contains'
+    arguments: list[str] | None = []
+    captureOutput: bool | None = False
+    failOnMultipleMatches: bool | None = True
+    failOnNonZero: bool | None = True
+    outputVariable: str | None = 'desktopApplicationResult'
+    timeout: int | None = 60000
+    useShell: bool | None = False
+    waitForExit: bool | None = False
+    workingDirectory: str | None = ''
+
+
+class DesktopOpenPathConfig(BaseActionConfig):
+    """
+    Open a file or folder location in file manager.
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    mustExist: bool | None = True
+    outputVariable: str | None = 'desktopOpenedPath'
+    path: str | None = ''
+    revealInFileManager: bool | None = True
+
+
+class DesktopRunScriptConfig(BaseActionConfig):
+    """
+    Execute an OS-level script with selected interpreter.
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    arguments: list[str] | None = []
+    captureOutput: bool | None = True
+    environment: dict[str, Any] | None = {}
+    failOnNonZero: bool | None = True
+    interpreter: str | None = ''
+    outputVariable: str | None = 'desktopScriptResult'
+    script: str | None = ''
+    scriptType: str | None = 'auto'
+    timeout: int | None = 120000
+    workingDirectory: str | None = ''
+
+
+class DesktopSwitchDesktopConfig(BaseActionConfig):
+    """
+    Switch to next/previous virtual desktop (workspace).
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    direction: str | None = 'next'
+    intervalMs: int | None = 120
+    outputVariable: str | None = 'desktopSwitchResult'
+    postActionWaitMs: int | None = 150
+    presses: int | None = 1
+
+
 class ActionConfigurations(BaseModel):
     """
     Configuration schemas for all automation actions

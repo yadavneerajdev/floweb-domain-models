@@ -1295,6 +1295,106 @@ export type DesktopCaptureScreenConfig = BaseActionConfig & {
    */
   outputVariable?: string;
 };
+/**
+ * Drag from desktop image/coordinates to image/coordinates.
+ */
+export type DesktopDragAndDropConfig = BaseActionConfig & {
+  button?: string;
+  confidence?: number;
+  dragDurationMs?: number;
+  dropImage?: string;
+  dropX?: number;
+  dropY?: number;
+  failIfTargetNotFound?: boolean;
+  grayscale?: boolean;
+  holdAtDropMs?: number;
+  holdBeforeDragMs?: number;
+  moveDurationMs?: number;
+  outputVariable?: string;
+  pollIntervalMs?: number;
+  postActionWaitMs?: number;
+  regionHeight?: number;
+  regionWidth?: number;
+  regionX?: number;
+  regionY?: number;
+  startImage?: string;
+  startX?: number;
+  startY?: number;
+  timeout?: number;
+  useRegion?: boolean;
+  waitForImage?: boolean;
+};
+/**
+ * Focus a desktop window by matching title text.
+ */
+export type DesktopFocusWindowConfig = BaseActionConfig & {
+  caseSensitive?: boolean;
+  failIfNotFound?: boolean;
+  matchMode?: string;
+  outputVariable?: string;
+  pollIntervalMs?: number;
+  timeout?: number;
+  title?: string;
+};
+/**
+ * List running processes with detailed metadata.
+ */
+export type DesktopListProcessesConfig = BaseActionConfig & {
+  includeCommandLine?: boolean;
+  outputVariable?: string;
+};
+/**
+ * Open a desktop application or executable, with optional fuzzy matching.
+ */
+export type DesktopOpenApplicationConfig = BaseActionConfig & {
+  application?: string;
+  applicationMatchMode?: string;
+  arguments?: string[];
+  captureOutput?: boolean;
+  failOnMultipleMatches?: boolean;
+  failOnNonZero?: boolean;
+  outputVariable?: string;
+  timeout?: number;
+  useShell?: boolean;
+  waitForExit?: boolean;
+  workingDirectory?: string;
+};
+/**
+ * Open a file or folder location in file manager.
+ */
+export type DesktopOpenPathConfig = BaseActionConfig & {
+  mustExist?: boolean;
+  outputVariable?: string;
+  path?: string;
+  revealInFileManager?: boolean;
+};
+/**
+ * Execute an OS-level script with selected interpreter.
+ */
+export type DesktopRunScriptConfig = BaseActionConfig & {
+  arguments?: string[];
+  captureOutput?: boolean;
+  environment?: {
+    [k: string]: unknown;
+  };
+  failOnNonZero?: boolean;
+  interpreter?: string;
+  outputVariable?: string;
+  script?: string;
+  scriptType?: string;
+  timeout?: number;
+  workingDirectory?: string;
+};
+/**
+ * Switch to next/previous virtual desktop (workspace).
+ */
+export type DesktopSwitchDesktopConfig = BaseActionConfig & {
+  direction?: string;
+  intervalMs?: number;
+  outputVariable?: string;
+  postActionWaitMs?: number;
+  presses?: number;
+};
 
 export interface ActionConfigurationsSchema {
   actionConfigs?: {
@@ -1398,6 +1498,13 @@ export interface ActionConfigurationsSchema {
   DesktopHotkeyConfig?: DesktopHotkeyConfig;
   DesktopRunCommandConfig?: DesktopRunCommandConfig;
   DesktopCaptureScreenConfig?: DesktopCaptureScreenConfig;
+  DesktopDragAndDropConfig?: DesktopDragAndDropConfig;
+  DesktopFocusWindowConfig?: DesktopFocusWindowConfig;
+  DesktopListProcessesConfig?: DesktopListProcessesConfig;
+  DesktopOpenApplicationConfig?: DesktopOpenApplicationConfig;
+  DesktopOpenPathConfig?: DesktopOpenPathConfig;
+  DesktopRunScriptConfig?: DesktopRunScriptConfig;
+  DesktopSwitchDesktopConfig?: DesktopSwitchDesktopConfig;
 }
 export interface BaseActionConfig {
   /**

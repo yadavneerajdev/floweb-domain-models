@@ -2540,6 +2540,356 @@
         }
       ],
       "description": "Capture a desktop screenshot."
+    },
+    "DesktopDragAndDropConfig": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/BaseActionConfig"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "button": {
+              "type": "string",
+              "default": "left"
+            },
+            "confidence": {
+              "type": "number",
+              "default": 0.82
+            },
+            "dragDurationMs": {
+              "type": "integer",
+              "default": 450
+            },
+            "dropImage": {
+              "type": "string",
+              "default": ""
+            },
+            "dropX": {
+              "type": "integer",
+              "default": 0
+            },
+            "dropY": {
+              "type": "integer",
+              "default": 0
+            },
+            "failIfTargetNotFound": {
+              "type": "boolean",
+              "default": true
+            },
+            "grayscale": {
+              "type": "boolean",
+              "default": true
+            },
+            "holdAtDropMs": {
+              "type": "integer",
+              "default": 80
+            },
+            "holdBeforeDragMs": {
+              "type": "integer",
+              "default": 120
+            },
+            "moveDurationMs": {
+              "type": "integer",
+              "default": 120
+            },
+            "outputVariable": {
+              "type": "string",
+              "default": "desktopDragDrop"
+            },
+            "pollIntervalMs": {
+              "type": "integer",
+              "default": 300
+            },
+            "postActionWaitMs": {
+              "type": "integer",
+              "default": 250
+            },
+            "regionHeight": {
+              "type": "integer",
+              "default": 0
+            },
+            "regionWidth": {
+              "type": "integer",
+              "default": 0
+            },
+            "regionX": {
+              "type": "integer",
+              "default": 0
+            },
+            "regionY": {
+              "type": "integer",
+              "default": 0
+            },
+            "startImage": {
+              "type": "string",
+              "default": ""
+            },
+            "startX": {
+              "type": "integer",
+              "default": 0
+            },
+            "startY": {
+              "type": "integer",
+              "default": 0
+            },
+            "timeout": {
+              "type": "integer",
+              "default": 10000
+            },
+            "useRegion": {
+              "type": "boolean",
+              "default": false
+            },
+            "waitForImage": {
+              "type": "boolean",
+              "default": true
+            }
+          }
+        }
+      ],
+      "description": "Drag from desktop image/coordinates to image/coordinates."
+    },
+    "DesktopFocusWindowConfig": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/BaseActionConfig"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "caseSensitive": {
+              "type": "boolean",
+              "default": false
+            },
+            "failIfNotFound": {
+              "type": "boolean",
+              "default": true
+            },
+            "matchMode": {
+              "type": "string",
+              "default": "contains"
+            },
+            "outputVariable": {
+              "type": "string",
+              "default": "desktopFocusedWindow"
+            },
+            "pollIntervalMs": {
+              "type": "integer",
+              "default": 250
+            },
+            "timeout": {
+              "type": "integer",
+              "default": 5000
+            },
+            "title": {
+              "type": "string",
+              "default": ""
+            }
+          }
+        }
+      ],
+      "description": "Focus a desktop window by matching title text."
+    },
+    "DesktopListProcessesConfig": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/BaseActionConfig"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "includeCommandLine": {
+              "type": "boolean",
+              "default": true
+            },
+            "outputVariable": {
+              "type": "string",
+              "default": "desktopProcesses"
+            }
+          }
+        }
+      ],
+      "description": "List running processes with detailed metadata."
+    },
+    "DesktopOpenApplicationConfig": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/BaseActionConfig"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "application": {
+              "type": "string",
+              "default": ""
+            },
+            "applicationMatchMode": {
+              "type": "string",
+              "default": "contains"
+            },
+            "arguments": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "default": []
+            },
+            "captureOutput": {
+              "type": "boolean",
+              "default": false
+            },
+            "failOnMultipleMatches": {
+              "type": "boolean",
+              "default": true
+            },
+            "failOnNonZero": {
+              "type": "boolean",
+              "default": true
+            },
+            "outputVariable": {
+              "type": "string",
+              "default": "desktopApplicationResult"
+            },
+            "timeout": {
+              "type": "integer",
+              "default": 60000
+            },
+            "useShell": {
+              "type": "boolean",
+              "default": false
+            },
+            "waitForExit": {
+              "type": "boolean",
+              "default": false
+            },
+            "workingDirectory": {
+              "type": "string",
+              "default": ""
+            }
+          }
+        }
+      ],
+      "description": "Open a desktop application or executable, with optional fuzzy matching."
+    },
+    "DesktopOpenPathConfig": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/BaseActionConfig"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "mustExist": {
+              "type": "boolean",
+              "default": true
+            },
+            "outputVariable": {
+              "type": "string",
+              "default": "desktopOpenedPath"
+            },
+            "path": {
+              "type": "string",
+              "default": ""
+            },
+            "revealInFileManager": {
+              "type": "boolean",
+              "default": true
+            }
+          }
+        }
+      ],
+      "description": "Open a file or folder location in file manager."
+    },
+    "DesktopRunScriptConfig": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/BaseActionConfig"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "arguments": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "default": []
+            },
+            "captureOutput": {
+              "type": "boolean",
+              "default": true
+            },
+            "environment": {
+              "type": "object",
+              "additionalProperties": true,
+              "default": {}
+            },
+            "failOnNonZero": {
+              "type": "boolean",
+              "default": true
+            },
+            "interpreter": {
+              "type": "string",
+              "default": ""
+            },
+            "outputVariable": {
+              "type": "string",
+              "default": "desktopScriptResult"
+            },
+            "script": {
+              "type": "string",
+              "default": ""
+            },
+            "scriptType": {
+              "type": "string",
+              "default": "auto"
+            },
+            "timeout": {
+              "type": "integer",
+              "default": 120000
+            },
+            "workingDirectory": {
+              "type": "string",
+              "default": ""
+            }
+          }
+        }
+      ],
+      "description": "Execute an OS-level script with selected interpreter."
+    },
+    "DesktopSwitchDesktopConfig": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/BaseActionConfig"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "direction": {
+              "type": "string",
+              "default": "next"
+            },
+            "intervalMs": {
+              "type": "integer",
+              "default": 120
+            },
+            "outputVariable": {
+              "type": "string",
+              "default": "desktopSwitchResult"
+            },
+            "postActionWaitMs": {
+              "type": "integer",
+              "default": 150
+            },
+            "presses": {
+              "type": "integer",
+              "default": 1
+            }
+          }
+        }
+      ],
+      "description": "Switch to next/previous virtual desktop (workspace)."
     }
   }
 }
