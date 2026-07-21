@@ -1,6 +1,9 @@
 /* eslint-disable */
 // GENERATED from schemas/ by scripts/generate-ts.cjs — do not edit by hand.
 
+/**
+ * Click on a web element.
+ */
 export type ClickConfig = BaseActionConfig & {
   /**
    * CSS selector for element to click
@@ -39,6 +42,9 @@ export type ClickConfig = BaseActionConfig & {
    */
   holdDuration?: number;
 };
+/**
+ * Type text into an input field.
+ */
 export type InputConfig = BaseActionConfig & {
   /**
    * CSS selector for input element
@@ -61,6 +67,9 @@ export type InputConfig = BaseActionConfig & {
    */
   scrollIntoView?: boolean;
 };
+/**
+ * Send keyboard input to an element or globally.
+ */
 export type SendKeysConfig = SendKeysConfig1 & {
   /**
    * Optional key combinations payload used by backend actions
@@ -81,6 +90,9 @@ export type SendKeysConfig1 = BaseActionConfig & {
    */
   waitForElement?: boolean;
 };
+/**
+ * Wait for a duration or element state.
+ */
 export type WaitConfig = WaitConfig1 & {
   /**
    * Whether wait was generated manually or automatically
@@ -129,6 +141,9 @@ export type WaitConfig1 = BaseActionConfig & {
    */
   fallbackDuration?: number;
 };
+/**
+ * Navigate to a URL.
+ */
 export type NavigateConfig = BaseActionConfig & {
   /**
    * URL to navigate to
@@ -143,6 +158,9 @@ export type NavigateConfig = BaseActionConfig & {
    */
   takeScreenshot?: boolean;
 };
+/**
+ * Scroll the page.
+ */
 export type ScrollConfig = BaseActionConfig & {
   /**
    * Scroll direction
@@ -169,6 +187,9 @@ export type ScrollConfig = BaseActionConfig & {
    */
   waitAfterScroll?: boolean;
 };
+/**
+ * Take a screenshot of the page or element.
+ */
 export type ScreenshotConfig = BaseActionConfig & {
   /**
    * Type of screenshot to capture
@@ -207,6 +228,9 @@ export type ScreenshotConfig = BaseActionConfig & {
    */
   fullPage?: boolean;
 };
+/**
+ * Assert element existence or value.
+ */
 export type AssertionConfig = AssertionConfig1 & {
   /**
    * Image reference for image assertion (base64, data URI, or mediaId:xxx resolved to data URI)
@@ -243,6 +267,9 @@ export type AssertionConfig1 = BaseActionConfig & {
    */
   partialMatch?: boolean;
 };
+/**
+ * Assert element visibility.
+ */
 export type AssertVisibleConfig = BaseActionConfig & {
   /**
    * CSS selector for element to check
@@ -257,6 +284,9 @@ export type AssertVisibleConfig = BaseActionConfig & {
    */
   waitForElement?: boolean;
 };
+/**
+ * Fill multiple form fields at once.
+ */
 export type FormFillConfig = BaseActionConfig & {
   /**
    * Array of form field configurations
@@ -279,6 +309,9 @@ export type FormFillConfig = BaseActionConfig & {
    */
   smartFieldDetection?: boolean;
 };
+/**
+ * Clear text from an input field.
+ */
 export type ClearInputConfig = ClearInputConfig1 & {
   /**
    * Whether to keep focus on element after clearing
@@ -295,12 +328,18 @@ export type ClearInputConfig1 = BaseActionConfig & {
    */
   waitForElement?: boolean;
 };
+/**
+ * Open a new browser tab.
+ */
 export type OpenNewTabConfig = BaseActionConfig & {
   /**
    * URL to open in new tab
    */
   url: string;
 };
+/**
+ * Switch to another browser tab.
+ */
 export type SwitchTabConfig = SwitchTabConfig1 & {
   /**
    * URL of tab to switch to (alternative to index)
@@ -321,9 +360,21 @@ export type SwitchTabConfig1 = BaseActionConfig & {
    */
   tabTitle?: string;
 };
+/**
+ * Navigate forward in browser history.
+ */
 export type GoForwardConfig = BaseActionConfig & {};
+/**
+ * Navigate back in browser history.
+ */
 export type GoBackConfig = BaseActionConfig & {};
+/**
+ * Refresh the current page.
+ */
 export type RefreshConfig = BaseActionConfig & {};
+/**
+ * Get page title, URL, and source.
+ */
 export type GetPageInfoConfig = GetPageInfoConfig1 & {
   /**
    * Dot-notation path to extract a specific key from the page info object (e.g. 'title', 'url'). If omitted, the full page info object is stored.
@@ -350,6 +401,9 @@ export type JunctionConfig = BaseActionConfig & {
    */
   falsePath?: string;
 };
+/**
+ * Make an HTTP API request. Set responsePath to store only a path of the response (e.g. data.token) in the output variable; leave empty to store the full {status_code, headers, data, url} object.
+ */
 export type ApiCallConfig = BaseActionConfig & {
   /**
    * HTTP method
@@ -410,6 +464,9 @@ export type ApiCallConfig = BaseActionConfig & {
    */
   basicAuthPassword?: string;
 };
+/**
+ * Branch based on a condition.
+ */
 export type ConditionalConfig = ConditionalConfig1 & {
   /**
    * Comparison operator used by editor helpers
@@ -434,6 +491,9 @@ export type ConditionalConfig1 = BaseActionConfig & {
     [k: string]: unknown;
   }[];
 };
+/**
+ * Repeat actions multiple times.
+ */
 export type LoopConfig = BaseActionConfig & {
   /**
    * Type of loop
@@ -466,6 +526,9 @@ export type LoopConfig = BaseActionConfig & {
    */
   maxIterations?: number;
 };
+/**
+ * Execute a database query.
+ */
 export type DatabaseQueryConfig = BaseActionConfig & {
   /**
    * Database connection string
@@ -492,6 +555,9 @@ export type DatabaseQueryConfig = BaseActionConfig & {
    */
   timeout?: number;
 };
+/**
+ * Insert data into a database.
+ */
 export type DatabaseInsertConfig = BaseActionConfig & {
   /**
    * Database connection string
@@ -518,6 +584,9 @@ export type DatabaseInsertConfig = BaseActionConfig & {
    */
   rollbackOnError?: boolean;
 };
+/**
+ * Execute custom JavaScript code.
+ */
 export type CustomCodeConfig = BaseActionConfig & {
   /**
    * JavaScript code to execute
@@ -550,6 +619,9 @@ export type CustomCodeConfig = BaseActionConfig & {
    */
   timeout?: number;
 };
+/**
+ * Drag one element to another element or position.
+ */
 export type DragAndDropConfig = BaseActionConfig & {
   /**
    * CSS selector for element to drag
@@ -612,6 +684,9 @@ export type DragAndDropConfig = BaseActionConfig & {
    */
   waitForElement?: boolean;
 };
+/**
+ * Call another flow and map inputs/outputs.
+ */
 export type CallToFlowConfig = BaseActionConfig & {
   /**
    * ID of flow to call
@@ -636,6 +711,9 @@ export type CallToFlowConfig = BaseActionConfig & {
    */
   async_?: boolean;
 };
+/**
+ * Switch to a frame or iframe.
+ */
 export type SwitchToFrameConfig = SwitchToFrameConfig1 & {
   /**
    * Switch strategy (selector/index/name/id)
@@ -680,6 +758,9 @@ export type SwitchToFrameConfig1 = BaseActionConfig & {
    */
   frameIndex?: number;
 };
+/**
+ * Exit a frame back to parent or main document.
+ */
 export type ExitFrameConfig = ExitFrameConfig1 & {
   /**
    * Exit strategy (parent/main/levels)
@@ -695,6 +776,9 @@ export type ExitFrameConfig = ExitFrameConfig1 & {
   returnToMain?: boolean;
 };
 export type ExitFrameConfig1 = BaseActionConfig & {};
+/**
+ * Set browser viewport and device emulation.
+ */
 export type SetViewportConfig = BaseActionConfig & {
   /**
    * Type of viewport configuration
@@ -757,6 +841,9 @@ export type SetViewportConfig = BaseActionConfig & {
    */
   preserveSessionStorage?: boolean;
 };
+/**
+ * Extract element properties or attributes.
+ */
 export type GetElementPropertiesConfig = BaseActionConfig & {
   /**
    * CSS selector for element
@@ -788,6 +875,9 @@ export type GetElementPropertiesConfig = BaseActionConfig & {
    */
   waitForElement?: boolean;
 };
+/**
+ * Handle alerts, confirms, prompts, or modals.
+ */
 export type HandlePopupConfig = BaseActionConfig & {
   /**
    * Action to perform on popup
@@ -806,6 +896,9 @@ export type HandlePopupConfig = BaseActionConfig & {
    */
   timeout?: number;
 };
+/**
+ * Upload a file to an input field.
+ */
 export type FileUploadConfig = BaseActionConfig & {
   /**
    * CSS selector for file input
@@ -828,6 +921,9 @@ export type FileUploadConfig = BaseActionConfig & {
    */
   validateFile?: boolean;
 };
+/**
+ * Download a file from a link.
+ */
 export type FileDownloadConfig = BaseActionConfig & {
   /**
    * CSS selector for download link
@@ -884,6 +980,9 @@ export type SubflowConfig = BaseActionConfig & {
    */
   propagateErrors?: boolean;
 };
+/**
+ * Wait until a desktop image appears on screen.
+ */
 export type DesktopWaitForImageConfig = DesktopVisualBaseConfig & {
   /**
    * Base64 encoded reference image to locate on the desktop
@@ -944,6 +1043,9 @@ export type DesktopVisualBaseConfig = BaseActionConfig & {
    */
   regionHeight?: number;
 };
+/**
+ * Find desktop image coordinates and store match output.
+ */
 export type DesktopFindImageConfig = DesktopVisualBaseConfig & {
   /**
    * Base64 encoded reference image to locate on the desktop
@@ -962,6 +1064,9 @@ export type DesktopFindImageConfig = DesktopVisualBaseConfig & {
    */
   failIfNotFound?: boolean;
 };
+/**
+ * Find and click a desktop image target.
+ */
 export type DesktopClickImageConfig = DesktopVisualBaseConfig & {
   /**
    * Base64 encoded reference image to click
@@ -1000,6 +1105,9 @@ export type DesktopClickImageConfig = DesktopVisualBaseConfig & {
    */
   postActionWaitMs?: number;
 };
+/**
+ * Click explicit desktop coordinates.
+ */
 export type DesktopClickPointConfig = BaseActionConfig & {
   /**
    * Target X coordinate
@@ -1034,6 +1142,9 @@ export type DesktopClickPointConfig = BaseActionConfig & {
    */
   outputVariable?: string;
 };
+/**
+ * Type text in desktop context with optional image focus.
+ */
 export type DesktopTypeTextConfig = DesktopVisualBaseConfig & {
   /**
    * Text to type on the desktop
@@ -1068,6 +1179,9 @@ export type DesktopTypeTextConfig = DesktopVisualBaseConfig & {
    */
   postActionWaitMs?: number;
 };
+/**
+ * Move desktop cursor to absolute or relative coordinates.
+ */
 export type DesktopMoveMouseConfig = BaseActionConfig & {
   /**
    * Target X coordinate
@@ -1094,6 +1208,9 @@ export type DesktopMoveMouseConfig = BaseActionConfig & {
    */
   outputVariable?: string;
 };
+/**
+ * Execute a desktop key combination.
+ */
 export type DesktopHotkeyConfig = BaseActionConfig & {
   /**
    * Key combination (e.g. ctrl+shift+p)
@@ -1112,6 +1229,9 @@ export type DesktopHotkeyConfig = BaseActionConfig & {
    */
   postActionWaitMs?: number;
 };
+/**
+ * Run a local shell command.
+ */
 export type DesktopRunCommandConfig = BaseActionConfig & {
   /**
    * Shell command to execute
@@ -1142,6 +1262,9 @@ export type DesktopRunCommandConfig = BaseActionConfig & {
    */
   outputVariable?: string;
 };
+/**
+ * Capture a desktop screenshot.
+ */
 export type DesktopCaptureScreenConfig = BaseActionConfig & {
   /**
    * Output filename when saving screenshot

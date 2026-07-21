@@ -325,6 +325,10 @@ class BaseActionConfig(FlowebActionBaseModel):
 
 
 class ClickConfig(BaseActionConfig):
+    """
+    Click on a web element.
+    """
+
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -367,6 +371,10 @@ class ClickConfig(BaseActionConfig):
 
 
 class InputConfig(BaseActionConfig):
+    """
+    Type text into an input field.
+    """
+
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -393,6 +401,10 @@ class InputConfig(BaseActionConfig):
 
 
 class NavigateConfig(BaseActionConfig):
+    """
+    Navigate to a URL.
+    """
+
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -411,6 +423,10 @@ class NavigateConfig(BaseActionConfig):
 
 
 class WaitConfig(BaseActionConfig):
+    """
+    Wait for a duration or element state.
+    """
+
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -461,6 +477,10 @@ class WaitConfig(BaseActionConfig):
 
 
 class AssertionConfig(BaseActionConfig):
+    """
+    Assert element existence or value.
+    """
+
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -499,6 +519,10 @@ class AssertionConfig(BaseActionConfig):
 
 
 class ScreenshotConfig(BaseActionConfig):
+    """
+    Take a screenshot of the page or element.
+    """
+
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -588,6 +612,10 @@ class FormField(BaseModel):
 
 
 class FormFillConfig(BaseActionConfig):
+    """
+    Fill multiple form fields at once.
+    """
+
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -614,6 +642,10 @@ class FormFillConfig(BaseActionConfig):
 
 
 class ApiCallConfig(BaseActionConfig):
+    """
+    Make an HTTP API request. Set responsePath to store only a path of the response (e.g. data.token) in the output variable; leave empty to store the full {status_code, headers, data, url} object.
+    """
+
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -676,6 +708,10 @@ class ApiCallConfig(BaseActionConfig):
 
 
 class DatabaseQueryConfig(BaseActionConfig):
+    """
+    Execute a database query.
+    """
+
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -706,6 +742,10 @@ class DatabaseQueryConfig(BaseActionConfig):
 
 
 class DatabaseInsertConfig(BaseActionConfig):
+    """
+    Insert data into a database.
+    """
+
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -736,6 +776,10 @@ class DatabaseInsertConfig(BaseActionConfig):
 
 
 class FileUploadConfig(BaseActionConfig):
+    """
+    Upload a file to an input field.
+    """
+
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -762,6 +806,10 @@ class FileUploadConfig(BaseActionConfig):
 
 
 class FileDownloadConfig(BaseActionConfig):
+    """
+    Download a file from a link.
+    """
+
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -788,6 +836,10 @@ class FileDownloadConfig(BaseActionConfig):
 
 
 class CustomCodeConfig(BaseActionConfig):
+    """
+    Execute custom JavaScript code.
+    """
+
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -860,6 +912,10 @@ class SubflowConfig(BaseActionConfig):
 
 
 class SendKeysConfig(BaseActionConfig):
+    """
+    Send keyboard input to an element or globally.
+    """
+
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -882,6 +938,10 @@ class SendKeysConfig(BaseActionConfig):
 
 
 class ScrollConfig(BaseActionConfig):
+    """
+    Scroll the page.
+    """
+
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -912,6 +972,10 @@ class ScrollConfig(BaseActionConfig):
 
 
 class AssertVisibleConfig(BaseActionConfig):
+    """
+    Assert element visibility.
+    """
+
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -930,6 +994,10 @@ class AssertVisibleConfig(BaseActionConfig):
 
 
 class ClearInputConfig(BaseActionConfig):
+    """
+    Clear text from an input field.
+    """
+
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -948,6 +1016,10 @@ class ClearInputConfig(BaseActionConfig):
 
 
 class OpenNewTabConfig(BaseActionConfig):
+    """
+    Open a new browser tab.
+    """
+
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -958,6 +1030,10 @@ class OpenNewTabConfig(BaseActionConfig):
 
 
 class SwitchTabConfig(BaseActionConfig):
+    """
+    Switch to another browser tab.
+    """
+
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -980,24 +1056,40 @@ class SwitchTabConfig(BaseActionConfig):
 
 
 class GoForwardConfig(BaseActionConfig):
+    """
+    Navigate forward in browser history.
+    """
+
     model_config = ConfigDict(
         populate_by_name=True,
     )
 
 
 class GoBackConfig(BaseActionConfig):
+    """
+    Navigate back in browser history.
+    """
+
     model_config = ConfigDict(
         populate_by_name=True,
     )
 
 
 class RefreshConfig(BaseActionConfig):
+    """
+    Refresh the current page.
+    """
+
     model_config = ConfigDict(
         populate_by_name=True,
     )
 
 
 class GetPageInfoConfig(BaseActionConfig):
+    """
+    Get page title, URL, and source.
+    """
+
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -1030,6 +1122,10 @@ class JunctionConfig(BaseActionConfig):
 
 
 class ConditionalConfig(BaseActionConfig):
+    """
+    Branch based on a condition.
+    """
+
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -1052,6 +1148,10 @@ class ConditionalConfig(BaseActionConfig):
 
 
 class LoopConfig(BaseActionConfig):
+    """
+    Repeat actions multiple times.
+    """
+
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -1086,6 +1186,10 @@ class LoopConfig(BaseActionConfig):
 
 
 class DragAndDropConfig(BaseActionConfig):
+    """
+    Drag one element to another element or position.
+    """
+
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -1138,6 +1242,10 @@ class DragAndDropConfig(BaseActionConfig):
 
 
 class CallToFlowConfig(BaseActionConfig):
+    """
+    Call another flow and map inputs/outputs.
+    """
+
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -1164,6 +1272,10 @@ class CallToFlowConfig(BaseActionConfig):
 
 
 class SwitchToFrameConfig(BaseActionConfig):
+    """
+    Switch to a frame or iframe.
+    """
+
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -1203,6 +1315,10 @@ class SwitchToFrameConfig(BaseActionConfig):
 
 
 class ExitFrameConfig(BaseActionConfig):
+    """
+    Exit a frame back to parent or main document.
+    """
+
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -1221,6 +1337,10 @@ class ExitFrameConfig(BaseActionConfig):
 
 
 class SetViewportConfig(BaseActionConfig):
+    """
+    Set browser viewport and device emulation.
+    """
+
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -1287,6 +1407,10 @@ class SetViewportConfig(BaseActionConfig):
 
 
 class GetElementPropertiesConfig(BaseActionConfig):
+    """
+    Extract element properties or attributes.
+    """
+
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -1309,6 +1433,10 @@ class GetElementPropertiesConfig(BaseActionConfig):
 
 
 class HandlePopupConfig(BaseActionConfig):
+    """
+    Handle alerts, confirms, prompts, or modals.
+    """
+
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -1373,6 +1501,10 @@ class DesktopVisualBaseConfig(BaseActionConfig):
 
 
 class DesktopWaitForImageConfig(DesktopVisualBaseConfig):
+    """
+    Wait until a desktop image appears on screen.
+    """
+
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -1399,6 +1531,10 @@ class DesktopWaitForImageConfig(DesktopVisualBaseConfig):
 
 
 class DesktopFindImageConfig(DesktopVisualBaseConfig):
+    """
+    Find desktop image coordinates and store match output.
+    """
+
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -1421,6 +1557,10 @@ class DesktopFindImageConfig(DesktopVisualBaseConfig):
 
 
 class DesktopClickImageConfig(DesktopVisualBaseConfig):
+    """
+    Find and click a desktop image target.
+    """
+
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -1463,6 +1603,10 @@ class DesktopClickImageConfig(DesktopVisualBaseConfig):
 
 
 class DesktopClickPointConfig(BaseActionConfig):
+    """
+    Click explicit desktop coordinates.
+    """
+
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -1501,6 +1645,10 @@ class DesktopClickPointConfig(BaseActionConfig):
 
 
 class DesktopTypeTextConfig(DesktopVisualBaseConfig):
+    """
+    Type text in desktop context with optional image focus.
+    """
+
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -1539,6 +1687,10 @@ class DesktopTypeTextConfig(DesktopVisualBaseConfig):
 
 
 class DesktopMoveMouseConfig(BaseActionConfig):
+    """
+    Move desktop cursor to absolute or relative coordinates.
+    """
+
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -1569,6 +1721,10 @@ class DesktopMoveMouseConfig(BaseActionConfig):
 
 
 class DesktopHotkeyConfig(BaseActionConfig):
+    """
+    Execute a desktop key combination.
+    """
+
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -1591,6 +1747,10 @@ class DesktopHotkeyConfig(BaseActionConfig):
 
 
 class DesktopRunCommandConfig(BaseActionConfig):
+    """
+    Run a local shell command.
+    """
+
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -1625,6 +1785,10 @@ class DesktopRunCommandConfig(BaseActionConfig):
 
 
 class DesktopCaptureScreenConfig(BaseActionConfig):
+    """
+    Capture a desktop screenshot.
+    """
+
     model_config = ConfigDict(
         populate_by_name=True,
     )

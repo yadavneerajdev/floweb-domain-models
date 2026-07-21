@@ -350,7 +350,8 @@
             "selector"
           ]
         }
-      ]
+      ],
+      "description": "Click on a web element."
     },
     "InputConfig": {
       "allOf": [
@@ -389,7 +390,8 @@
             "text"
           ]
         }
-      ]
+      ],
+      "description": "Type text into an input field."
     },
     "NavigateConfig": {
       "allOf": [
@@ -419,7 +421,8 @@
             "url"
           ]
         }
-      ]
+      ],
+      "description": "Navigate to a URL."
     },
     "WaitConfig": {
       "allOf": [
@@ -500,7 +503,8 @@
           "minimum": 0,
           "description": "Observed elapsed wait between trigger and dependent action during recording"
         }
-      }
+      },
+      "description": "Wait for a duration or element state."
     },
     "AssertionConfig": {
       "allOf": [
@@ -562,7 +566,8 @@
           "default": 0.9,
           "description": "Minimum similarity score (0-1) for image assertions"
         }
-      }
+      },
+      "description": "Assert element existence or value."
     },
     "ScreenshotConfig": {
       "allOf": [
@@ -627,7 +632,8 @@
             }
           }
         }
-      ]
+      ],
+      "description": "Take a screenshot of the page or element."
     },
     "FormField": {
       "type": "object",
@@ -785,7 +791,8 @@
             "fields"
           ]
         }
-      ]
+      ],
+      "description": "Fill multiple form fields at once."
     },
     "ApiCallConfig": {
       "allOf": [
@@ -875,7 +882,8 @@
             "url"
           ]
         }
-      ]
+      ],
+      "description": "Make an HTTP API request. Set responsePath to store only a path of the response (e.g. data.token) in the output variable; leave empty to store the full {status_code, headers, data, url} object."
     },
     "DatabaseQueryConfig": {
       "allOf": [
@@ -919,7 +927,8 @@
             "query"
           ]
         }
-      ]
+      ],
+      "description": "Execute a database query."
     },
     "DatabaseInsertConfig": {
       "allOf": [
@@ -963,7 +972,8 @@
             "data"
           ]
         }
-      ]
+      ],
+      "description": "Insert data into a database."
     },
     "FileUploadConfig": {
       "allOf": [
@@ -1002,7 +1012,8 @@
             "filePath"
           ]
         }
-      ]
+      ],
+      "description": "Upload a file to an input field."
     },
     "FileDownloadConfig": {
       "allOf": [
@@ -1041,7 +1052,8 @@
             "downloadPath"
           ]
         }
-      ]
+      ],
+      "description": "Download a file from a link."
     },
     "CustomCodeConfig": {
       "allOf": [
@@ -1093,7 +1105,8 @@
             "code"
           ]
         }
-      ]
+      ],
+      "description": "Execute custom JavaScript code."
     },
     "SubflowConfig": {
       "allOf": [
@@ -1184,7 +1197,8 @@
           "type": "array",
           "description": "Optional key combinations payload used by backend actions"
         }
-      }
+      },
+      "description": "Send keyboard input to an element or globally."
     },
     "ScrollConfig": {
       "allOf": [
@@ -1231,7 +1245,8 @@
             }
           }
         }
-      ]
+      ],
+      "description": "Scroll the page."
     },
     "AssertVisibleConfig": {
       "allOf": [
@@ -1260,7 +1275,8 @@
             "selector"
           ]
         }
-      ]
+      ],
+      "description": "Assert element visibility."
     },
     "ClearInputConfig": {
       "allOf": [
@@ -1291,7 +1307,8 @@
           "default": false,
           "description": "Whether to keep focus on element after clearing"
         }
-      }
+      },
+      "description": "Clear text from an input field."
     },
     "OpenNewTabConfig": {
       "allOf": [
@@ -1310,7 +1327,8 @@
             "url"
           ]
         }
-      ]
+      ],
+      "description": "Open a new browser tab."
     },
     "SwitchTabConfig": {
       "allOf": [
@@ -1342,7 +1360,8 @@
           "default": "auto",
           "description": "Explicit switch method (auto/index/url/title)"
         }
-      }
+      },
+      "description": "Switch to another browser tab."
     },
     "GoForwardConfig": {
       "allOf": [
@@ -1353,7 +1372,8 @@
           "type": "object",
           "properties": {}
         }
-      ]
+      ],
+      "description": "Navigate forward in browser history."
     },
     "GoBackConfig": {
       "allOf": [
@@ -1364,7 +1384,8 @@
           "type": "object",
           "properties": {}
         }
-      ]
+      ],
+      "description": "Navigate back in browser history."
     },
     "RefreshConfig": {
       "allOf": [
@@ -1375,7 +1396,8 @@
           "type": "object",
           "properties": {}
         }
-      ]
+      ],
+      "description": "Refresh the current page."
     },
     "GetPageInfoConfig": {
       "allOf": [
@@ -1398,7 +1420,8 @@
           "type": "string",
           "description": "Dot-notation path to extract a specific key from the page info object (e.g. 'title', 'url'). If omitted, the full page info object is stored."
         }
-      }
+      },
+      "description": "Get page title, URL, and source."
     },
     "JunctionConfig": {
       "allOf": [
@@ -1466,7 +1489,8 @@
       },
       "required": [
         "operator"
-      ]
+      ],
+      "description": "Branch based on a condition."
     },
     "LoopConfig": {
       "allOf": [
@@ -1523,7 +1547,8 @@
             "actions"
           ]
         }
-      ]
+      ],
+      "description": "Repeat actions multiple times."
     },
     "DragAndDropConfig": {
       "allOf": [
@@ -1657,7 +1682,8 @@
             "sourceSelector"
           ]
         }
-      ]
+      ],
+      "description": "Drag one element to another element or position."
     },
     "CallToFlowConfig": {
       "allOf": [
@@ -1696,7 +1722,8 @@
             "flowId"
           ]
         }
-      ]
+      ],
+      "description": "Call another flow and map inputs/outputs."
     },
     "SwitchToFrameConfig": {
       "allOf": [
@@ -1775,7 +1802,8 @@
           "default": true,
           "description": "Wait for frame to become available"
         }
-      }
+      },
+      "description": "Switch to a frame or iframe."
     },
     "ExitFrameConfig": {
       "allOf": [
@@ -1804,7 +1832,8 @@
           "default": false,
           "description": "Force returning to main content after exit"
         }
-      }
+      },
+      "description": "Exit a frame back to parent or main document."
     },
     "SetViewportConfig": {
       "allOf": [
@@ -1900,7 +1929,8 @@
             "height"
           ]
         }
-      ]
+      ],
+      "description": "Set browser viewport and device emulation."
     },
     "GetElementPropertiesConfig": {
       "allOf": [
@@ -1951,7 +1981,8 @@
             "properties"
           ]
         }
-      ]
+      ],
+      "description": "Extract element properties or attributes."
     },
     "HandlePopupConfig": {
       "allOf": [
@@ -1987,7 +2018,8 @@
             }
           }
         }
-      ]
+      ],
+      "description": "Handle alerts, confirms, prompts, or modals."
     },
     "DesktopVisualBaseConfig": {
       "allOf": [
@@ -2088,7 +2120,8 @@
             "image"
           ]
         }
-      ]
+      ],
+      "description": "Wait until a desktop image appears on screen."
     },
     "DesktopFindImageConfig": {
       "allOf": [
@@ -2122,7 +2155,8 @@
             "image"
           ]
         }
-      ]
+      ],
+      "description": "Find desktop image coordinates and store match output."
     },
     "DesktopClickImageConfig": {
       "allOf": [
@@ -2190,7 +2224,8 @@
             "image"
           ]
         }
-      ]
+      ],
+      "description": "Find and click a desktop image target."
     },
     "DesktopClickPointConfig": {
       "allOf": [
@@ -2251,7 +2286,8 @@
             }
           }
         }
-      ]
+      ],
+      "description": "Click explicit desktop coordinates."
     },
     "DesktopTypeTextConfig": {
       "allOf": [
@@ -2306,7 +2342,8 @@
             "text"
           ]
         }
-      ]
+      ],
+      "description": "Type text in desktop context with optional image focus."
     },
     "DesktopMoveMouseConfig": {
       "allOf": [
@@ -2350,7 +2387,8 @@
             }
           }
         }
-      ]
+      ],
+      "description": "Move desktop cursor to absolute or relative coordinates."
     },
     "DesktopHotkeyConfig": {
       "allOf": [
@@ -2387,7 +2425,8 @@
             "keyCombination"
           ]
         }
-      ]
+      ],
+      "description": "Execute a desktop key combination."
     },
     "DesktopRunCommandConfig": {
       "allOf": [
@@ -2436,7 +2475,8 @@
             "command"
           ]
         }
-      ]
+      ],
+      "description": "Run a local shell command."
     },
     "DesktopCaptureScreenConfig": {
       "allOf": [
@@ -2498,7 +2538,8 @@
             }
           }
         }
-      ]
+      ],
+      "description": "Capture a desktop screenshot."
     }
   }
 }
