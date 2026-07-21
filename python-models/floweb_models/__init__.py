@@ -12,21 +12,20 @@ from .flow import (
     AssistantAuditEntry,
     AssistantAuditOperation,
     Edge,
-    Environment,
-    EnvironmentVariable,
     Flow,
     FlowParameters,
     FlowVariables,
-    GlobalVariable,
     LastResult,
     Position,
     Type,
-    Variable,
     Zoom,
 )
 
 from .environment import (
+    Environment,
     EnvironmentAndGlobalVariablesConfiguration,
+    GlobalVariable,
+    Variable,
 )
 
 from .action_configs import (
@@ -495,7 +494,6 @@ __all__ = [
     "EngineStatusResponse",
     "Environment",
     "EnvironmentAndGlobalVariablesConfiguration",
-    "EnvironmentVariable",
     "ErrorResponse",
     "ExecutionReport",
     "ExecutionResults",

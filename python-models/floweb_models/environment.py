@@ -4,7 +4,7 @@
 from __future__ import annotations
 
 from enum import StrEnum
-from typing import Annotated
+from typing import Annotated, Any
 
 from pydantic import AwareDatetime, BaseModel, ConfigDict, Field
 
@@ -17,10 +17,12 @@ class Type(StrEnum):
     string = 'string'
     number = 'number'
     boolean = 'boolean'
+    object = 'object'
+    array = 'array'
     url = 'url'
     file = 'file'
     json = 'json'
-    array = 'array'
+    web_identifier = 'web-identifier'
 
 
 class GlobalVariable(BaseModel):
@@ -41,13 +43,13 @@ class GlobalVariable(BaseModel):
     """
     Variable name used in flows
     """
-    value: Annotated[str, Field(max_length=10000, min_length=0)]
-    """
-    The variable's value
-    """
     type: Type
     """
     Data type of the variable
+    """
+    value: Any
+    """
+    The variable's value; any JSON value is allowed (2026-07 decision: runtime stores structured values, aligned with TS JsonValue rather than the old string-only contract)
     """
     description: Annotated[str | None, Field(max_length=500)] = None
     """
@@ -65,7 +67,7 @@ class GlobalVariable(BaseModel):
 
 class Variable(BaseModel):
     """
-    An environment-specific variable
+    A variable (environment, global, or flow parameter). Field constraints are strict; `value` accepts any JSON value.
     """
 
     model_config = ConfigDict(
@@ -73,7 +75,7 @@ class Variable(BaseModel):
     )
     id: Annotated[str, Field(max_length=50, min_length=1, pattern='^[a-zA-Z0-9_-]+$')]
     """
-    Unique identifier for the variable within this environment
+    Unique identifier for the variable
     """
     name: Annotated[
         str, Field(max_length=50, min_length=1, pattern='^[a-zA-Z_][a-zA-Z0-9_]*$')
@@ -81,23 +83,27 @@ class Variable(BaseModel):
     """
     Variable name used in flows
     """
-    value: Annotated[str, Field(max_length=10000, min_length=0)]
-    """
-    The variable's value
-    """
     type: Type
     """
     Data type of the variable
+    """
+    value: Any
+    """
+    The variable's value; any JSON value is allowed (2026-07 decision: runtime stores structured values, aligned with TS JsonValue rather than the old string-only contract)
     """
     description: Annotated[str | None, Field(max_length=500)] = None
     """
     Description of the variable's purpose
     """
+    isOutput: bool | None = None
+    """
+    Whether this is an output variable (flow parameters)
+    """
 
 
 class Environment(BaseModel):
     """
-    An environment configuration with its variables
+    An environment configuration with its variables. Unifies the standalone-entity and embedded-in-flow forms: only id+name are required so embedded partial environments validate; the server always sets the remaining fields on stored environments.
     """
 
     model_config = ConfigDict(
@@ -115,19 +121,23 @@ class Environment(BaseModel):
     """
     Description of the environment's purpose
     """
-    variables: Annotated[list[Variable], Field(min_length=0)]
+    variables: Annotated[list[Variable] | None, Field(min_length=0)] = None
     """
     Environment-specific variables
     """
-    isDefault: bool
+    isDefault: bool | None = False
     """
     Whether this is the default environment
     """
-    createdAt: AwareDatetime
+    isActive: bool | None = None
+    """
+    Whether this environment is currently active
+    """
+    createdAt: AwareDatetime | None = None
     """
     ISO 8601 timestamp when the environment was created
     """
-    updatedAt: AwareDatetime
+    updatedAt: AwareDatetime | None = None
     """
     ISO 8601 timestamp when the environment was last updated
     """

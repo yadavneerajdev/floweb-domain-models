@@ -4,6 +4,36 @@ All notable changes to the domain-models schemas are recorded here. Versions
 refer to the `$version` field carried by every schema (independent of the npm/PyPI
 package version until the consumption switch in the package plan Phase 4).
 
+## Phase 4 — 2026-07-21 — canonicalize duplicated Variable/Environment/GlobalVariable $defs
+
+Prerequisite for the single-source `index.d.ts` consolidation. `Variable`,
+`GlobalVariable`, and `Environment` were defined **twice** with diverging shapes
+— `flow.json` (embedded-in-flow, loose) and `environment.json` (standalone
+entity, strict) — which produced numeric-suffix collisions (`Environment1`,
+`Zoom1`, …) in generated output and blocked a single deduplicated bundle.
+
+### Changed
+- `environment.json` is now the **canonical home** for `Variable` /
+  `GlobalVariable` / `Environment` ($version → 2.0.0). One unified shape per type:
+  strict field constraints (id/name patterns + length limits, `type` enum, 500-char
+  description) with `value` kept as **any JSON value** — honouring the recorded
+  2026-07 decision that runtime stores structured values (not string-only). `type`
+  enum is the superset of both prior definitions plus the TS union
+  (`string|number|boolean|object|array|url|file|json|web-identifier`). `Environment`
+  requires only `id`+`name` so embedded partial environments validate; the server
+  still sets timestamps/isDefault on stored environments. `Variable.isOutput` and
+  `Environment.isActive` retained as optional.
+- `flow.json` ($version → 2.0.0) drops its local `Variable`/`EnvironmentVariable`/
+  `Environment`/`GlobalVariable` copies and cross-refs `environment.json` (8 refs).
+  Net −257 lines across schemas + generated artifacts.
+- `scripts/validate-schemas.cjs` inliner now resolves cross-file refs
+  **transitively** (parallel-execution → flow → environment) via a worklist
+  fixpoint, so 2-hop refs compile.
+
+Gates: ajv validate ✓, TS generate + tsc ✓, Python generate ✓, jest 22, pytest 15,
+check-breaking clean. `index.d.ts` still hand-written (consumers unaffected); the
+generated bundle swap is the next step.
+
 ## Phase 3 — 2026-07-20 — missing entity schemas
 
 Added the six missing entity schemas and extended the WS protocol, each authored

@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://floweb.com/schemas/environment.json",
-  "$version": "1.1.0",
+  "$version": "2.0.0",
   "title": "Environment and Global Variables Configuration",
   "description": "Schema for environment configurations and global variables used in Floweb automation flows",
   "type": "object",
@@ -35,7 +35,7 @@
   "$defs": {
     "Environment": {
       "type": "object",
-      "description": "An environment configuration with its variables",
+      "description": "An environment configuration with its variables. Unifies the standalone-entity and embedded-in-flow forms: only id+name are required so embedded partial environments validate; the server always sets the remaining fields on stored environments.",
       "properties": {
         "id": {
           "type": "string",
@@ -68,6 +68,10 @@
           "description": "Whether this is the default environment",
           "default": false
         },
+        "isActive": {
+          "type": "boolean",
+          "description": "Whether this environment is currently active"
+        },
         "createdAt": {
           "type": "string",
           "format": "date-time",
@@ -81,11 +85,7 @@
       },
       "required": [
         "id",
-        "name",
-        "variables",
-        "isDefault",
-        "createdAt",
-        "updatedAt"
+        "name"
       ]
     },
     "GlobalVariable": {
@@ -106,12 +106,6 @@
           "minLength": 1,
           "maxLength": 50
         },
-        "value": {
-          "type": "string",
-          "description": "The variable's value",
-          "minLength": 0,
-          "maxLength": 10000
-        },
         "type": {
           "type": "string",
           "description": "Data type of the variable",
@@ -119,11 +113,16 @@
             "string",
             "number",
             "boolean",
+            "object",
+            "array",
             "url",
             "file",
             "json",
-            "array"
+            "web-identifier"
           ]
+        },
+        "value": {
+          "description": "The variable's value; any JSON value is allowed (2026-07 decision: runtime stores structured values, aligned with TS JsonValue rather than the old string-only contract)"
         },
         "description": {
           "type": "string",
@@ -144,17 +143,17 @@
       "required": [
         "id",
         "name",
-        "value",
-        "type"
+        "type",
+        "value"
       ]
     },
     "Variable": {
       "type": "object",
-      "description": "An environment-specific variable",
+      "description": "A variable (environment, global, or flow parameter). Field constraints are strict; `value` accepts any JSON value.",
       "properties": {
         "id": {
           "type": "string",
-          "description": "Unique identifier for the variable within this environment",
+          "description": "Unique identifier for the variable",
           "pattern": "^[a-zA-Z0-9_-]+$",
           "minLength": 1,
           "maxLength": 50
@@ -166,12 +165,6 @@
           "minLength": 1,
           "maxLength": 50
         },
-        "value": {
-          "type": "string",
-          "description": "The variable's value",
-          "minLength": 0,
-          "maxLength": 10000
-        },
         "type": {
           "type": "string",
           "description": "Data type of the variable",
@@ -179,23 +172,32 @@
             "string",
             "number",
             "boolean",
+            "object",
+            "array",
             "url",
             "file",
             "json",
-            "array"
+            "web-identifier"
           ]
+        },
+        "value": {
+          "description": "The variable's value; any JSON value is allowed (2026-07 decision: runtime stores structured values, aligned with TS JsonValue rather than the old string-only contract)"
         },
         "description": {
           "type": "string",
           "description": "Description of the variable's purpose",
           "maxLength": 500
+        },
+        "isOutput": {
+          "type": "boolean",
+          "description": "Whether this is an output variable (flow parameters)"
         }
       },
       "required": [
         "id",
         "name",
-        "value",
-        "type"
+        "type",
+        "value"
       ]
     }
   }

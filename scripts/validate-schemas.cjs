@@ -54,8 +54,36 @@ function rootDefName(file) {
 
 // Return a self-contained copy of `schema`: cross-file refs are rewritten to
 // local "#/$defs/..." and the referenced files' $defs (and roots) are merged in.
+// Resolution is transitive — a merged def may itself reference a third file
+// (e.g. parallel-execution -> flow -> environment), so every newly merged def
+// is walked as well until no cross-file refs remain.
 function inline(schema) {
-  const merged = Object.assign({}, schema.$defs || {});
+  const merged = {};
+  const worklist = []; // names of merged defs whose bodies still need rewriting
+
+  const ensureFileDefs = (file) => {
+    for (const [dn, dv] of Object.entries(loadSchema(file).$defs || {})) {
+      if (!(dn in merged)) {
+        merged[dn] = dv;
+        worklist.push(dn);
+      }
+    }
+  };
+  const ensureRoot = (file) => {
+    ensureFileDefs(file);
+    const name = rootDefName(file);
+    if (!(name in merged)) {
+      const body = Object.assign({}, loadSchema(file));
+      delete body.$id;
+      delete body.$schema;
+      delete body.$version;
+      delete body.$defs;
+      merged[name] = body;
+      worklist.push(name);
+    }
+    return name;
+  };
+
   const walk = (node) => {
     if (Array.isArray(node)) return node.map(walk);
     if (node && typeof node === "object") {
@@ -64,30 +92,13 @@ function inline(schema) {
         if (k === "$ref" && typeof v === "string") {
           const frag = v.match(CROSS_FILE);
           if (frag) {
-            const [, file, name] = frag;
-            for (const [dn, dv] of Object.entries(loadSchema(file).$defs || {})) {
-              if (!(dn in merged)) merged[dn] = dv;
-            }
-            out[k] = `#/$defs/${name}`;
+            ensureFileDefs(frag[1]);
+            out[k] = `#/$defs/${frag[2]}`;
             continue;
           }
           const rootRef = v.match(ROOT_FILE);
           if (rootRef) {
-            const [, file] = rootRef;
-            const ref = loadSchema(file);
-            const name = rootDefName(file);
-            for (const [dn, dv] of Object.entries(ref.$defs || {})) {
-              if (!(dn in merged)) merged[dn] = dv;
-            }
-            if (!(name in merged)) {
-              const body = Object.assign({}, ref);
-              delete body.$id;
-              delete body.$schema;
-              delete body.$version;
-              delete body.$defs;
-              merged[name] = body;
-            }
-            out[k] = `#/$defs/${name}`;
+            out[k] = `#/$defs/${ensureRoot(rootRef[1])}`;
             continue;
           }
         }
@@ -97,9 +108,23 @@ function inline(schema) {
     }
     return node;
   };
-  const copy = walk(schema);
+
+  // Seed the schema's own $defs, then rewrite the root and every merged def to
+  // a fixpoint (walking a def may enqueue further defs from other files).
+  for (const [dn, dv] of Object.entries(schema.$defs || {})) {
+    if (!(dn in merged)) {
+      merged[dn] = dv;
+      worklist.push(dn);
+    }
+  }
+  const { $defs: _own, ...rootNoDefs } = schema;
+  const copy = walk(rootNoDefs);
+  while (worklist.length) {
+    const name = worklist.shift();
+    merged[name] = walk(merged[name]);
+  }
   delete copy.$id; // avoid URL-base resolution surprises during local validation
-  copy.$defs = Object.assign({}, merged, copy.$defs || {});
+  copy.$defs = merged;
   return copy;
 }
 

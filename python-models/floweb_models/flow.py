@@ -8,6 +8,8 @@ from typing import Annotated, Any
 
 from pydantic import AwareDatetime, BaseModel, ConfigDict, Field
 
+from . import environment as environment_1
+
 
 class Type(StrEnum):
     """
@@ -214,45 +216,15 @@ class Zoom(BaseModel):
     """
 
 
-class Variable(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    id: str
-    """
-    Variable identifier
-    """
-    name: str
-    """
-    Variable name
-    """
-    type: str
-    """
-    Variable data type
-    """
-    value: Any
-    """
-    Variable value; any JSON value is allowed (decision 2026-07: runtime stores structured values, aligned with TS JsonValue rather than the old string-only contract)
-    """
-    description: str | None = None
-    """
-    Optional description
-    """
-    isOutput: bool | None = None
-    """
-    Whether this is an output variable
-    """
-
-
 class FlowVariables(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    input: list[Variable]
+    input: list[environment_1.Variable]
     """
     Input variables
     """
-    output: list[Variable]
+    output: list[environment_1.Variable]
     """
     Output variables
     """
@@ -262,119 +234,25 @@ class FlowParameters(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    input: list[Variable]
+    input: list[environment_1.Variable]
     """
     Input parameters
     """
-    output: list[Variable]
+    output: list[environment_1.Variable]
     """
     Output parameters
     """
-    parameterBefore: Annotated[list[Variable] | None, Field(default_factory=list)]
+    parameterBefore: Annotated[
+        list[environment_1.Variable] | None, Field(default_factory=list)
+    ]
     """
     Parameters to be set before execution
     """
-    variableBefore: Annotated[list[Variable] | None, Field(default_factory=list)]
+    variableBefore: Annotated[
+        list[environment_1.Variable] | None, Field(default_factory=list)
+    ]
     """
     Variables to be set before execution
-    """
-
-
-class EnvironmentVariable(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    id: str
-    """
-    Variable identifier
-    """
-    name: str
-    """
-    Variable name
-    """
-    type: str
-    """
-    Variable data type
-    """
-    value: Any
-    """
-    Variable value; any JSON value is allowed (aligned with TS JsonValue)
-    """
-    description: str | None = None
-    """
-    Optional description
-    """
-
-
-class Environment(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    id: str
-    """
-    Environment identifier
-    """
-    name: str
-    """
-    Environment name
-    """
-    variables: list[EnvironmentVariable | Variable] | None = None
-    """
-    Environment variables; historical payloads may carry full Variable objects, so both shapes are accepted
-    """
-    description: str | None = None
-    """
-    Environment description
-    """
-    isDefault: bool | None = None
-    """
-    Whether this is the default environment
-    """
-    isActive: bool | None = None
-    """
-    Whether this environment is active
-    """
-    createdAt: AwareDatetime | None = None
-    """
-    Creation timestamp
-    """
-    updatedAt: AwareDatetime | None = None
-    """
-    Last update timestamp
-    """
-
-
-class GlobalVariable(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    id: str
-    """
-    Variable identifier
-    """
-    name: str
-    """
-    Variable name
-    """
-    type: str
-    """
-    Variable data type
-    """
-    value: Any
-    """
-    Variable value; any JSON value is allowed (aligned with TS JsonValue)
-    """
-    description: str | None = None
-    """
-    Optional description
-    """
-    createdAt: AwareDatetime | None = None
-    """
-    Creation timestamp
-    """
-    updatedAt: AwareDatetime | None = None
-    """
-    Last update timestamp
     """
 
 
@@ -438,11 +316,11 @@ class Flow(BaseModel):
     """
     Flow parameters for configuration
     """
-    environment: Environment | None = None
+    environment: environment_1.Environment | None = None
     """
     Environment configuration
     """
-    globalVariables: list[GlobalVariable] | None = None
+    globalVariables: list[environment_1.GlobalVariable] | None = None
     """
     Global variables available to the flow
     """

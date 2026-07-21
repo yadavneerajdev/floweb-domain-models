@@ -73,12 +73,11 @@ export interface FlowSchema {
   Action?: Action;
   Edge?: Edge;
   Zoom?: Zoom1;
-  Variable?: Variable;
   FlowVariables?: FlowVariables1;
   FlowParameters?: FlowParameters1;
-  EnvironmentVariable?: EnvironmentVariable;
   Environment?: Environment1;
   GlobalVariable?: GlobalVariable;
+  Variable?: Variable;
 }
 export interface Action {
   /**
@@ -192,31 +191,34 @@ export interface FlowVariables {
    */
   output: Variable[];
 }
+/**
+ * A variable (environment, global, or flow parameter). Field constraints are strict; `value` accepts any JSON value.
+ */
 export interface Variable {
   /**
-   * Variable identifier
+   * Unique identifier for the variable
    */
   id: string;
   /**
-   * Variable name
+   * Variable name used in flows
    */
   name: string;
   /**
-   * Variable data type
+   * Data type of the variable
    */
-  type: string;
+  type: "string" | "number" | "boolean" | "object" | "array" | "url" | "file" | "json" | "web-identifier";
   /**
-   * Variable value; any JSON value is allowed (decision 2026-07: runtime stores structured values, aligned with TS JsonValue rather than the old string-only contract)
+   * The variable's value; any JSON value is allowed (2026-07 decision: runtime stores structured values, aligned with TS JsonValue rather than the old string-only contract)
    */
   value: {
     [k: string]: unknown;
   };
   /**
-   * Optional description
+   * Description of the variable's purpose
    */
   description?: string;
   /**
-   * Whether this is an output variable
+   * Whether this is an output variable (flow parameters)
    */
   isOutput?: boolean;
 }
@@ -246,91 +248,72 @@ export interface FlowParameters {
  */
 export interface Environment {
   /**
-   * Environment identifier
+   * Unique identifier for the environment
    */
   id: string;
   /**
-   * Environment name
+   * Display name for the environment
    */
   name: string;
   /**
-   * Environment variables; historical payloads may carry full Variable objects, so both shapes are accepted
-   */
-  variables?: (EnvironmentVariable | Variable)[];
-  /**
-   * Environment description
+   * Description of the environment's purpose
    */
   description?: string;
+  /**
+   * Environment-specific variables
+   *
+   * @minItems 0
+   */
+  variables?: Variable[];
   /**
    * Whether this is the default environment
    */
   isDefault?: boolean;
   /**
-   * Whether this environment is active
+   * Whether this environment is currently active
    */
   isActive?: boolean;
   /**
-   * Creation timestamp
+   * ISO 8601 timestamp when the environment was created
    */
   createdAt?: string;
   /**
-   * Last update timestamp
+   * ISO 8601 timestamp when the environment was last updated
    */
   updatedAt?: string;
 }
-export interface EnvironmentVariable {
-  /**
-   * Variable identifier
-   */
-  id: string;
-  /**
-   * Variable name
-   */
-  name: string;
-  /**
-   * Variable data type
-   */
-  type: string;
-  /**
-   * Variable value; any JSON value is allowed (aligned with TS JsonValue)
-   */
-  value: {
-    [k: string]: unknown;
-  };
-  /**
-   * Optional description
-   */
-  description?: string;
-}
+/**
+ * A global variable available across all environments
+ */
 export interface GlobalVariable {
   /**
-   * Variable identifier
+   * Unique identifier for the global variable
    */
   id: string;
   /**
-   * Variable name
+   * Variable name used in flows
    */
   name: string;
   /**
-   * Variable data type
+   * Data type of the variable
    */
-  type: string;
+  type: "string" | "number" | "boolean" | "object" | "array" | "url" | "file" | "json" | "web-identifier";
   /**
-   * Variable value; any JSON value is allowed (aligned with TS JsonValue)
+   * The variable's value; any JSON value is allowed (2026-07 decision: runtime stores structured values, aligned with TS JsonValue rather than the old string-only contract)
    */
   value: {
     [k: string]: unknown;
   };
   /**
-   * Optional description
+   * Description of the variable's purpose
    */
   description?: string;
   /**
-   * Creation timestamp
+   * ISO 8601 timestamp when the variable was created
    */
   createdAt?: string;
   /**
-   * Last update timestamp
+   * ISO 8601 timestamp when the variable was last updated
    */
   updatedAt?: string;
 }
@@ -434,37 +417,42 @@ export interface FlowParameters1 {
    */
   variableBefore?: Variable[];
 }
+/**
+ * An environment configuration with its variables. Unifies the standalone-entity and embedded-in-flow forms: only id+name are required so embedded partial environments validate; the server always sets the remaining fields on stored environments.
+ */
 export interface Environment1 {
   /**
-   * Environment identifier
+   * Unique identifier for the environment
    */
   id: string;
   /**
-   * Environment name
+   * Display name for the environment
    */
   name: string;
   /**
-   * Environment variables; historical payloads may carry full Variable objects, so both shapes are accepted
-   */
-  variables?: (EnvironmentVariable | Variable)[];
-  /**
-   * Environment description
+   * Description of the environment's purpose
    */
   description?: string;
+  /**
+   * Environment-specific variables
+   *
+   * @minItems 0
+   */
+  variables?: Variable[];
   /**
    * Whether this is the default environment
    */
   isDefault?: boolean;
   /**
-   * Whether this environment is active
+   * Whether this environment is currently active
    */
   isActive?: boolean;
   /**
-   * Creation timestamp
+   * ISO 8601 timestamp when the environment was created
    */
   createdAt?: string;
   /**
-   * Last update timestamp
+   * ISO 8601 timestamp when the environment was last updated
    */
   updatedAt?: string;
 }

@@ -23,7 +23,7 @@ export interface EnvironmentandGlobalVariablesConfigurationSchema {
   Variable?: Variable;
 }
 /**
- * An environment configuration with its variables
+ * An environment configuration with its variables. Unifies the standalone-entity and embedded-in-flow forms: only id+name are required so embedded partial environments validate; the server always sets the remaining fields on stored environments.
  */
 export interface Environment {
   /**
@@ -43,26 +43,30 @@ export interface Environment {
    *
    * @minItems 0
    */
-  variables: Variable[];
+  variables?: Variable[];
   /**
    * Whether this is the default environment
    */
-  isDefault: boolean;
+  isDefault?: boolean;
+  /**
+   * Whether this environment is currently active
+   */
+  isActive?: boolean;
   /**
    * ISO 8601 timestamp when the environment was created
    */
-  createdAt: string;
+  createdAt?: string;
   /**
    * ISO 8601 timestamp when the environment was last updated
    */
-  updatedAt: string;
+  updatedAt?: string;
 }
 /**
- * An environment-specific variable
+ * A variable (environment, global, or flow parameter). Field constraints are strict; `value` accepts any JSON value.
  */
 export interface Variable {
   /**
-   * Unique identifier for the variable within this environment
+   * Unique identifier for the variable
    */
   id: string;
   /**
@@ -70,17 +74,23 @@ export interface Variable {
    */
   name: string;
   /**
-   * The variable's value
-   */
-  value: string;
-  /**
    * Data type of the variable
    */
-  type: "string" | "number" | "boolean" | "url" | "file" | "json" | "array";
+  type: "string" | "number" | "boolean" | "object" | "array" | "url" | "file" | "json" | "web-identifier";
+  /**
+   * The variable's value; any JSON value is allowed (2026-07 decision: runtime stores structured values, aligned with TS JsonValue rather than the old string-only contract)
+   */
+  value: {
+    [k: string]: unknown;
+  };
   /**
    * Description of the variable's purpose
    */
   description?: string;
+  /**
+   * Whether this is an output variable (flow parameters)
+   */
+  isOutput?: boolean;
 }
 /**
  * A global variable available across all environments
@@ -95,13 +105,15 @@ export interface GlobalVariable {
    */
   name: string;
   /**
-   * The variable's value
-   */
-  value: string;
-  /**
    * Data type of the variable
    */
-  type: "string" | "number" | "boolean" | "url" | "file" | "json" | "array";
+  type: "string" | "number" | "boolean" | "object" | "array" | "url" | "file" | "json" | "web-identifier";
+  /**
+   * The variable's value; any JSON value is allowed (2026-07 decision: runtime stores structured values, aligned with TS JsonValue rather than the old string-only contract)
+   */
+  value: {
+    [k: string]: unknown;
+  };
   /**
    * Description of the variable's purpose
    */
