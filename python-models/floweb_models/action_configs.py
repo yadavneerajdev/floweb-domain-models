@@ -6,7 +6,7 @@ from __future__ import annotations
 from enum import StrEnum
 from typing import Annotated, Any
 
-from pydantic import AnyUrl, BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from ._base import FlowebActionBaseModel
 
@@ -332,7 +332,7 @@ class ClickConfig(BaseActionConfig):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    selector: str
+    selector: str | None = ''
     """
     CSS selector for element to click
     """
@@ -378,11 +378,11 @@ class InputConfig(BaseActionConfig):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    selector: str
+    selector: str | None = ''
     """
     CSS selector for input element
     """
-    text: str
+    text: str | None = ''
     """
     Text to input
     """
@@ -408,7 +408,7 @@ class NavigateConfig(BaseActionConfig):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    url: AnyUrl
+    url: str
     """
     URL to navigate to
     """
@@ -438,7 +438,7 @@ class WaitConfig(BaseActionConfig):
     """
     Duration to wait in milliseconds
     """
-    selector: str | None = None
+    selector: str | None = ''
     """
     CSS selector for element to wait for
     """
@@ -484,7 +484,7 @@ class AssertionConfig(BaseActionConfig):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    selector: str
+    selector: str | None = ''
     """
     CSS selector for element
     """
@@ -492,7 +492,7 @@ class AssertionConfig(BaseActionConfig):
     """
     Type of assertion
     """
-    expectedValue: str
+    expectedValue: str | None = ''
     """
     Expected value for assertion
     """
@@ -530,7 +530,7 @@ class ScreenshotConfig(BaseActionConfig):
     """
     Type of screenshot to capture
     """
-    selector: str | None = None
+    selector: str | None = ''
     """
     CSS selector for element screenshots
     """
@@ -619,7 +619,7 @@ class FormFillConfig(BaseActionConfig):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    fields: list[FormField]
+    fields: list[FormField] | None = None
     """
     Array of form field configurations
     """
@@ -653,7 +653,7 @@ class ApiCallConfig(BaseActionConfig):
     """
     HTTP method
     """
-    url: AnyUrl
+    url: str | None = ''
     """
     API endpoint URL
     """
@@ -661,7 +661,7 @@ class ApiCallConfig(BaseActionConfig):
     """
     HTTP headers
     """
-    body: str | None = None
+    body: str | None = ''
     """
     Request body
     """
@@ -669,7 +669,7 @@ class ApiCallConfig(BaseActionConfig):
     """
     Variable to store response
     """
-    responsePath: str | None = None
+    responsePath: str | None = ''
     """
     Optional path into the response to store in the output variable, e.g. data.token, headers["Content-Type"], data.items[0].id. Applied to the response object {status_code, headers, data, url} (body fields under data.). When empty, the full response object is stored.
     """
@@ -697,11 +697,11 @@ class ApiCallConfig(BaseActionConfig):
     """
     Verify SSL certificates
     """
-    basicAuthUsername: str | None = None
+    basicAuthUsername: str | None = ''
     """
     Basic auth username
     """
-    basicAuthPassword: str | None = None
+    basicAuthPassword: str | None = ''
     """
     Basic auth password
     """
@@ -715,11 +715,11 @@ class DatabaseQueryConfig(BaseActionConfig):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    connectionString: str
+    connectionString: str | None = ''
     """
     Database connection string
     """
-    query: str
+    query: str | None = ''
     """
     SQL query to execute
     """
@@ -749,15 +749,15 @@ class DatabaseInsertConfig(BaseActionConfig):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    connectionString: str
+    connectionString: str | None = ''
     """
     Database connection string
     """
-    table: str
+    table: str | None = ''
     """
     Table name to insert into
     """
-    data: dict[str, Any]
+    data: dict[str, Any] | None = None
     """
     Data to insert (column-value pairs)
     """
@@ -783,11 +783,11 @@ class FileUploadConfig(BaseActionConfig):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    selector: str
+    selector: str | None = ''
     """
     CSS selector for file input
     """
-    filePath: str
+    filePath: str | None = ''
     """
     Path to file to upload
     """
@@ -813,11 +813,11 @@ class FileDownloadConfig(BaseActionConfig):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    selector: str
+    selector: str | None = ''
     """
     CSS selector for download link
     """
-    downloadPath: str
+    downloadPath: str | None = ''
     """
     Path to save downloaded file
     """
@@ -843,7 +843,7 @@ class CustomCodeConfig(BaseActionConfig):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    code: str
+    code: str | None = ''
     """
     JavaScript code to execute
     """
@@ -877,7 +877,7 @@ class SubflowConfig(BaseActionConfig):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    flowId: str
+    flowId: str | None = None
     """
     ID of flow to call
     """
@@ -919,17 +919,25 @@ class SendKeysConfig(BaseActionConfig):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    selector: str | None = None
+    selector: str | None = ''
     """
     CSS selector for element to send keys to
     """
-    keys: str
+    keys: str | None = None
     """
     Keys to send
     """
     waitForElement: bool | None = True
     """
     Wait for element to be present
+    """
+    scrollIntoView: bool | None = True
+    """
+    Scroll element into view before acting
+    """
+    waitTime: int | None = 1000
+    """
+    Wait time in milliseconds
     """
     keyCombinations: list[Any] | None = None
     """
@@ -979,7 +987,7 @@ class AssertVisibleConfig(BaseActionConfig):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    selector: str
+    selector: str | None = ''
     """
     CSS selector for element to check
     """
@@ -991,6 +999,10 @@ class AssertVisibleConfig(BaseActionConfig):
     """
     Wait for element to be present
     """
+    scrollIntoView: bool | None = True
+    """
+    Scroll element into view before acting
+    """
 
 
 class ClearInputConfig(BaseActionConfig):
@@ -1001,13 +1013,17 @@ class ClearInputConfig(BaseActionConfig):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    selector: str
+    selector: str | None = ''
     """
     CSS selector for input element
     """
     waitForElement: bool | None = True
     """
     Wait for element to be present
+    """
+    scrollIntoView: bool | None = True
+    """
+    Scroll element into view before acting
     """
     maintainFocus: bool | None = False
     """
@@ -1023,9 +1039,17 @@ class OpenNewTabConfig(BaseActionConfig):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    url: str
+    url: str | None = ''
     """
     URL to open in new tab
+    """
+    waitForLoad: bool | None = True
+    """
+    Wait for page load to complete
+    """
+    switchToNewTab: bool | None = True
+    """
+    Switch focus to the newly opened tab
     """
 
 
@@ -1037,15 +1061,23 @@ class SwitchTabConfig(BaseActionConfig):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    tabIndex: Annotated[int | None, Field(ge=0)] = None
+    tabIndex: Annotated[int | None, Field(ge=0)] = 0
     """
     Tab index to switch to
     """
-    tabTitle: str | None = None
+    tabTitle: str | None = ''
     """
     Tab title to switch to (alternative to index)
     """
-    tabUrl: str | None = None
+    waitForLoad: bool | None = True
+    """
+    Wait for page load to complete
+    """
+    takeScreenshot: bool | None = False
+    """
+    Capture a screenshot after the action
+    """
+    tabUrl: str | None = ''
     """
     URL of tab to switch to (alternative to index)
     """
@@ -1063,6 +1095,14 @@ class GoForwardConfig(BaseActionConfig):
     model_config = ConfigDict(
         populate_by_name=True,
     )
+    waitForLoad: bool | None = True
+    """
+    Wait for page load to complete
+    """
+    takeScreenshot: bool | None = False
+    """
+    Capture a screenshot after the action
+    """
 
 
 class GoBackConfig(BaseActionConfig):
@@ -1073,6 +1113,14 @@ class GoBackConfig(BaseActionConfig):
     model_config = ConfigDict(
         populate_by_name=True,
     )
+    waitForLoad: bool | None = True
+    """
+    Wait for page load to complete
+    """
+    takeScreenshot: bool | None = False
+    """
+    Capture a screenshot after the action
+    """
 
 
 class RefreshConfig(BaseActionConfig):
@@ -1083,6 +1131,22 @@ class RefreshConfig(BaseActionConfig):
     model_config = ConfigDict(
         populate_by_name=True,
     )
+    waitForLoad: bool | None = True
+    """
+    Wait for page load to complete
+    """
+    takeScreenshot: bool | None = False
+    """
+    Capture a screenshot after the action
+    """
+    hardRefresh: bool | None = False
+    """
+    Perform a hard refresh bypassing the cache
+    """
+    preserveFormData: bool | None = True
+    """
+    Preserve form data across the refresh
+    """
 
 
 class GetPageInfoConfig(BaseActionConfig):
@@ -1097,7 +1161,31 @@ class GetPageInfoConfig(BaseActionConfig):
     """
     Variable to store page information
     """
-    outputKey: str | None = None
+    getTitle: bool | None = True
+    """
+    Include page title in the output
+    """
+    getUrl: bool | None = True
+    """
+    Include page URL in the output
+    """
+    getSource: bool | None = False
+    """
+    Include page source in the output
+    """
+    waitForLoad: bool | None = True
+    """
+    Wait for page load to complete
+    """
+    takeScreenshot: bool | None = False
+    """
+    Capture a screenshot after the action
+    """
+    formatOutput: str | None = 'object'
+    """
+    Output format for the page info
+    """
+    outputKey: str | None = ''
     """
     Dot-notation path to extract a specific key from the page info object (e.g. 'title', 'url'). If omitted, the full page info object is stored.
     """
@@ -1129,7 +1217,7 @@ class ConditionalConfig(BaseActionConfig):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    condition: str
+    condition: str | None = ''
     """
     JavaScript condition to evaluate
     """
@@ -1141,7 +1229,19 @@ class ConditionalConfig(BaseActionConfig):
     """
     Actions to execute if condition is false
     """
-    operator: str
+    value: str | None = ''
+    """
+    Value to compare against
+    """
+    trueAction: str | None = ''
+    """
+    Action to take when the condition is true
+    """
+    falseAction: str | None = ''
+    """
+    Action to take when the condition is false
+    """
+    operator: str | None = 'equals'
     """
     Comparison operator used by editor helpers
     """
@@ -1159,11 +1259,11 @@ class LoopConfig(BaseActionConfig):
     """
     Type of loop
     """
-    count: Annotated[int | None, Field(ge=1)] = None
+    count: Annotated[int | None, Field(ge=1)] = 3
     """
     Number of iterations (for count loops)
     """
-    condition: str | None = None
+    condition: str | None = ''
     """
     Condition to continue loop (for condition loops)
     """
@@ -1175,7 +1275,7 @@ class LoopConfig(BaseActionConfig):
     """
     Variable name for current item (for foreach loops)
     """
-    actions: list[dict[str, Any]]
+    actions: list[dict[str, Any]] | None = None
     """
     Actions to execute in each iteration
     """
@@ -1193,11 +1293,11 @@ class DragAndDropConfig(BaseActionConfig):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    sourceSelector: str
+    sourceSelector: str | None = ''
     """
     CSS selector for element to drag
     """
-    targetSelector: str | None = None
+    targetSelector: str | None = ''
     """
     CSS selector for drop target (required in element mode)
     """
@@ -1239,6 +1339,38 @@ class DragAndDropConfig(BaseActionConfig):
     """
     Wait for elements to be present
     """
+    waitTime: int | None = 1000
+    """
+    Wait time in milliseconds
+    """
+    sourceImage: str | None = ''
+    """
+    Visual reference image for the drag source
+    """
+    targetImage: str | None = ''
+    """
+    Visual reference image for the drop target
+    """
+    scrollIntoView: bool | None = True
+    """
+    Scroll element into view before acting
+    """
+    dragDelay: int | None = 500
+    """
+    Delay before starting the drag, in milliseconds
+    """
+    dropDelay: int | None = 500
+    """
+    Delay before dropping, in milliseconds
+    """
+    validateDrop: bool | None = True
+    """
+    Validate the drop succeeded
+    """
+    forceDrag: bool | None = False
+    """
+    Force the drag even if the element is not draggable
+    """
 
 
 class CallToFlowConfig(BaseActionConfig):
@@ -1249,11 +1381,11 @@ class CallToFlowConfig(BaseActionConfig):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    flowId: str
+    flowId: str | None = ''
     """
     ID of flow to call
     """
-    inputParameters: dict[str, Any] | None = None
+    inputParameters: list[Any] | None = None
     """
     Input parameters to pass to subflow
     """
@@ -1269,6 +1401,22 @@ class CallToFlowConfig(BaseActionConfig):
     """
     Execute subflow asynchronously
     """
+    flowName: str | None = ''
+    """
+    Name of the subflow to call
+    """
+    outputParameters: list[Any] | None = None
+    """
+    Output parameters returned from the subflow
+    """
+    logExecution: bool | None = True
+    """
+    Log execution details
+    """
+    propagateErrors: bool | None = True
+    """
+    Propagate subflow errors to the parent flow
+    """
 
 
 class SwitchToFrameConfig(BaseActionConfig):
@@ -1279,7 +1427,7 @@ class SwitchToFrameConfig(BaseActionConfig):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    frameSelector: str | None = None
+    frameSelector: str | None = ''
     """
     CSS selector or frame name/ID
     """
@@ -1292,19 +1440,47 @@ class SwitchToFrameConfig(BaseActionConfig):
     Ordered fallback selectors for the frame element
     """
     frameSemanticTarget: SemanticTarget | None = None
-    frameIndex: Annotated[int | None, Field(ge=0)] = None
+    frameIndex: Annotated[int | None, Field(ge=0)] = 0
     """
     Frame index (alternative to selector)
+    """
+    timeout: int | None = 10000
+    """
+    Timeout in milliseconds
+    """
+    validateFrame: bool | None = True
+    """
+    Validate the frame switch succeeded
+    """
+    scrollIntoView: bool | None = True
+    """
+    Scroll element into view before acting
+    """
+    takeScreenshot: bool | None = False
+    """
+    Capture a screenshot after the action
+    """
+    logFrameInfo: bool | None = True
+    """
+    Log frame-switch details
+    """
+    fallbackToIndex: bool | None = True
+    """
+    Fall back to frame index when the selector fails
+    """
+    fallbackIndex: int | None = 0
+    """
+    Frame index to use as a fallback
     """
     switchMethod: str | None = 'selector'
     """
     Switch strategy (selector/index/name/id)
     """
-    frameName: str | None = None
+    frameName: str | None = ''
     """
     Frame name (alternative to selector/index)
     """
-    frameId: str | None = None
+    frameId: str | None = ''
     """
     Frame id (alternative to selector/index)
     """
@@ -1322,6 +1498,34 @@ class ExitFrameConfig(BaseActionConfig):
     model_config = ConfigDict(
         populate_by_name=True,
     )
+    exitLevels: int | None = 1
+    """
+    Number of parent levels to exit when exitMethod is levels
+    """
+    waitForExit: bool | None = True
+    """
+    Wait for the frame exit to complete
+    """
+    timeout: int | None = 5000
+    """
+    Timeout in milliseconds
+    """
+    validateExit: bool | None = True
+    """
+    Validate the frame exit succeeded
+    """
+    takeScreenshot: bool | None = False
+    """
+    Capture a screenshot after the action
+    """
+    logExitInfo: bool | None = True
+    """
+    Log frame-exit details
+    """
+    preserveContext: bool | None = False
+    """
+    Preserve execution context after exiting the frame
+    """
     exitMethod: str | None = 'parent'
     """
     Exit strategy (parent/main/levels)
@@ -1348,15 +1552,15 @@ class SetViewportConfig(BaseActionConfig):
     """
     Type of viewport configuration
     """
-    width: Annotated[int, Field(ge=1)]
+    width: Annotated[int | None, Field(ge=1)] = 1920
     """
     Viewport width in pixels
     """
-    height: Annotated[int, Field(ge=1)]
+    height: Annotated[int | None, Field(ge=1)] = 1080
     """
     Viewport height in pixels
     """
-    screenSizePreset: str | None = None
+    screenSizePreset: str | None = 'desktop-large'
     """
     Preset screen size name
     """
@@ -1380,7 +1584,7 @@ class SetViewportConfig(BaseActionConfig):
     """
     Use landscape orientation
     """
-    userAgent: str | None = None
+    userAgent: str | None = ''
     """
     Custom user agent string
     """
@@ -1414,11 +1618,11 @@ class GetElementPropertiesConfig(BaseActionConfig):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    selector: str
+    selector: str | None = ''
     """
     CSS selector for element
     """
-    properties: list[Property]
+    properties: list[Property] | None = None
     """
     Properties to retrieve
     """
@@ -1429,6 +1633,38 @@ class GetElementPropertiesConfig(BaseActionConfig):
     waitForElement: bool | None = True
     """
     Wait for element to be present
+    """
+    propertyType: str | None = 'text'
+    """
+    Kind of property to extract
+    """
+    attributeName: str | None = ''
+    """
+    Attribute name to read when propertyType is attribute
+    """
+    timeout: int | None = 10000
+    """
+    Timeout in milliseconds
+    """
+    scrollIntoView: bool | None = True
+    """
+    Scroll element into view before acting
+    """
+    trimWhitespace: bool | None = True
+    """
+    Trim whitespace from the extracted value
+    """
+    fallbackValue: str | None = ''
+    """
+    Value returned when extraction fails
+    """
+    validateExtraction: bool | None = True
+    """
+    Validate the extraction succeeded
+    """
+    logExtraction: bool | None = True
+    """
+    Log extraction details
     """
 
 
@@ -1455,6 +1691,30 @@ class HandlePopupConfig(BaseActionConfig):
     timeout: int | None = 5000
     """
     Timeout in milliseconds
+    """
+    popupType: str | None = 'any'
+    """
+    Expected popup type
+    """
+    popupAction: str | None = 'accept'
+    """
+    How to handle the popup
+    """
+    inputText: str | None = ''
+    """
+    Text to enter when the popup requires input
+    """
+    selector: str | None = ''
+    """
+    CSS selector for the target element
+    """
+    capturePopupText: bool | None = True
+    """
+    Capture the popup text into the output
+    """
+    outputVariable: str | None = 'popupResult'
+    """
+    Variable name to store the action output
     """
 
 
@@ -1508,7 +1768,7 @@ class DesktopWaitForImageConfig(DesktopVisualBaseConfig):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    image: str
+    image: str | None = ''
     """
     Base64 encoded reference image to locate on the desktop
     """
@@ -1538,7 +1798,7 @@ class DesktopFindImageConfig(DesktopVisualBaseConfig):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    image: str
+    image: str | None = ''
     """
     Base64 encoded reference image to locate on the desktop
     """
@@ -1564,7 +1824,7 @@ class DesktopClickImageConfig(DesktopVisualBaseConfig):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    image: str
+    image: str | None = ''
     """
     Base64 encoded reference image to click
     """
@@ -1652,7 +1912,7 @@ class DesktopTypeTextConfig(DesktopVisualBaseConfig):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    text: str
+    text: str | None = ''
     """
     Text to type on the desktop
     """
@@ -1664,7 +1924,7 @@ class DesktopTypeTextConfig(DesktopVisualBaseConfig):
     """
     Click target image before typing to focus input
     """
-    image: str | None = None
+    image: str | None = ''
     """
     Optional target image used when clickImageFirst is enabled
     """
@@ -1728,7 +1988,7 @@ class DesktopHotkeyConfig(BaseActionConfig):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    keyCombination: str
+    keyCombination: str | None = ''
     """
     Key combination (e.g. ctrl+shift+p)
     """
@@ -1754,7 +2014,7 @@ class DesktopRunCommandConfig(BaseActionConfig):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    command: str
+    command: str | None = ''
     """
     Shell command to execute
     """
@@ -1762,7 +2022,7 @@ class DesktopRunCommandConfig(BaseActionConfig):
     """
     Run command through shell
     """
-    workingDirectory: str | None = None
+    workingDirectory: str | None = ''
     """
     Optional working directory for command execution
     """

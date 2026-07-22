@@ -8,7 +8,7 @@ export type ClickConfig = BaseActionConfig & {
   /**
    * CSS selector for element to click
    */
-  selector: string;
+  selector?: string;
   /**
    * Wait time in milliseconds
    */
@@ -49,11 +49,11 @@ export type InputConfig = BaseActionConfig & {
   /**
    * CSS selector for input element
    */
-  selector: string;
+  selector?: string;
   /**
    * Text to input
    */
-  text: string;
+  text?: string;
   /**
    * Clear field before typing
    */
@@ -84,11 +84,19 @@ export type SendKeysConfig1 = BaseActionConfig & {
   /**
    * Keys to send
    */
-  keys: string;
+  keys?: string;
   /**
    * Wait for element to be present
    */
   waitForElement?: boolean;
+  /**
+   * Scroll element into view before acting
+   */
+  scrollIntoView?: boolean;
+  /**
+   * Wait time in milliseconds
+   */
+  waitTime?: number;
 };
 /**
  * Wait for a duration or element state.
@@ -245,7 +253,7 @@ export type AssertionConfig1 = BaseActionConfig & {
   /**
    * CSS selector for element
    */
-  selector: string;
+  selector?: string;
   /**
    * Type of assertion
    */
@@ -253,7 +261,7 @@ export type AssertionConfig1 = BaseActionConfig & {
   /**
    * Expected value for assertion
    */
-  expectedValue: string;
+  expectedValue?: string;
   /**
    * Wait for element to be present
    */
@@ -274,7 +282,7 @@ export type AssertVisibleConfig = BaseActionConfig & {
   /**
    * CSS selector for element to check
    */
-  selector: string;
+  selector?: string;
   /**
    * Timeout in milliseconds
    */
@@ -283,6 +291,10 @@ export type AssertVisibleConfig = BaseActionConfig & {
    * Wait for element to be present
    */
   waitForElement?: boolean;
+  /**
+   * Scroll element into view before acting
+   */
+  scrollIntoView?: boolean;
 };
 /**
  * Fill multiple form fields at once.
@@ -291,7 +303,7 @@ export type FormFillConfig = BaseActionConfig & {
   /**
    * Array of form field configurations
    */
-  fields: FormField[];
+  fields?: FormField[];
   /**
    * Wait for all form elements to be present
    */
@@ -322,11 +334,15 @@ export type ClearInputConfig1 = BaseActionConfig & {
   /**
    * CSS selector for input element
    */
-  selector: string;
+  selector?: string;
   /**
    * Wait for element to be present
    */
   waitForElement?: boolean;
+  /**
+   * Scroll element into view before acting
+   */
+  scrollIntoView?: boolean;
 };
 /**
  * Open a new browser tab.
@@ -335,7 +351,15 @@ export type OpenNewTabConfig = BaseActionConfig & {
   /**
    * URL to open in new tab
    */
-  url: string;
+  url?: string;
+  /**
+   * Wait for page load to complete
+   */
+  waitForLoad?: boolean;
+  /**
+   * Switch focus to the newly opened tab
+   */
+  switchToNewTab?: boolean;
 };
 /**
  * Switch to another browser tab.
@@ -359,19 +383,62 @@ export type SwitchTabConfig1 = BaseActionConfig & {
    * Tab title to switch to (alternative to index)
    */
   tabTitle?: string;
+  /**
+   * Wait for page load to complete
+   */
+  waitForLoad?: boolean;
+  /**
+   * Capture a screenshot after the action
+   */
+  takeScreenshot?: boolean;
 };
 /**
  * Navigate forward in browser history.
  */
-export type GoForwardConfig = BaseActionConfig & {};
+export type GoForwardConfig = BaseActionConfig & {
+  /**
+   * Wait for page load to complete
+   */
+  waitForLoad?: boolean;
+  /**
+   * Capture a screenshot after the action
+   */
+  takeScreenshot?: boolean;
+};
 /**
  * Navigate back in browser history.
  */
-export type GoBackConfig = BaseActionConfig & {};
+export type GoBackConfig = BaseActionConfig & {
+  /**
+   * Wait for page load to complete
+   */
+  waitForLoad?: boolean;
+  /**
+   * Capture a screenshot after the action
+   */
+  takeScreenshot?: boolean;
+};
 /**
  * Refresh the current page.
  */
-export type RefreshConfig = BaseActionConfig & {};
+export type RefreshConfig = BaseActionConfig & {
+  /**
+   * Wait for page load to complete
+   */
+  waitForLoad?: boolean;
+  /**
+   * Capture a screenshot after the action
+   */
+  takeScreenshot?: boolean;
+  /**
+   * Perform a hard refresh bypassing the cache
+   */
+  hardRefresh?: boolean;
+  /**
+   * Preserve form data across the refresh
+   */
+  preserveFormData?: boolean;
+};
 /**
  * Get page title, URL, and source.
  */
@@ -386,6 +453,30 @@ export type GetPageInfoConfig1 = BaseActionConfig & {
    * Variable to store page information
    */
   outputVariable?: string;
+  /**
+   * Include page title in the output
+   */
+  getTitle?: boolean;
+  /**
+   * Include page URL in the output
+   */
+  getUrl?: boolean;
+  /**
+   * Include page source in the output
+   */
+  getSource?: boolean;
+  /**
+   * Wait for page load to complete
+   */
+  waitForLoad?: boolean;
+  /**
+   * Capture a screenshot after the action
+   */
+  takeScreenshot?: boolean;
+  /**
+   * Output format for the page info
+   */
+  formatOutput?: string;
 };
 export type JunctionConfig = BaseActionConfig & {
   /**
@@ -412,7 +503,7 @@ export type ApiCallConfig = BaseActionConfig & {
   /**
    * API endpoint URL
    */
-  url: string;
+  url?: string;
   /**
    * HTTP headers
    */
@@ -471,13 +562,13 @@ export type ConditionalConfig = ConditionalConfig1 & {
   /**
    * Comparison operator used by editor helpers
    */
-  operator: string;
+  operator?: string;
 };
 export type ConditionalConfig1 = BaseActionConfig & {
   /**
    * JavaScript condition to evaluate
    */
-  condition: string;
+  condition?: string;
   /**
    * Actions to execute if condition is true
    */
@@ -490,6 +581,18 @@ export type ConditionalConfig1 = BaseActionConfig & {
   elseActions?: {
     [k: string]: unknown;
   }[];
+  /**
+   * Value to compare against
+   */
+  value?: string;
+  /**
+   * Action to take when the condition is true
+   */
+  trueAction?: string;
+  /**
+   * Action to take when the condition is false
+   */
+  falseAction?: string;
 };
 /**
  * Repeat actions multiple times.
@@ -518,7 +621,7 @@ export type LoopConfig = BaseActionConfig & {
   /**
    * Actions to execute in each iteration
    */
-  actions: {
+  actions?: {
     [k: string]: unknown;
   }[];
   /**
@@ -533,11 +636,11 @@ export type DatabaseQueryConfig = BaseActionConfig & {
   /**
    * Database connection string
    */
-  connectionString: string;
+  connectionString?: string;
   /**
    * SQL query to execute
    */
-  query: string;
+  query?: string;
   /**
    * Variable to store result
    */
@@ -562,15 +665,15 @@ export type DatabaseInsertConfig = BaseActionConfig & {
   /**
    * Database connection string
    */
-  connectionString: string;
+  connectionString?: string;
   /**
    * Table name to insert into
    */
-  table: string;
+  table?: string;
   /**
    * Data to insert (column-value pairs)
    */
-  data: {};
+  data?: {};
   /**
    * Log the insert operation
    */
@@ -591,7 +694,7 @@ export type CustomCodeConfig = BaseActionConfig & {
   /**
    * JavaScript code to execute
    */
-  code: string;
+  code?: string;
   /**
    * Main function name to invoke after loading the code
    */
@@ -626,7 +729,7 @@ export type DragAndDropConfig = BaseActionConfig & {
   /**
    * CSS selector for element to drag
    */
-  sourceSelector: string;
+  sourceSelector?: string;
   /**
    * CSS selector for drop target (required in element mode)
    */
@@ -683,6 +786,38 @@ export type DragAndDropConfig = BaseActionConfig & {
    * Wait for elements to be present
    */
   waitForElement?: boolean;
+  /**
+   * Wait time in milliseconds
+   */
+  waitTime?: number;
+  /**
+   * Visual reference image for the drag source
+   */
+  sourceImage?: string;
+  /**
+   * Visual reference image for the drop target
+   */
+  targetImage?: string;
+  /**
+   * Scroll element into view before acting
+   */
+  scrollIntoView?: boolean;
+  /**
+   * Delay before starting the drag, in milliseconds
+   */
+  dragDelay?: number;
+  /**
+   * Delay before dropping, in milliseconds
+   */
+  dropDelay?: number;
+  /**
+   * Validate the drop succeeded
+   */
+  validateDrop?: boolean;
+  /**
+   * Force the drag even if the element is not draggable
+   */
+  forceDrag?: boolean;
 };
 /**
  * Call another flow and map inputs/outputs.
@@ -691,13 +826,11 @@ export type CallToFlowConfig = BaseActionConfig & {
   /**
    * ID of flow to call
    */
-  flowId: string;
+  flowId?: string;
   /**
    * Input parameters to pass to subflow
    */
-  inputParameters?: {
-    [k: string]: unknown;
-  };
+  inputParameters?: unknown[];
   /**
    * Variable to store result
    */
@@ -710,6 +843,22 @@ export type CallToFlowConfig = BaseActionConfig & {
    * Execute subflow asynchronously
    */
   async_?: boolean;
+  /**
+   * Name of the subflow to call
+   */
+  flowName?: string;
+  /**
+   * Output parameters returned from the subflow
+   */
+  outputParameters?: unknown[];
+  /**
+   * Log execution details
+   */
+  logExecution?: boolean;
+  /**
+   * Propagate subflow errors to the parent flow
+   */
+  propagateErrors?: boolean;
 };
 /**
  * Switch to a frame or iframe.
@@ -757,6 +906,34 @@ export type SwitchToFrameConfig1 = BaseActionConfig & {
    * Frame index (alternative to selector)
    */
   frameIndex?: number;
+  /**
+   * Timeout in milliseconds
+   */
+  timeout?: number;
+  /**
+   * Validate the frame switch succeeded
+   */
+  validateFrame?: boolean;
+  /**
+   * Scroll element into view before acting
+   */
+  scrollIntoView?: boolean;
+  /**
+   * Capture a screenshot after the action
+   */
+  takeScreenshot?: boolean;
+  /**
+   * Log frame-switch details
+   */
+  logFrameInfo?: boolean;
+  /**
+   * Fall back to frame index when the selector fails
+   */
+  fallbackToIndex?: boolean;
+  /**
+   * Frame index to use as a fallback
+   */
+  fallbackIndex?: number;
 };
 /**
  * Exit a frame back to parent or main document.
@@ -775,7 +952,36 @@ export type ExitFrameConfig = ExitFrameConfig1 & {
    */
   returnToMain?: boolean;
 };
-export type ExitFrameConfig1 = BaseActionConfig & {};
+export type ExitFrameConfig1 = BaseActionConfig & {
+  /**
+   * Number of parent levels to exit when exitMethod is levels
+   */
+  exitLevels?: number;
+  /**
+   * Wait for the frame exit to complete
+   */
+  waitForExit?: boolean;
+  /**
+   * Timeout in milliseconds
+   */
+  timeout?: number;
+  /**
+   * Validate the frame exit succeeded
+   */
+  validateExit?: boolean;
+  /**
+   * Capture a screenshot after the action
+   */
+  takeScreenshot?: boolean;
+  /**
+   * Log frame-exit details
+   */
+  logExitInfo?: boolean;
+  /**
+   * Preserve execution context after exiting the frame
+   */
+  preserveContext?: boolean;
+};
 /**
  * Set browser viewport and device emulation.
  */
@@ -787,11 +993,11 @@ export type SetViewportConfig = BaseActionConfig & {
   /**
    * Viewport width in pixels
    */
-  width: number;
+  width?: number;
   /**
    * Viewport height in pixels
    */
-  height: number;
+  height?: number;
   /**
    * Preset screen size name
    */
@@ -848,11 +1054,11 @@ export type GetElementPropertiesConfig = BaseActionConfig & {
   /**
    * CSS selector for element
    */
-  selector: string;
+  selector?: string;
   /**
    * Properties to retrieve
    */
-  properties: (
+  properties?: (
     | "text"
     | "value"
     | "class"
@@ -874,6 +1080,38 @@ export type GetElementPropertiesConfig = BaseActionConfig & {
    * Wait for element to be present
    */
   waitForElement?: boolean;
+  /**
+   * Kind of property to extract
+   */
+  propertyType?: string;
+  /**
+   * Attribute name to read when propertyType is attribute
+   */
+  attributeName?: string;
+  /**
+   * Timeout in milliseconds
+   */
+  timeout?: number;
+  /**
+   * Scroll element into view before acting
+   */
+  scrollIntoView?: boolean;
+  /**
+   * Trim whitespace from the extracted value
+   */
+  trimWhitespace?: boolean;
+  /**
+   * Value returned when extraction fails
+   */
+  fallbackValue?: string;
+  /**
+   * Validate the extraction succeeded
+   */
+  validateExtraction?: boolean;
+  /**
+   * Log extraction details
+   */
+  logExtraction?: boolean;
 };
 /**
  * Handle alerts, confirms, prompts, or modals.
@@ -895,6 +1133,30 @@ export type HandlePopupConfig = BaseActionConfig & {
    * Timeout in milliseconds
    */
   timeout?: number;
+  /**
+   * Expected popup type
+   */
+  popupType?: string;
+  /**
+   * How to handle the popup
+   */
+  popupAction?: string;
+  /**
+   * Text to enter when the popup requires input
+   */
+  inputText?: string;
+  /**
+   * CSS selector for the target element
+   */
+  selector?: string;
+  /**
+   * Capture the popup text into the output
+   */
+  capturePopupText?: boolean;
+  /**
+   * Variable name to store the action output
+   */
+  outputVariable?: string;
 };
 /**
  * Upload a file to an input field.
@@ -903,11 +1165,11 @@ export type FileUploadConfig = BaseActionConfig & {
   /**
    * CSS selector for file input
    */
-  selector: string;
+  selector?: string;
   /**
    * Path to file to upload
    */
-  filePath: string;
+  filePath?: string;
   /**
    * Wait for element to be present
    */
@@ -928,11 +1190,11 @@ export type FileDownloadConfig = BaseActionConfig & {
   /**
    * CSS selector for download link
    */
-  selector: string;
+  selector?: string;
   /**
    * Path to save downloaded file
    */
-  downloadPath: string;
+  downloadPath?: string;
   /**
    * Wait for element to be present
    */
@@ -950,7 +1212,7 @@ export type SubflowConfig = BaseActionConfig & {
   /**
    * ID of flow to call
    */
-  flowId: string;
+  flowId?: string;
   /**
    * Name of flow to call
    */
@@ -987,7 +1249,7 @@ export type DesktopWaitForImageConfig = DesktopVisualBaseConfig & {
   /**
    * Base64 encoded reference image to locate on the desktop
    */
-  image: string;
+  image?: string;
   /**
    * Require the image to remain visible for a stable period
    */
@@ -1050,7 +1312,7 @@ export type DesktopFindImageConfig = DesktopVisualBaseConfig & {
   /**
    * Base64 encoded reference image to locate on the desktop
    */
-  image: string;
+  image?: string;
   /**
    * Wait for image appearance before returning
    */
@@ -1071,7 +1333,7 @@ export type DesktopClickImageConfig = DesktopVisualBaseConfig & {
   /**
    * Base64 encoded reference image to click
    */
-  image: string;
+  image?: string;
   /**
    * Mouse button to use for clicking
    */
@@ -1149,7 +1411,7 @@ export type DesktopTypeTextConfig = DesktopVisualBaseConfig & {
   /**
    * Text to type on the desktop
    */
-  text: string;
+  text?: string;
   /**
    * Delay between key presses in milliseconds
    */
@@ -1215,7 +1477,7 @@ export type DesktopHotkeyConfig = BaseActionConfig & {
   /**
    * Key combination (e.g. ctrl+shift+p)
    */
-  keyCombination: string;
+  keyCombination?: string;
   /**
    * How many times to trigger the hotkey
    */
@@ -1236,7 +1498,7 @@ export type DesktopRunCommandConfig = BaseActionConfig & {
   /**
    * Shell command to execute
    */
-  command: string;
+  command?: string;
   /**
    * Run command through shell
    */
