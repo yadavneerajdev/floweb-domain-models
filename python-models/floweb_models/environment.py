@@ -23,6 +23,7 @@ class Type(StrEnum):
     file = 'file'
     json = 'json'
     web_identifier = 'web-identifier'
+    image = 'image'
 
 
 class GlobalVariable(BaseModel):

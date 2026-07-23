@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://floweb.com/schemas/environment.json",
-  "$version": "2.0.0",
+  "$version": "2.1.0",
   "title": "Environment and Global Variables Configuration",
   "description": "Schema for environment configurations and global variables used in Floweb automation flows",
   "type": "object",
@@ -118,7 +118,8 @@
             "url",
             "file",
             "json",
-            "web-identifier"
+            "web-identifier",
+            "image"
           ]
         },
         "value": {
@@ -177,7 +178,8 @@
             "url",
             "file",
             "json",
-            "web-identifier"
+            "web-identifier",
+            "image"
           ]
         },
         "value": {

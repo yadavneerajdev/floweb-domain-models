@@ -34,9 +34,12 @@ describe("casing contract — wrong-cased required field must fail", () => {
   }> = [
     {
       schemaFile: "action-configs.json",
-      def: "ClickConfig",
-      note: "ClickConfig is camelCase; snake_case 'selector' is fine (same word) so flip a real one",
-      build: () => ({ Selector: "#x" }), // wrong-cased -> required 'selector' missing
+      def: "NavigateConfig",
+      // Action configs are intentionally lenient (most fields optional so partial/AI-built
+      // configs validate). NavigateConfig.url is one field that stays required, so a
+      // wrong-cased 'Url' leaves the lowercase 'url' missing and must fail.
+      note: "NavigateConfig is camelCase and requires 'url'; wrong-cased 'Url' must fail",
+      build: () => ({ Url: "https://example.com" }),
     },
     {
       schemaFile: "execution-results.json",

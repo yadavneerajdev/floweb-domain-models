@@ -293,7 +293,7 @@ export interface Variable {
   /**
    * Data type of the variable
    */
-  type: "string" | "number" | "boolean" | "object" | "array" | "url" | "file" | "json" | "web-identifier";
+  type: "string" | "number" | "boolean" | "object" | "array" | "url" | "file" | "json" | "web-identifier" | "image";
   /**
    * The variable's value; any JSON value is allowed (2026-07 decision: runtime stores structured values, aligned with TS JsonValue rather than the old string-only contract)
    */
@@ -384,7 +384,7 @@ export interface GlobalVariable {
   /**
    * Data type of the variable
    */
-  type: "string" | "number" | "boolean" | "object" | "array" | "url" | "file" | "json" | "web-identifier";
+  type: "string" | "number" | "boolean" | "object" | "array" | "url" | "file" | "json" | "web-identifier" | "image";
   /**
    * The variable's value; any JSON value is allowed (2026-07 decision: runtime stores structured values, aligned with TS JsonValue rather than the old string-only contract)
    */
