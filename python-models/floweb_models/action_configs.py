@@ -1275,9 +1275,17 @@ class LoopConfig(BaseActionConfig):
     """
     Variable name for current item (for foreach loops)
     """
+    startAction: str | None = None
+    """
+    Node id of the first action in the repeated range (UI provenance for the actions snapshot)
+    """
+    endAction: str | None = None
+    """
+    Node id of the last action in the repeated range (UI provenance for the actions snapshot)
+    """
     actions: list[dict[str, Any]] | None = None
     """
-    Actions to execute in each iteration
+    Snapshot of the actions executed in each iteration (populated from the start/end range)
     """
     maxIterations: Annotated[int | None, Field(ge=1)] = 100
     """

@@ -874,7 +874,15 @@ export type LoopConfig = BaseActionConfig & {
    */
   itemVariable?: string;
   /**
-   * Actions to execute in each iteration
+   * Node id of the first action in the repeated range (UI provenance for the actions snapshot)
+   */
+  startAction?: string;
+  /**
+   * Node id of the last action in the repeated range (UI provenance for the actions snapshot)
+   */
+  endAction?: string;
+  /**
+   * Snapshot of the actions executed in each iteration (populated from the start/end range)
    */
   actions?: AnyObject[];
   /**
