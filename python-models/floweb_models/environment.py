@@ -39,7 +39,7 @@ class GlobalVariable(BaseModel):
     Unique identifier for the global variable
     """
     name: Annotated[
-        str, Field(max_length=50, min_length=1, pattern='^[a-zA-Z_][a-zA-Z0-9_]*$')
+        str, Field(max_length=50, min_length=1, pattern='^[a-zA-Z_][a-zA-Z0-9_-]*$')
     ]
     """
     Variable name used in flows
@@ -79,7 +79,7 @@ class Variable(BaseModel):
     Unique identifier for the variable
     """
     name: Annotated[
-        str, Field(max_length=50, min_length=1, pattern='^[a-zA-Z_][a-zA-Z0-9_]*$')
+        str, Field(max_length=50, min_length=1, pattern='^[a-zA-Z_][a-zA-Z0-9_-]*$')
     ]
     """
     Variable name used in flows
