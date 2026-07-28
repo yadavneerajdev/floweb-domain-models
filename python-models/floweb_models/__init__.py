@@ -29,6 +29,7 @@ from .environment import (
 )
 
 from .action_configs import (
+    Action1,
     ActionConfigurations,
     ApiCallConfig,
     AssertType,
@@ -87,6 +88,7 @@ from .action_configs import (
     LoopType,
     Method,
     NavigateConfig,
+    NetworkControlConfig,
     OpenNewTabConfig,
     Operator,
     Property,
@@ -108,6 +110,7 @@ from .action_configs import (
     SwitchToFrameConfig,
     Target,
     TargetIdentifiers,
+    Throttle,
     ViewportType,
     WaitConfig,
     WaitType,
@@ -380,6 +383,7 @@ __all__ = [
     "AccountDataStore",
     "AccountSettings",
     "Action",
+    "Action1",
     "ActionConfigurations",
     "ActionData",
     "ActionResult",
@@ -568,6 +572,7 @@ __all__ = [
     "Method",
     "Mode",
     "NavigateConfig",
+    "NetworkControlConfig",
     "NodeValidationResult",
     "OpenNewTabConfig",
     "Operator",
@@ -663,6 +668,7 @@ __all__ = [
     "TargetIdentifiers",
     "TestCatalogItem",
     "TestRecentRun",
+    "Throttle",
     "TimelineDataPoint",
     "TokenRefreshConfig",
     "Totals",

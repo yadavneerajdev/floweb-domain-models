@@ -24,6 +24,7 @@ export type ActionType =
   | "getPageInfo"
   | "setViewport"
   | "apiCall"
+  | "networkControl"
   | "conditional"
   | "loop"
   | "dbQuery"

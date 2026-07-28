@@ -32,6 +32,7 @@ class ActionType(StrEnum):
     getPageInfo = 'getPageInfo'
     setViewport = 'setViewport'
     apiCall = 'apiCall'
+    networkControl = 'networkControl'
     conditional = 'conditional'
     loop = 'loop'
     dbQuery = 'dbQuery'

@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://floweb.com/schemas/action-configs.json",
-  "$version": "1.4.0",
+  "$version": "1.5.0",
   "title": "Action Configurations",
   "description": "Configuration schemas for all automation actions",
   "type": "object",
@@ -67,6 +67,9 @@
             },
             {
               "$ref": "#/$defs/ApiCallConfig"
+            },
+            {
+              "$ref": "#/$defs/NetworkControlConfig"
             },
             {
               "$ref": "#/$defs/ConditionalConfig"
@@ -938,6 +941,80 @@
         "target"
       ],
       "description": "A single assertion applied to an HTTP response."
+    },
+    "NetworkControlConfig": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/BaseActionConfig"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "action": {
+              "type": "string",
+              "enum": [
+                "apply",
+                "clear",
+                "captureHar"
+              ],
+              "default": "apply",
+              "description": "apply: install block/throttle/header rules for the session; clear: remove them; captureHar: read the current session's network log into a variable."
+            },
+            "blockUrls": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "URL patterns to block (Chrome Network.setBlockedURLs wildcards, e.g. *.analytics.com/*)."
+            },
+            "throttle": {
+              "type": "string",
+              "enum": [
+                "none",
+                "offline",
+                "slow-3g",
+                "fast-3g",
+                "custom"
+              ],
+              "default": "none",
+              "description": "Network condition emulation profile."
+            },
+            "throttleDownloadKbps": {
+              "type": "number",
+              "default": 0,
+              "description": "Download throughput in kbps when throttle=custom."
+            },
+            "throttleUploadKbps": {
+              "type": "number",
+              "default": 0,
+              "description": "Upload throughput in kbps when throttle=custom."
+            },
+            "throttleLatencyMs": {
+              "type": "number",
+              "default": 0,
+              "description": "Added latency in milliseconds when throttle=custom."
+            },
+            "extraHeaders": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              },
+              "description": "Extra HTTP headers injected into every request for the session."
+            },
+            "userAgent": {
+              "type": "string",
+              "default": "",
+              "description": "Override the User-Agent for the session."
+            },
+            "harOutputVariable": {
+              "type": "string",
+              "default": "",
+              "description": "Variable to store the captured HAR-like network log when action=captureHar."
+            }
+          }
+        }
+      ],
+      "description": "Control the browser's network layer via Chrome DevTools: block hosts, throttle bandwidth, inject headers/User-Agent, or capture the network log. Chromium only."
     },
     "DatabaseQueryConfig": {
       "allOf": [

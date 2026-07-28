@@ -250,6 +250,28 @@ class ResponseAssertion(BaseModel):
     """
 
 
+class Action(StrEnum):
+    """
+    apply: install block/throttle/header rules for the session; clear: remove them; captureHar: read the current session's network log into a variable.
+    """
+
+    apply = 'apply'
+    clear = 'clear'
+    captureHar = 'captureHar'
+
+
+class Throttle(StrEnum):
+    """
+    Network condition emulation profile.
+    """
+
+    none = 'none'
+    offline = 'offline'
+    slow_3g = 'slow-3g'
+    fast_3g = 'fast-3g'
+    custom = 'custom'
+
+
 class Direction(StrEnum):
     """
     Scroll direction
@@ -333,7 +355,7 @@ class Property(StrEnum):
     selected = 'selected'
 
 
-class Action(StrEnum):
+class Action1(StrEnum):
     """
     Action to perform on popup
     """
@@ -769,6 +791,52 @@ class ApiCallConfig(BaseActionConfig):
     assertions: list[ResponseAssertion] | None = None
     """
     Response assertions evaluated after the request. All must pass for the action to succeed.
+    """
+
+
+class NetworkControlConfig(BaseActionConfig):
+    """
+    Control the browser's network layer via Chrome DevTools: block hosts, throttle bandwidth, inject headers/User-Agent, or capture the network log. Chromium only.
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    action: Action | None = 'apply'
+    """
+    apply: install block/throttle/header rules for the session; clear: remove them; captureHar: read the current session's network log into a variable.
+    """
+    blockUrls: list[str] | None = None
+    """
+    URL patterns to block (Chrome Network.setBlockedURLs wildcards, e.g. *.analytics.com/*).
+    """
+    throttle: Throttle | None = 'none'
+    """
+    Network condition emulation profile.
+    """
+    throttleDownloadKbps: float | None = 0
+    """
+    Download throughput in kbps when throttle=custom.
+    """
+    throttleUploadKbps: float | None = 0
+    """
+    Upload throughput in kbps when throttle=custom.
+    """
+    throttleLatencyMs: float | None = 0
+    """
+    Added latency in milliseconds when throttle=custom.
+    """
+    extraHeaders: dict[str, str] | None = None
+    """
+    Extra HTTP headers injected into every request for the session.
+    """
+    userAgent: str | None = ''
+    """
+    Override the User-Agent for the session.
+    """
+    harOutputVariable: str | None = ''
+    """
+    Variable to store the captured HAR-like network log when action=captureHar.
     """
 
 
@@ -1749,7 +1817,7 @@ class HandlePopupConfig(BaseActionConfig):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    action: Action | None = 'accept'
+    action: Action1 | None = 'accept'
     """
     Action to perform on popup
     """
@@ -2318,6 +2386,7 @@ class ActionConfigurations(BaseModel):
             | GetPageInfoConfig
             | JunctionConfig
             | ApiCallConfig
+            | NetworkControlConfig
             | ConditionalConfig
             | LoopConfig
             | DatabaseQueryConfig

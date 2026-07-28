@@ -564,6 +564,49 @@ export type ApiCallConfig = BaseActionConfig & {
   assertions?: ResponseAssertion[];
 };
 /**
+ * Control the browser's network layer via Chrome DevTools: block hosts, throttle bandwidth, inject headers/User-Agent, or capture the network log. Chromium only.
+ */
+export type NetworkControlConfig = BaseActionConfig & {
+  /**
+   * apply: install block/throttle/header rules for the session; clear: remove them; captureHar: read the current session's network log into a variable.
+   */
+  action?: "apply" | "clear" | "captureHar";
+  /**
+   * URL patterns to block (Chrome Network.setBlockedURLs wildcards, e.g. *.analytics.com/*).
+   */
+  blockUrls?: string[];
+  /**
+   * Network condition emulation profile.
+   */
+  throttle?: "none" | "offline" | "slow-3g" | "fast-3g" | "custom";
+  /**
+   * Download throughput in kbps when throttle=custom.
+   */
+  throttleDownloadKbps?: number;
+  /**
+   * Upload throughput in kbps when throttle=custom.
+   */
+  throttleUploadKbps?: number;
+  /**
+   * Added latency in milliseconds when throttle=custom.
+   */
+  throttleLatencyMs?: number;
+  /**
+   * Extra HTTP headers injected into every request for the session.
+   */
+  extraHeaders?: {
+    [k: string]: string;
+  };
+  /**
+   * Override the User-Agent for the session.
+   */
+  userAgent?: string;
+  /**
+   * Variable to store the captured HAR-like network log when action=captureHar.
+   */
+  harOutputVariable?: string;
+};
+/**
  * Branch based on a condition.
  */
 export type ConditionalConfig = ConditionalConfig1 & {
@@ -1700,6 +1743,7 @@ export interface ActionConfigurationsSchema {
       | GetPageInfoConfig
       | JunctionConfig
       | ApiCallConfig
+      | NetworkControlConfig
       | ConditionalConfig
       | LoopConfig
       | DatabaseQueryConfig
@@ -1741,6 +1785,7 @@ export interface ActionConfigurationsSchema {
   FormFillConfig?: FormFillConfig;
   ApiCallConfig?: ApiCallConfig;
   ResponseAssertion?: ResponseAssertion;
+  NetworkControlConfig?: NetworkControlConfig;
   DatabaseQueryConfig?: DatabaseQueryConfig;
   DatabaseInsertConfig?: DatabaseInsertConfig;
   FileUploadConfig?: FileUploadConfig;
