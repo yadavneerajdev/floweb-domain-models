@@ -193,6 +193,63 @@ class Method(StrEnum):
     PATCH = 'PATCH'
 
 
+class Target(StrEnum):
+    """
+    What to assert on: HTTP status, a response header, a JSONPath into the parsed body, the raw body text, or the total response time in ms.
+    """
+
+    status = 'status'
+    header = 'header'
+    jsonPath = 'jsonPath'
+    body = 'body'
+    responseTime = 'responseTime'
+
+
+class Operator(StrEnum):
+    """
+    Comparison operator. exists/notExists ignore value; matches treats value as a regular expression; in expects value to be a list.
+    """
+
+    equals = 'equals'
+    notEquals = 'notEquals'
+    contains = 'contains'
+    notContains = 'notContains'
+    exists = 'exists'
+    notExists = 'notExists'
+    gt = 'gt'
+    gte = 'gte'
+    lt = 'lt'
+    lte = 'lte'
+    matches = 'matches'
+    in_ = 'in'
+
+
+class ResponseAssertion(BaseModel):
+    """
+    A single assertion applied to an HTTP response.
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    target: Target
+    """
+    What to assert on: HTTP status, a response header, a JSONPath into the parsed body, the raw body text, or the total response time in ms.
+    """
+    path: str | None = ''
+    """
+    For target=jsonPath, the path into the response body (e.g. data.items[0].id). For target=header, the header name (case-insensitive).
+    """
+    operator: Operator | None = 'equals'
+    """
+    Comparison operator. exists/notExists ignore value; matches treats value as a regular expression; in expects value to be a list.
+    """
+    value: Any | None = None
+    """
+    Comparison value. Its type depends on the operator and target (string, number, or list).
+    """
+
+
 class Direction(StrEnum):
     """
     Scroll direction
@@ -643,7 +700,7 @@ class FormFillConfig(BaseActionConfig):
 
 class ApiCallConfig(BaseActionConfig):
     """
-    Make an HTTP API request. Set responsePath to store only a path of the response (e.g. data.token) in the output variable; leave empty to store the full {status_code, headers, data, url} object.
+    Make an HTTP API request. Set responsePath to store only a path of the response (e.g. data.token) in the output variable; leave empty to store the full {status_code, headers, data, url} object. Use validateStatus/expectedStatus and assertions to turn the call into a network/response check.
     """
 
     model_config = ConfigDict(
@@ -704,6 +761,14 @@ class ApiCallConfig(BaseActionConfig):
     basicAuthPassword: str | None = ''
     """
     Basic auth password
+    """
+    expectedStatus: list[int] | None = None
+    """
+    Explicit expected HTTP status code(s). When set, the call fails unless the response status is one of these; overrides the default 2xx check that validateStatus performs.
+    """
+    assertions: list[ResponseAssertion] | None = None
+    """
+    Response assertions evaluated after the request. All must pass for the action to succeed.
     """
 
 

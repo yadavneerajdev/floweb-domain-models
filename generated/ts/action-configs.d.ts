@@ -493,7 +493,7 @@ export type JunctionConfig = BaseActionConfig & {
   falsePath?: string;
 };
 /**
- * Make an HTTP API request. Set responsePath to store only a path of the response (e.g. data.token) in the output variable; leave empty to store the full {status_code, headers, data, url} object.
+ * Make an HTTP API request. Set responsePath to store only a path of the response (e.g. data.token) in the output variable; leave empty to store the full {status_code, headers, data, url} object. Use validateStatus/expectedStatus and assertions to turn the call into a network/response check.
  */
 export type ApiCallConfig = BaseActionConfig & {
   /**
@@ -554,6 +554,14 @@ export type ApiCallConfig = BaseActionConfig & {
    * Basic auth password
    */
   basicAuthPassword?: string;
+  /**
+   * Explicit expected HTTP status code(s). When set, the call fails unless the response status is one of these; overrides the default 2xx check that validateStatus performs.
+   */
+  expectedStatus?: number[];
+  /**
+   * Response assertions evaluated after the request. All must pass for the action to succeed.
+   */
+  assertions?: ResponseAssertion[];
 };
 /**
  * Branch based on a condition.
@@ -1732,6 +1740,7 @@ export interface ActionConfigurationsSchema {
   FormFieldOption?: FormFieldOption;
   FormFillConfig?: FormFillConfig;
   ApiCallConfig?: ApiCallConfig;
+  ResponseAssertion?: ResponseAssertion;
   DatabaseQueryConfig?: DatabaseQueryConfig;
   DatabaseInsertConfig?: DatabaseInsertConfig;
   FileUploadConfig?: FileUploadConfig;
@@ -1905,4 +1914,39 @@ export interface FormFieldOption {
    * Option label
    */
   label: string;
+}
+/**
+ * A single assertion applied to an HTTP response.
+ */
+export interface ResponseAssertion {
+  /**
+   * What to assert on: HTTP status, a response header, a JSONPath into the parsed body, the raw body text, or the total response time in ms.
+   */
+  target: "status" | "header" | "jsonPath" | "body" | "responseTime";
+  /**
+   * For target=jsonPath, the path into the response body (e.g. data.items[0].id). For target=header, the header name (case-insensitive).
+   */
+  path?: string;
+  /**
+   * Comparison operator. exists/notExists ignore value; matches treats value as a regular expression; in expects value to be a list.
+   */
+  operator?:
+    | "equals"
+    | "notEquals"
+    | "contains"
+    | "notContains"
+    | "exists"
+    | "notExists"
+    | "gt"
+    | "gte"
+    | "lt"
+    | "lte"
+    | "matches"
+    | "in";
+  /**
+   * Comparison value. Its type depends on the operator and target (string, number, or list).
+   */
+  value?: {
+    [k: string]: unknown;
+  };
 }
