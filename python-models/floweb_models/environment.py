@@ -56,6 +56,10 @@ class GlobalVariable(BaseModel):
     """
     Description of the variable's purpose
     """
+    secret: bool | None = False
+    """
+    When true, the value is a secret: masked in UI API responses and only sent in plaintext to the engine runtime context.
+    """
     createdAt: AwareDatetime | None = None
     """
     ISO 8601 timestamp when the variable was created
@@ -99,6 +103,10 @@ class Variable(BaseModel):
     isOutput: bool | None = None
     """
     Whether this is an output variable (flow parameters)
+    """
+    secret: bool | None = False
+    """
+    When true, the value is a secret: masked in UI API responses and only sent in plaintext to the engine runtime context.
     """
 
 

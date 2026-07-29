@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://floweb.com/schemas/environment.json",
-  "$version": "2.2.0",
+  "$version": "2.3.0",
   "title": "Environment and Global Variables Configuration",
   "description": "Schema for environment configurations and global variables used in Floweb automation flows",
   "type": "object",
@@ -130,6 +130,11 @@
           "description": "Description of the variable's purpose",
           "maxLength": 500
         },
+        "secret": {
+          "type": "boolean",
+          "description": "When true, the value is a secret: masked in UI API responses and only sent in plaintext to the engine runtime context.",
+          "default": false
+        },
         "createdAt": {
           "type": "string",
           "format": "date-time",
@@ -193,6 +198,11 @@
         "isOutput": {
           "type": "boolean",
           "description": "Whether this is an output variable (flow parameters)"
+        },
+        "secret": {
+          "type": "boolean",
+          "description": "When true, the value is a secret: masked in UI API responses and only sent in plaintext to the engine runtime context.",
+          "default": false
         }
       },
       "required": [

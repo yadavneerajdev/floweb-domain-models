@@ -3302,6 +3302,10 @@ export interface Variable {
    * Whether this is an output variable (flow parameters)
    */
   isOutput?: boolean;
+  /**
+   * When true, the value is a secret: masked in UI API responses and only sent in plaintext to the engine runtime context.
+   */
+  secret?: boolean;
 }
 /**
  * A global variable available across all environments
@@ -3321,6 +3325,10 @@ export interface GlobalVariable {
    * Description of the variable's purpose
    */
   description?: string;
+  /**
+   * When true, the value is a secret: masked in UI API responses and only sent in plaintext to the engine runtime context.
+   */
+  secret?: boolean;
   /**
    * ISO 8601 timestamp when the variable was created
    */
