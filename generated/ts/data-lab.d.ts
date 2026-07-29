@@ -33,6 +33,8 @@ export type ActionType =
   | "setViewport"
   | "apiCall"
   | "networkControl"
+  | "accessibilityAudit"
+  | "captureWebVitals"
   | "conditional"
   | "loop"
   | "dbQuery"

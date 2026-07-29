@@ -607,6 +607,42 @@ export type NetworkControlConfig = BaseActionConfig & {
   harOutputVariable?: string;
 };
 /**
+ * Run an axe-core accessibility audit on the current page and report WCAG violations. Chromium recommended.
+ */
+export type AccessibilityAuditConfig = BaseActionConfig & {
+  /**
+   * WCAG conformance level (axe-core tag) to audit against.
+   */
+  standard?: "wcag2a" | "wcag2aa" | "wcag21a" | "wcag21aa" | "best-practice";
+  /**
+   * Optional CSS selector to restrict the audit to a region of the page.
+   */
+  includeSelector?: string;
+  /**
+   * Fail the action when a violation of this impact or higher is found; 'none' never fails.
+   */
+  failOnSeverity?: "none" | "minor" | "moderate" | "serious" | "critical";
+  /**
+   * Variable to store the list of violations.
+   */
+  outputVariable?: string;
+};
+/**
+ * Capture Core Web Vitals and navigation timing (LCP, FCP, CLS, TTFB, load) from the current page via the Performance APIs.
+ */
+export type CaptureWebVitalsConfig = BaseActionConfig & {
+  /**
+   * Variable to store the captured metrics object.
+   */
+  outputVariable?: string;
+  /**
+   * Optional per-metric budgets in milliseconds/score (e.g. { "lcp": 2500, "cls": 0.1 }); the action fails if any captured metric exceeds its budget.
+   */
+  budgets?: {
+    [k: string]: number;
+  };
+};
+/**
  * Branch based on a condition.
  */
 export type ConditionalConfig = ConditionalConfig1 & {
@@ -1744,6 +1780,8 @@ export interface ActionConfigurationsSchema {
       | JunctionConfig
       | ApiCallConfig
       | NetworkControlConfig
+      | AccessibilityAuditConfig
+      | CaptureWebVitalsConfig
       | ConditionalConfig
       | LoopConfig
       | DatabaseQueryConfig
@@ -1786,6 +1824,8 @@ export interface ActionConfigurationsSchema {
   ApiCallConfig?: ApiCallConfig;
   ResponseAssertion?: ResponseAssertion;
   NetworkControlConfig?: NetworkControlConfig;
+  AccessibilityAuditConfig?: AccessibilityAuditConfig;
+  CaptureWebVitalsConfig?: CaptureWebVitalsConfig;
   DatabaseQueryConfig?: DatabaseQueryConfig;
   DatabaseInsertConfig?: DatabaseInsertConfig;
   FileUploadConfig?: FileUploadConfig;

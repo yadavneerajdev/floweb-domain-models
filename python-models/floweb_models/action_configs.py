@@ -272,6 +272,30 @@ class Throttle(StrEnum):
     custom = 'custom'
 
 
+class Standard(StrEnum):
+    """
+    WCAG conformance level (axe-core tag) to audit against.
+    """
+
+    wcag2a = 'wcag2a'
+    wcag2aa = 'wcag2aa'
+    wcag21a = 'wcag21a'
+    wcag21aa = 'wcag21aa'
+    best_practice = 'best-practice'
+
+
+class FailOnSeverity(StrEnum):
+    """
+    Fail the action when a violation of this impact or higher is found; 'none' never fails.
+    """
+
+    none = 'none'
+    minor = 'minor'
+    moderate = 'moderate'
+    serious = 'serious'
+    critical = 'critical'
+
+
 class Direction(StrEnum):
     """
     Scroll direction
@@ -837,6 +861,50 @@ class NetworkControlConfig(BaseActionConfig):
     harOutputVariable: str | None = ''
     """
     Variable to store the captured HAR-like network log when action=captureHar.
+    """
+
+
+class AccessibilityAuditConfig(BaseActionConfig):
+    """
+    Run an axe-core accessibility audit on the current page and report WCAG violations. Chromium recommended.
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    standard: Standard | None = 'wcag2aa'
+    """
+    WCAG conformance level (axe-core tag) to audit against.
+    """
+    includeSelector: str | None = ''
+    """
+    Optional CSS selector to restrict the audit to a region of the page.
+    """
+    failOnSeverity: FailOnSeverity | None = 'serious'
+    """
+    Fail the action when a violation of this impact or higher is found; 'none' never fails.
+    """
+    outputVariable: str | None = 'a11yViolations'
+    """
+    Variable to store the list of violations.
+    """
+
+
+class CaptureWebVitalsConfig(BaseActionConfig):
+    """
+    Capture Core Web Vitals and navigation timing (LCP, FCP, CLS, TTFB, load) from the current page via the Performance APIs.
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    outputVariable: str | None = 'webVitals'
+    """
+    Variable to store the captured metrics object.
+    """
+    budgets: dict[str, float] | None = None
+    """
+    Optional per-metric budgets in milliseconds/score (e.g. { "lcp": 2500, "cls": 0.1 }); the action fails if any captured metric exceeds its budget.
     """
 
 
@@ -2387,6 +2455,8 @@ class ActionConfigurations(BaseModel):
             | JunctionConfig
             | ApiCallConfig
             | NetworkControlConfig
+            | AccessibilityAuditConfig
+            | CaptureWebVitalsConfig
             | ConditionalConfig
             | LoopConfig
             | DatabaseQueryConfig

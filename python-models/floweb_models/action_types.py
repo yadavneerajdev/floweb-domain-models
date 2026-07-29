@@ -33,6 +33,8 @@ class ActionType(StrEnum):
     setViewport = 'setViewport'
     apiCall = 'apiCall'
     networkControl = 'networkControl'
+    accessibilityAudit = 'accessibilityAudit'
+    captureWebVitals = 'captureWebVitals'
     conditional = 'conditional'
     loop = 'loop'
     dbQuery = 'dbQuery'

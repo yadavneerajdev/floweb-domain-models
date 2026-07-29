@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://floweb.com/schemas/action-configs.json",
-  "$version": "1.5.0",
+  "$version": "1.6.0",
   "title": "Action Configurations",
   "description": "Configuration schemas for all automation actions",
   "type": "object",
@@ -70,6 +70,12 @@
             },
             {
               "$ref": "#/$defs/NetworkControlConfig"
+            },
+            {
+              "$ref": "#/$defs/AccessibilityAuditConfig"
+            },
+            {
+              "$ref": "#/$defs/CaptureWebVitalsConfig"
             },
             {
               "$ref": "#/$defs/ConditionalConfig"
@@ -1015,6 +1021,78 @@
         }
       ],
       "description": "Control the browser's network layer via Chrome DevTools: block hosts, throttle bandwidth, inject headers/User-Agent, or capture the network log. Chromium only."
+    },
+    "AccessibilityAuditConfig": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/BaseActionConfig"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "standard": {
+              "type": "string",
+              "enum": [
+                "wcag2a",
+                "wcag2aa",
+                "wcag21a",
+                "wcag21aa",
+                "best-practice"
+              ],
+              "default": "wcag2aa",
+              "description": "WCAG conformance level (axe-core tag) to audit against."
+            },
+            "includeSelector": {
+              "type": "string",
+              "default": "",
+              "description": "Optional CSS selector to restrict the audit to a region of the page."
+            },
+            "failOnSeverity": {
+              "type": "string",
+              "enum": [
+                "none",
+                "minor",
+                "moderate",
+                "serious",
+                "critical"
+              ],
+              "default": "serious",
+              "description": "Fail the action when a violation of this impact or higher is found; 'none' never fails."
+            },
+            "outputVariable": {
+              "type": "string",
+              "default": "a11yViolations",
+              "description": "Variable to store the list of violations."
+            }
+          }
+        }
+      ],
+      "description": "Run an axe-core accessibility audit on the current page and report WCAG violations. Chromium recommended."
+    },
+    "CaptureWebVitalsConfig": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/BaseActionConfig"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "outputVariable": {
+              "type": "string",
+              "default": "webVitals",
+              "description": "Variable to store the captured metrics object."
+            },
+            "budgets": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "number"
+              },
+              "description": "Optional per-metric budgets in milliseconds/score (e.g. { \"lcp\": 2500, \"cls\": 0.1 }); the action fails if any captured metric exceeds its budget."
+            }
+          }
+        }
+      ],
+      "description": "Capture Core Web Vitals and navigation timing (LCP, FCP, CLS, TTFB, load) from the current page via the Performance APIs."
     },
     "DatabaseQueryConfig": {
       "allOf": [
