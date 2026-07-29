@@ -35,6 +35,7 @@ class ActionType(StrEnum):
     networkControl = 'networkControl'
     accessibilityAudit = 'accessibilityAudit'
     captureWebVitals = 'captureWebVitals'
+    visualRegression = 'visualRegression'
     conditional = 'conditional'
     loop = 'loop'
     dbQuery = 'dbQuery'

@@ -35,6 +35,7 @@ export type ActionType =
   | "networkControl"
   | "accessibilityAudit"
   | "captureWebVitals"
+  | "visualRegression"
   | "conditional"
   | "loop"
   | "dbQuery"

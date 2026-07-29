@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://floweb.com/schemas/action-configs.json",
-  "$version": "1.6.0",
+  "$version": "1.7.0",
   "title": "Action Configurations",
   "description": "Configuration schemas for all automation actions",
   "type": "object",
@@ -76,6 +76,9 @@
             },
             {
               "$ref": "#/$defs/CaptureWebVitalsConfig"
+            },
+            {
+              "$ref": "#/$defs/VisualRegressionConfig"
             },
             {
               "$ref": "#/$defs/ConditionalConfig"
@@ -1093,6 +1096,44 @@
         }
       ],
       "description": "Capture Core Web Vitals and navigation timing (LCP, FCP, CLS, TTFB, load) from the current page via the Performance APIs."
+    },
+    "VisualRegressionConfig": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/BaseActionConfig"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "baselineName": {
+              "type": "string",
+              "default": "",
+              "description": "Identifier for the baseline image. Defaults to the step label/id when empty."
+            },
+            "threshold": {
+              "type": "number",
+              "default": 0.98,
+              "description": "Minimum SSIM similarity (0-1) required to pass; below this the step fails on visual drift."
+            },
+            "fullPage": {
+              "type": "boolean",
+              "default": true,
+              "description": "Capture the full scrollable page (Chromium) instead of just the viewport."
+            },
+            "updateBaseline": {
+              "type": "boolean",
+              "default": false,
+              "description": "Approve the current page as the new baseline (overwrites the stored baseline)."
+            },
+            "diffOutputVariable": {
+              "type": "string",
+              "default": "",
+              "description": "Variable to store the comparison result (score, threshold, diff image)."
+            }
+          }
+        }
+      ],
+      "description": "Compare a full-page screenshot against a stored baseline using perceptual SSIM. First run (or updateBaseline) records the baseline; later runs fail on visual drift beyond the threshold."
     },
     "DatabaseQueryConfig": {
       "allOf": [

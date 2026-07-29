@@ -643,6 +643,31 @@ export type CaptureWebVitalsConfig = BaseActionConfig & {
   };
 };
 /**
+ * Compare a full-page screenshot against a stored baseline using perceptual SSIM. First run (or updateBaseline) records the baseline; later runs fail on visual drift beyond the threshold.
+ */
+export type VisualRegressionConfig = BaseActionConfig & {
+  /**
+   * Identifier for the baseline image. Defaults to the step label/id when empty.
+   */
+  baselineName?: string;
+  /**
+   * Minimum SSIM similarity (0-1) required to pass; below this the step fails on visual drift.
+   */
+  threshold?: number;
+  /**
+   * Capture the full scrollable page (Chromium) instead of just the viewport.
+   */
+  fullPage?: boolean;
+  /**
+   * Approve the current page as the new baseline (overwrites the stored baseline).
+   */
+  updateBaseline?: boolean;
+  /**
+   * Variable to store the comparison result (score, threshold, diff image).
+   */
+  diffOutputVariable?: string;
+};
+/**
  * Branch based on a condition.
  */
 export type ConditionalConfig = ConditionalConfig1 & {
@@ -1782,6 +1807,7 @@ export interface ActionConfigurationsSchema {
       | NetworkControlConfig
       | AccessibilityAuditConfig
       | CaptureWebVitalsConfig
+      | VisualRegressionConfig
       | ConditionalConfig
       | LoopConfig
       | DatabaseQueryConfig
@@ -1826,6 +1852,7 @@ export interface ActionConfigurationsSchema {
   NetworkControlConfig?: NetworkControlConfig;
   AccessibilityAuditConfig?: AccessibilityAuditConfig;
   CaptureWebVitalsConfig?: CaptureWebVitalsConfig;
+  VisualRegressionConfig?: VisualRegressionConfig;
   DatabaseQueryConfig?: DatabaseQueryConfig;
   DatabaseInsertConfig?: DatabaseInsertConfig;
   FileUploadConfig?: FileUploadConfig;

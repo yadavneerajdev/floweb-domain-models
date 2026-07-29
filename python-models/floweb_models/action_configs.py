@@ -908,6 +908,36 @@ class CaptureWebVitalsConfig(BaseActionConfig):
     """
 
 
+class VisualRegressionConfig(BaseActionConfig):
+    """
+    Compare a full-page screenshot against a stored baseline using perceptual SSIM. First run (or updateBaseline) records the baseline; later runs fail on visual drift beyond the threshold.
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    baselineName: str | None = ''
+    """
+    Identifier for the baseline image. Defaults to the step label/id when empty.
+    """
+    threshold: float | None = 0.98
+    """
+    Minimum SSIM similarity (0-1) required to pass; below this the step fails on visual drift.
+    """
+    fullPage: bool | None = True
+    """
+    Capture the full scrollable page (Chromium) instead of just the viewport.
+    """
+    updateBaseline: bool | None = False
+    """
+    Approve the current page as the new baseline (overwrites the stored baseline).
+    """
+    diffOutputVariable: str | None = ''
+    """
+    Variable to store the comparison result (score, threshold, diff image).
+    """
+
+
 class DatabaseQueryConfig(BaseActionConfig):
     """
     Execute a database query.
@@ -2457,6 +2487,7 @@ class ActionConfigurations(BaseModel):
             | NetworkControlConfig
             | AccessibilityAuditConfig
             | CaptureWebVitalsConfig
+            | VisualRegressionConfig
             | ConditionalConfig
             | LoopConfig
             | DatabaseQueryConfig

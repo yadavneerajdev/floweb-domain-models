@@ -116,6 +116,7 @@ from .action_configs import (
     TargetIdentifiers,
     Throttle,
     ViewportType,
+    VisualRegressionConfig,
     WaitConfig,
     WaitType,
 )
@@ -696,6 +697,7 @@ __all__ = [
     "VibeVerifyRequest",
     "VibeVerifyResponse",
     "ViewportType",
+    "VisualRegressionConfig",
     "WaitConfig",
     "WaitType",
     "WarningSeverity",
