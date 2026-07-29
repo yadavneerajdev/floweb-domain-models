@@ -24,6 +24,7 @@ class Type(StrEnum):
     json = 'json'
     web_identifier = 'web-identifier'
     image = 'image'
+    secret = 'secret'
 
 
 class GlobalVariable(BaseModel):
@@ -58,7 +59,7 @@ class GlobalVariable(BaseModel):
     """
     secret: bool | None = False
     """
-    When true, the value is a secret: masked in UI API responses and only sent in plaintext to the engine runtime context.
+    When true, the value is a secret: write-only for UI clients (masked in API responses, never returned as plaintext), redacted from reports and logs, and sent in plaintext only to the engine runtime context. Set automatically when type is `secret`.
     """
     createdAt: AwareDatetime | None = None
     """
@@ -106,7 +107,7 @@ class Variable(BaseModel):
     """
     secret: bool | None = False
     """
-    When true, the value is a secret: masked in UI API responses and only sent in plaintext to the engine runtime context.
+    When true, the value is a secret: write-only for UI clients (masked in API responses, never returned as plaintext), redacted from reports and logs, and sent in plaintext only to the engine runtime context. Set automatically when type is `secret`.
     """
 
 

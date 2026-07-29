@@ -3303,7 +3303,7 @@ export interface Variable {
    */
   isOutput?: boolean;
   /**
-   * When true, the value is a secret: masked in UI API responses and only sent in plaintext to the engine runtime context.
+   * When true, the value is a secret: write-only for UI clients (masked in API responses, never returned as plaintext), redacted from reports and logs, and sent in plaintext only to the engine runtime context. Set automatically when type is `secret`.
    */
   secret?: boolean;
 }
@@ -3326,7 +3326,7 @@ export interface GlobalVariable {
    */
   description?: string;
   /**
-   * When true, the value is a secret: masked in UI API responses and only sent in plaintext to the engine runtime context.
+   * When true, the value is a secret: write-only for UI clients (masked in API responses, never returned as plaintext), redacted from reports and logs, and sent in plaintext only to the engine runtime context. Set automatically when type is `secret`.
    */
   secret?: boolean;
   /**

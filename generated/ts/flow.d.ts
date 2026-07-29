@@ -206,7 +206,18 @@ export interface Variable {
   /**
    * Data type of the variable
    */
-  type: "string" | "number" | "boolean" | "object" | "array" | "url" | "file" | "json" | "web-identifier" | "image";
+  type:
+    | "string"
+    | "number"
+    | "boolean"
+    | "object"
+    | "array"
+    | "url"
+    | "file"
+    | "json"
+    | "web-identifier"
+    | "image"
+    | "secret";
   /**
    * The variable's value; any JSON value is allowed (2026-07 decision: runtime stores structured values, aligned with TS JsonValue rather than the old string-only contract)
    */
@@ -222,7 +233,7 @@ export interface Variable {
    */
   isOutput?: boolean;
   /**
-   * When true, the value is a secret: masked in UI API responses and only sent in plaintext to the engine runtime context.
+   * When true, the value is a secret: write-only for UI clients (masked in API responses, never returned as plaintext), redacted from reports and logs, and sent in plaintext only to the engine runtime context. Set automatically when type is `secret`.
    */
   secret?: boolean;
 }
@@ -301,7 +312,18 @@ export interface GlobalVariable {
   /**
    * Data type of the variable
    */
-  type: "string" | "number" | "boolean" | "object" | "array" | "url" | "file" | "json" | "web-identifier" | "image";
+  type:
+    | "string"
+    | "number"
+    | "boolean"
+    | "object"
+    | "array"
+    | "url"
+    | "file"
+    | "json"
+    | "web-identifier"
+    | "image"
+    | "secret";
   /**
    * The variable's value; any JSON value is allowed (2026-07 decision: runtime stores structured values, aligned with TS JsonValue rather than the old string-only contract)
    */
@@ -313,7 +335,7 @@ export interface GlobalVariable {
    */
   description?: string;
   /**
-   * When true, the value is a secret: masked in UI API responses and only sent in plaintext to the engine runtime context.
+   * When true, the value is a secret: write-only for UI clients (masked in API responses, never returned as plaintext), redacted from reports and logs, and sent in plaintext only to the engine runtime context. Set automatically when type is `secret`.
    */
   secret?: boolean;
   /**

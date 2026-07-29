@@ -119,7 +119,8 @@
             "file",
             "json",
             "web-identifier",
-            "image"
+            "image",
+            "secret"
           ]
         },
         "value": {
@@ -132,7 +133,7 @@
         },
         "secret": {
           "type": "boolean",
-          "description": "When true, the value is a secret: masked in UI API responses and only sent in plaintext to the engine runtime context.",
+          "description": "When true, the value is a secret: write-only for UI clients (masked in API responses, never returned as plaintext), redacted from reports and logs, and sent in plaintext only to the engine runtime context. Set automatically when type is `secret`.",
           "default": false
         },
         "createdAt": {
@@ -184,7 +185,8 @@
             "file",
             "json",
             "web-identifier",
-            "image"
+            "image",
+            "secret"
           ]
         },
         "value": {
@@ -201,7 +203,7 @@
         },
         "secret": {
           "type": "boolean",
-          "description": "When true, the value is a secret: masked in UI API responses and only sent in plaintext to the engine runtime context.",
+          "description": "When true, the value is a secret: write-only for UI clients (masked in API responses, never returned as plaintext), redacted from reports and logs, and sent in plaintext only to the engine runtime context. Set automatically when type is `secret`.",
           "default": false
         }
       },
