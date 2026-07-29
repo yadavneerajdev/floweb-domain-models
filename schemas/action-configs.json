@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://floweb.com/schemas/action-configs.json",
-  "$version": "1.7.0",
+  "$version": "1.8.0",
   "title": "Action Configurations",
   "description": "Configuration schemas for all automation actions",
   "type": "object",
@@ -79,6 +79,9 @@
             },
             {
               "$ref": "#/$defs/VisualRegressionConfig"
+            },
+            {
+              "$ref": "#/$defs/LoadDatasetConfig"
             },
             {
               "$ref": "#/$defs/ConditionalConfig"
@@ -1134,6 +1137,49 @@
         }
       ],
       "description": "Compare a full-page screenshot against a stored baseline using perceptual SSIM. First run (or updateBaseline) records the baseline; later runs fail on visual drift beyond the threshold."
+    },
+    "LoadDatasetConfig": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/BaseActionConfig"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "format": {
+              "type": "string",
+              "enum": [
+                "auto",
+                "csv",
+                "json"
+              ],
+              "default": "auto",
+              "description": "Dataset format. 'auto' infers from the content/reference."
+            },
+            "source": {
+              "type": "string",
+              "default": "",
+              "description": "Inline CSV/JSON text, or a mediaId:<id> reference to an uploaded dataset file."
+            },
+            "hasHeader": {
+              "type": "boolean",
+              "default": true,
+              "description": "CSV only: treat the first row as column names."
+            },
+            "delimiter": {
+              "type": "string",
+              "default": ",",
+              "description": "CSV column delimiter."
+            },
+            "outputVariable": {
+              "type": "string",
+              "default": "dataset",
+              "description": "Variable to store the parsed rows (a list of row objects) for a loop forEach to iterate."
+            }
+          }
+        }
+      ],
+      "description": "Load a CSV/JSON dataset (inline or from an uploaded file) into a variable as a list of row objects, for data-driven testing with loop forEach. Reference a row field as {{row.column}} inside the loop."
     },
     "DatabaseQueryConfig": {
       "allOf": [

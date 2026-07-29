@@ -36,6 +36,7 @@ class ActionType(StrEnum):
     accessibilityAudit = 'accessibilityAudit'
     captureWebVitals = 'captureWebVitals'
     visualRegression = 'visualRegression'
+    loadDataset = 'loadDataset'
     conditional = 'conditional'
     loop = 'loop'
     dbQuery = 'dbQuery'

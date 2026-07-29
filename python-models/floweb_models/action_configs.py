@@ -296,6 +296,16 @@ class FailOnSeverity(StrEnum):
     critical = 'critical'
 
 
+class Format1(StrEnum):
+    """
+    Dataset format. 'auto' infers from the content/reference.
+    """
+
+    auto = 'auto'
+    csv = 'csv'
+    json = 'json'
+
+
 class Direction(StrEnum):
     """
     Scroll direction
@@ -399,7 +409,7 @@ class Button(StrEnum):
     middle = 'middle'
 
 
-class Format1(StrEnum):
+class Format2(StrEnum):
     """
     Screenshot image format
     """
@@ -935,6 +945,36 @@ class VisualRegressionConfig(BaseActionConfig):
     diffOutputVariable: str | None = ''
     """
     Variable to store the comparison result (score, threshold, diff image).
+    """
+
+
+class LoadDatasetConfig(BaseActionConfig):
+    """
+    Load a CSV/JSON dataset (inline or from an uploaded file) into a variable as a list of row objects, for data-driven testing with loop forEach. Reference a row field as {{row.column}} inside the loop.
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    format: Format1 | None = 'auto'
+    """
+    Dataset format. 'auto' infers from the content/reference.
+    """
+    source: str | None = ''
+    """
+    Inline CSV/JSON text, or a mediaId:<id> reference to an uploaded dataset file.
+    """
+    hasHeader: bool | None = True
+    """
+    CSV only: treat the first row as column names.
+    """
+    delimiter: str | None = ','
+    """
+    CSV column delimiter.
+    """
+    outputVariable: str | None = 'dataset'
+    """
+    Variable to store the parsed rows (a list of row objects) for a loop forEach to iterate.
     """
 
 
@@ -2303,7 +2343,7 @@ class DesktopCaptureScreenConfig(BaseActionConfig):
     """
     Append timestamp to output filename
     """
-    format: Format1 | None = 'png'
+    format: Format2 | None = 'png'
     """
     Screenshot image format
     """
@@ -2488,6 +2528,7 @@ class ActionConfigurations(BaseModel):
             | AccessibilityAuditConfig
             | CaptureWebVitalsConfig
             | VisualRegressionConfig
+            | LoadDatasetConfig
             | ConditionalConfig
             | LoopConfig
             | DatabaseQueryConfig

@@ -28,6 +28,7 @@ export type ActionType =
   | "accessibilityAudit"
   | "captureWebVitals"
   | "visualRegression"
+  | "loadDataset"
   | "conditional"
   | "loop"
   | "dbQuery"

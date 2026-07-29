@@ -500,6 +500,31 @@ export type VisualRegressionConfig = BaseActionConfig & {
   diffOutputVariable?: string;
 };
 /**
+ * Load a CSV/JSON dataset (inline or from an uploaded file) into a variable as a list of row objects, for data-driven testing with loop forEach. Reference a row field as {{row.column}} inside the loop.
+ */
+export type LoadDatasetConfig = BaseActionConfig & {
+  /**
+   * Dataset format. 'auto' infers from the content/reference.
+   */
+  format?: "auto" | "csv" | "json";
+  /**
+   * Inline CSV/JSON text, or a mediaId:<id> reference to an uploaded dataset file.
+   */
+  source?: string;
+  /**
+   * CSV only: treat the first row as column names.
+   */
+  hasHeader?: boolean;
+  /**
+   * CSV column delimiter.
+   */
+  delimiter?: string;
+  /**
+   * Variable to store the parsed rows (a list of row objects) for a loop forEach to iterate.
+   */
+  outputVariable?: string;
+};
+/**
  * Execute a database query.
  */
 export type DatabaseQueryConfig = BaseActionConfig & {
@@ -1878,6 +1903,7 @@ export type ActionType =
   | "accessibilityAudit"
   | "captureWebVitals"
   | "visualRegression"
+  | "loadDataset"
   | "conditional"
   | "loop"
   | "dbQuery"
