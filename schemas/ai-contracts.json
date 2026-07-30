@@ -25,7 +25,14 @@
         "baseUrl": { "type": ["string", "null"], "default": null },
         "apiKey": { "type": ["string", "null"], "default": null },
         "temperature": { "type": "number", "default": 0.2 },
-        "maxTokens": { "type": "integer", "default": 2000 }
+        "maxTokens": { "type": "integer", "default": 2000 },
+        "requestTimeoutSeconds": {
+          "type": ["number", "null"],
+          "description": "How long to wait for the model to respond, in seconds. Null uses the service default. Bounded so a client cannot hold a worker open indefinitely.",
+          "minimum": 10,
+          "maximum": 900,
+          "default": null
+        }
       }
     },
     "AIRequestMetadata": {
@@ -131,9 +138,29 @@
         "operations": { "type": "array", "items": { "$ref": "#/$defs/AssistantOperation" }, "default": [] },
         "plan": { "type": ["array", "null"], "items": { "type": "string" }, "default": null },
         "suggestions": { "type": ["array", "null"], "items": { "type": "string" }, "default": null },
+        "steps": { "type": "array", "items": { "$ref": "#/$defs/AssistantStep" }, "default": [] },
         "metadata": { "$ref": "#/$defs/AIResponseMetadata" }
       },
       "required": ["message", "metadata"]
+    },
+    "AssistantStepKind": {
+      "type": "string",
+      "description": "What kind of work a thread step represents",
+      "enum": ["discovery", "decision", "edit", "answer", "error"]
+    },
+    "AssistantStep": {
+      "type": "object",
+      "description": "One entry in the assistant's reasoning thread: what it looked at, what it decided, and what it changed",
+      "properties": {
+        "id": { "type": "string" },
+        "kind": { "$ref": "#/$defs/AssistantStepKind" },
+        "title": { "type": "string" },
+        "detail": { "type": ["string", "null"], "description": "Longer explanation shown when expanded. Markdown.", "default": null },
+        "tool": { "type": ["string", "null"], "description": "Tool this step corresponds to, when it maps to one", "default": null },
+        "status": { "type": "string", "enum": ["ok", "skipped", "failed"], "default": "ok" }
+      },
+      "required": ["id", "kind", "title"],
+      "additionalProperties": true
     },
     "FixLocatorRequest": {
       "type": "object",

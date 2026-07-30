@@ -73,6 +73,10 @@ export type ActionType =
  */
 export type AIProviderType = "auto" | "ollama" | "openai" | "anthropic" | "openai-compatible" | "disabled";
 /**
+ * What kind of work a thread step represents
+ */
+export type AssistantStepKind = "discovery" | "decision" | "edit" | "answer" | "error";
+/**
  * The 17 desktop automation action types (subset of ActionType).
  */
 export type DesktopActionType =
@@ -121,6 +125,8 @@ export interface DataLabSchema {
   AssistantToolDescriptor?: AssistantToolDescriptor;
   AssistantActionRequest?: AssistantActionRequest;
   AssistantActionResponse?: AssistantActionResponse;
+  AssistantStepKind?: AssistantStepKind;
+  AssistantStep?: AssistantStep;
   FixLocatorRequest?: FixLocatorRequest;
   FixLocatorResponse?: FixLocatorResponse;
   AnalyzeFailureRequest?: AnalyzeFailureRequest;
@@ -164,6 +170,10 @@ export interface AIProviderConfig {
   apiKey?: string | null;
   temperature?: number;
   maxTokens?: number;
+  /**
+   * How long to wait for the model to respond, in seconds. Null uses the service default. Bounded so a client cannot hold a worker open indefinitely.
+   */
+  requestTimeoutSeconds?: number | null;
 }
 /**
  * Response for all three generate endpoints
@@ -392,7 +402,26 @@ export interface AssistantActionResponse {
   operations?: AssistantOperation[];
   plan?: string[] | null;
   suggestions?: string[] | null;
+  steps?: AssistantStep[];
   metadata: AIResponseMetadata;
+}
+/**
+ * One entry in the assistant's reasoning thread: what it looked at, what it decided, and what it changed
+ */
+export interface AssistantStep {
+  id: string;
+  kind: AssistantStepKind;
+  title: string;
+  /**
+   * Longer explanation shown when expanded. Markdown.
+   */
+  detail?: string | null;
+  /**
+   * Tool this step corresponds to, when it maps to one
+   */
+  tool?: string | null;
+  status?: "ok" | "skipped" | "failed";
+  [k: string]: unknown;
 }
 /**
  * POST /ai/fix-locator request

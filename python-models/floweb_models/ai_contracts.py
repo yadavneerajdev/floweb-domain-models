@@ -36,6 +36,10 @@ class AIProviderConfig(BaseModel):
     apiKey: str | None = None
     temperature: float | None = 0.2
     maxTokens: int | None = 2000
+    requestTimeoutSeconds: Annotated[float | None, Field(ge=10, le=900)] = None
+    """
+    How long to wait for the model to respond, in seconds. Null uses the service default. Bounded so a client cannot hold a worker open indefinitely.
+    """
 
 
 class AIRequestMetadata(BaseModel):
@@ -163,6 +167,47 @@ class AssistantActionRequest(BaseModel):
     metadata: AIRequestMetadata | None = None
 
 
+class AssistantStepKind(StrEnum):
+    """
+    What kind of work a thread step represents
+    """
+
+    discovery = 'discovery'
+    decision = 'decision'
+    edit = 'edit'
+    answer = 'answer'
+    error = 'error'
+
+
+class Status(StrEnum):
+    ok = 'ok'
+    skipped = 'skipped'
+    failed = 'failed'
+
+
+class AssistantStep(BaseModel):
+    """
+    One entry in the assistant's reasoning thread: what it looked at, what it decided, and what it changed
+    """
+
+    model_config = ConfigDict(
+        extra='allow',
+        populate_by_name=True,
+    )
+    id: str
+    kind: AssistantStepKind
+    title: str
+    detail: str | None = None
+    """
+    Longer explanation shown when expanded. Markdown.
+    """
+    tool: str | None = None
+    """
+    Tool this step corresponds to, when it maps to one
+    """
+    status: Status | None = 'ok'
+
+
 class AssistantActionResponse(BaseModel):
     """
     POST /ai/assistant-actions response
@@ -175,6 +220,7 @@ class AssistantActionResponse(BaseModel):
     operations: Annotated[list[AssistantOperation] | None, Field(default_factory=list)]
     plan: list[str] | None = None
     suggestions: list[str] | None = None
+    steps: Annotated[list[AssistantStep] | None, Field(default_factory=list)]
     metadata: AIResponseMetadata
 
 
