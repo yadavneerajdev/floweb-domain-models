@@ -125,6 +125,8 @@
         "instruction": { "type": "string" },
         "currentTest": { "type": ["object", "null"], "additionalProperties": true, "default": null },
         "assistantPermissions": { "type": ["object", "null"], "additionalProperties": true, "default": null },
+        "runOutcome": { "oneOf": [{ "$ref": "#/$defs/AssistantRunOutcome" }, { "type": "null" }], "description": "Results of a run the assistant previously requested", "default": null },
+        "engineConnected": { "type": ["boolean", "null"], "description": "Whether the engine is reachable, so the assistant knows if running is possible", "default": null },
         "provider": { "$ref": "#/$defs/AIProviderConfig" },
         "metadata": { "$ref": "#/$defs/AIRequestMetadata" }
       },
@@ -139,9 +141,69 @@
         "plan": { "type": ["array", "null"], "items": { "type": "string" }, "default": null },
         "suggestions": { "type": ["array", "null"], "items": { "type": "string" }, "default": null },
         "steps": { "type": "array", "items": { "$ref": "#/$defs/AssistantStep" }, "default": [] },
+        "continuation": { "oneOf": [{ "$ref": "#/$defs/AssistantContinuation" }, { "type": "null" }], "default": null },
+        "runRequest": { "oneOf": [{ "$ref": "#/$defs/AssistantRunRequest" }, { "type": "null" }], "default": null },
         "metadata": { "$ref": "#/$defs/AIResponseMetadata" }
       },
       "required": ["message", "metadata"]
+    },
+    "AssistantRunRequest": {
+      "type": "object",
+      "description": "The assistant asking for the test to be executed so it can check its own work. `partial` runs only what it changed; `full` runs everything.",
+      "properties": {
+        "mode": { "type": "string", "enum": ["partial", "full"], "default": "partial" },
+        "reason": { "type": "string", "description": "Why the run is needed, shown to the user when asking permission" },
+        "nodeIds": { "type": "array", "items": { "type": "string" }, "description": "Nodes to run for a partial run. The client prepends whatever setup steps are required, so a mid-flow action does not fail for want of a browser.", "default": [] },
+        "expectation": { "type": ["string", "null"], "description": "What the assistant expects to happen, so a mismatch is meaningful", "default": null }
+      },
+      "required": ["mode", "reason"],
+      "additionalProperties": true
+    },
+    "AssistantRunOutcome": {
+      "type": "object",
+      "description": "Execution results handed back to the assistant so it can decide whether to fix, continue, or stop.",
+      "properties": {
+        "status": { "type": "string", "enum": ["passed", "failed", "error", "cancelled", "not_run"] },
+        "mode": { "type": "string", "enum": ["partial", "full"] },
+        "durationSeconds": { "type": ["number", "null"], "default": null },
+        "failedNodeId": { "type": ["string", "null"], "default": null },
+        "failedAction": { "type": ["string", "null"], "default": null },
+        "errorMessage": { "type": ["string", "null"], "default": null },
+        "steps": { "type": "array", "items": { "type": "object", "additionalProperties": true }, "description": "Per-step outcomes from the engine report", "default": [] },
+        "consoleLogs": { "type": "array", "items": { "type": "string" }, "default": [] },
+        "reportId": { "type": ["string", "null"], "default": null }
+      },
+      "required": ["status", "mode"],
+      "additionalProperties": true
+    },
+    "AssistantContinuation": {
+      "type": "object",
+      "description": "Set when the assistant could not finish in one turn. The client applies this turn, then sends `nextInstruction` back to continue, so progress is visible per step instead of after the whole goal.",
+      "properties": {
+        "goal": { "type": "string", "description": "The overall objective being worked towards" },
+        "nextInstruction": { "type": "string", "description": "Instruction the client should send to continue" },
+        "remaining": { "type": ["integer", "null"], "description": "Best estimate of turns still needed, when known", "default": null },
+        "reason": { "type": ["string", "null"], "description": "Why the work was split", "default": null }
+      },
+      "required": ["goal", "nextInstruction"],
+      "additionalProperties": true
+    },
+    "AssistantPhase": {
+      "type": "string",
+      "description": "Coarse stage of an assistant turn, streamed while the turn runs",
+      "enum": ["reading_context", "consulting_docs", "awaiting_model", "executing_tools", "done", "failed", "cancelled"]
+    },
+    "AssistantProgressEvent": {
+      "type": "object",
+      "description": "One server-sent event emitted while an assistant turn runs. Terminal events carry the final response.",
+      "properties": {
+        "phase": { "$ref": "#/$defs/AssistantPhase" },
+        "label": { "type": "string", "description": "Human-readable description of the current phase" },
+        "detail": { "type": ["string", "null"], "description": "Optional extra context for the phase", "default": null },
+        "response": { "type": ["object", "null"], "additionalProperties": true, "description": "The completed AssistantActionResponse, present only on a terminal event", "default": null }
+      },
+      "required": ["phase", "label"],
+      "additionalProperties": true
     },
     "AssistantStepKind": {
       "type": "string",

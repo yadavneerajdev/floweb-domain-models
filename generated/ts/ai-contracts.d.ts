@@ -9,6 +9,17 @@ export type AIProviderType = "auto" | "ollama" | "openai" | "anthropic" | "opena
  * What kind of work a thread step represents
  */
 export type AssistantStepKind = "discovery" | "decision" | "edit" | "answer" | "error";
+/**
+ * Coarse stage of an assistant turn, streamed while the turn runs
+ */
+export type AssistantPhase =
+  | "reading_context"
+  | "consulting_docs"
+  | "awaiting_model"
+  | "executing_tools"
+  | "done"
+  | "failed"
+  | "cancelled";
 
 export interface AIContractsSchema {
   generateFlowRequest?: GenerateFlowRequest;
@@ -25,6 +36,11 @@ export interface AIContractsSchema {
   AssistantToolDescriptor?: AssistantToolDescriptor;
   AssistantActionRequest?: AssistantActionRequest;
   AssistantActionResponse?: AssistantActionResponse;
+  AssistantRunRequest?: AssistantRunRequest;
+  AssistantRunOutcome?: AssistantRunOutcome;
+  AssistantContinuation?: AssistantContinuation;
+  AssistantPhase?: AssistantPhase;
+  AssistantProgressEvent?: AssistantProgressEvent;
   AssistantStepKind?: AssistantStepKind;
   AssistantStep?: AssistantStep;
   FixLocatorRequest?: FixLocatorRequest;
@@ -157,8 +173,36 @@ export interface AssistantActionRequest {
   assistantPermissions?: {
     [k: string]: unknown;
   } | null;
+  /**
+   * Results of a run the assistant previously requested
+   */
+  runOutcome?: AssistantRunOutcome | null;
+  /**
+   * Whether the engine is reachable, so the assistant knows if running is possible
+   */
+  engineConnected?: boolean | null;
   provider?: AIProviderConfig;
   metadata?: AIRequestMetadata;
+}
+/**
+ * Execution results handed back to the assistant so it can decide whether to fix, continue, or stop.
+ */
+export interface AssistantRunOutcome {
+  status: "passed" | "failed" | "error" | "cancelled" | "not_run";
+  mode: "partial" | "full";
+  durationSeconds?: number | null;
+  failedNodeId?: string | null;
+  failedAction?: string | null;
+  errorMessage?: string | null;
+  /**
+   * Per-step outcomes from the engine report
+   */
+  steps?: {
+    [k: string]: unknown;
+  }[];
+  consoleLogs?: string[];
+  reportId?: string | null;
+  [k: string]: unknown;
 }
 /**
  * POST /ai/assistant-actions response
@@ -169,6 +213,8 @@ export interface AssistantActionResponse {
   plan?: string[] | null;
   suggestions?: string[] | null;
   steps?: AssistantStep[];
+  continuation?: AssistantContinuation | null;
+  runRequest?: AssistantRunRequest | null;
   metadata: AIResponseMetadata;
 }
 /**
@@ -187,6 +233,68 @@ export interface AssistantStep {
    */
   tool?: string | null;
   status?: "ok" | "skipped" | "failed";
+  [k: string]: unknown;
+}
+/**
+ * Set when the assistant could not finish in one turn. The client applies this turn, then sends `nextInstruction` back to continue, so progress is visible per step instead of after the whole goal.
+ */
+export interface AssistantContinuation {
+  /**
+   * The overall objective being worked towards
+   */
+  goal: string;
+  /**
+   * Instruction the client should send to continue
+   */
+  nextInstruction: string;
+  /**
+   * Best estimate of turns still needed, when known
+   */
+  remaining?: number | null;
+  /**
+   * Why the work was split
+   */
+  reason?: string | null;
+  [k: string]: unknown;
+}
+/**
+ * The assistant asking for the test to be executed so it can check its own work. `partial` runs only what it changed; `full` runs everything.
+ */
+export interface AssistantRunRequest {
+  mode: "partial" | "full";
+  /**
+   * Why the run is needed, shown to the user when asking permission
+   */
+  reason: string;
+  /**
+   * Nodes to run for a partial run. The client prepends whatever setup steps are required, so a mid-flow action does not fail for want of a browser.
+   */
+  nodeIds?: string[];
+  /**
+   * What the assistant expects to happen, so a mismatch is meaningful
+   */
+  expectation?: string | null;
+  [k: string]: unknown;
+}
+/**
+ * One server-sent event emitted while an assistant turn runs. Terminal events carry the final response.
+ */
+export interface AssistantProgressEvent {
+  phase: AssistantPhase;
+  /**
+   * Human-readable description of the current phase
+   */
+  label: string;
+  /**
+   * Optional extra context for the phase
+   */
+  detail?: string | null;
+  /**
+   * The completed AssistantActionResponse, present only on a terminal event
+   */
+  response?: {
+    [k: string]: unknown;
+  } | null;
   [k: string]: unknown;
 }
 /**

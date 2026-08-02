@@ -36,7 +36,7 @@ class AIProviderConfig(BaseModel):
     apiKey: str | None = None
     temperature: float | None = 0.2
     maxTokens: int | None = 2000
-    requestTimeoutSeconds: Annotated[float | None, Field(ge=10, le=900)] = None
+    requestTimeoutSeconds: Annotated[float | None, Field(ge=10.0, le=900.0)] = None
     """
     How long to wait for the model to respond, in seconds. Null uses the service default. Bounded so a client cannot hold a worker open indefinitely.
     """
@@ -152,19 +152,129 @@ class AssistantToolDescriptor(BaseModel):
     requiresExecution: bool
 
 
-class AssistantActionRequest(BaseModel):
+class Mode(StrEnum):
+    partial = 'partial'
+    full = 'full'
+
+
+class AssistantRunRequest(BaseModel):
     """
-    POST /ai/assistant-actions request
+    The assistant asking for the test to be executed so it can check its own work. `partial` runs only what it changed; `full` runs everything.
     """
 
     model_config = ConfigDict(
+        extra='allow',
         populate_by_name=True,
     )
-    instruction: str
-    currentTest: dict[str, Any] | None = None
-    assistantPermissions: dict[str, Any] | None = None
-    provider: AIProviderConfig | None = None
-    metadata: AIRequestMetadata | None = None
+    mode: Mode
+    reason: str
+    """
+    Why the run is needed, shown to the user when asking permission
+    """
+    nodeIds: list[str] | None = []
+    """
+    Nodes to run for a partial run. The client prepends whatever setup steps are required, so a mid-flow action does not fail for want of a browser.
+    """
+    expectation: str | None = None
+    """
+    What the assistant expects to happen, so a mismatch is meaningful
+    """
+
+
+class Status(StrEnum):
+    passed = 'passed'
+    failed = 'failed'
+    error = 'error'
+    cancelled = 'cancelled'
+    not_run = 'not_run'
+
+
+class AssistantRunOutcome(BaseModel):
+    """
+    Execution results handed back to the assistant so it can decide whether to fix, continue, or stop.
+    """
+
+    model_config = ConfigDict(
+        extra='allow',
+        populate_by_name=True,
+    )
+    status: Status
+    mode: Mode
+    durationSeconds: float | None = None
+    failedNodeId: str | None = None
+    failedAction: str | None = None
+    errorMessage: str | None = None
+    steps: list[dict[str, Any]] | None = []
+    """
+    Per-step outcomes from the engine report
+    """
+    consoleLogs: list[str] | None = []
+    reportId: str | None = None
+
+
+class AssistantContinuation(BaseModel):
+    """
+    Set when the assistant could not finish in one turn. The client applies this turn, then sends `nextInstruction` back to continue, so progress is visible per step instead of after the whole goal.
+    """
+
+    model_config = ConfigDict(
+        extra='allow',
+        populate_by_name=True,
+    )
+    goal: str
+    """
+    The overall objective being worked towards
+    """
+    nextInstruction: str
+    """
+    Instruction the client should send to continue
+    """
+    remaining: int | None = None
+    """
+    Best estimate of turns still needed, when known
+    """
+    reason: str | None = None
+    """
+    Why the work was split
+    """
+
+
+class AssistantPhase(StrEnum):
+    """
+    Coarse stage of an assistant turn, streamed while the turn runs
+    """
+
+    reading_context = 'reading_context'
+    consulting_docs = 'consulting_docs'
+    awaiting_model = 'awaiting_model'
+    executing_tools = 'executing_tools'
+    done = 'done'
+    failed = 'failed'
+    cancelled = 'cancelled'
+
+
+class AssistantProgressEvent(BaseModel):
+    """
+    One server-sent event emitted while an assistant turn runs. Terminal events carry the final response.
+    """
+
+    model_config = ConfigDict(
+        extra='allow',
+        populate_by_name=True,
+    )
+    phase: AssistantPhase
+    label: str
+    """
+    Human-readable description of the current phase
+    """
+    detail: str | None = None
+    """
+    Optional extra context for the phase
+    """
+    response: dict[str, Any] | None = None
+    """
+    The completed AssistantActionResponse, present only on a terminal event
+    """
 
 
 class AssistantStepKind(StrEnum):
@@ -179,7 +289,7 @@ class AssistantStepKind(StrEnum):
     error = 'error'
 
 
-class Status(StrEnum):
+class Status1(StrEnum):
     ok = 'ok'
     skipped = 'skipped'
     failed = 'failed'
@@ -205,23 +315,7 @@ class AssistantStep(BaseModel):
     """
     Tool this step corresponds to, when it maps to one
     """
-    status: Status | None = 'ok'
-
-
-class AssistantActionResponse(BaseModel):
-    """
-    POST /ai/assistant-actions response
-    """
-
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    message: str
-    operations: Annotated[list[AssistantOperation] | None, Field(default_factory=list)]
-    plan: list[str] | None = None
-    suggestions: list[str] | None = None
-    steps: Annotated[list[AssistantStep] | None, Field(default_factory=list)]
-    metadata: AIResponseMetadata
+    status: Status1 | None = 'ok'
 
 
 class FixLocatorRequest(BaseModel):
@@ -389,9 +483,11 @@ class VibeNextActionRequest(BaseModel):
     screenHeight: int | None = 0
     step: int | None = 1
     maxSteps: int | None = 25
-    history: Annotated[list[VibeStepRecord] | None, Field(default_factory=list)]
-    messages: Annotated[list[VibeMessage] | None, Field(default_factory=list)]
-    existingSteps: Annotated[list[VibeExistingStep] | None, Field(default_factory=list)]
+    history: Annotated[list[VibeStepRecord] | None, Field(validate_default=True)] = []
+    messages: Annotated[list[VibeMessage] | None, Field(validate_default=True)] = []
+    existingSteps: Annotated[
+        list[VibeExistingStep] | None, Field(validate_default=True)
+    ] = []
     provider: AIProviderConfig | None = None
     metadata: AIRequestMetadata | None = None
 
@@ -456,3 +552,46 @@ class AIContracts(BaseModel):
     generateFlowRequest: GenerateFlowRequest | None = None
     generateFlowResponse: GenerateFlowResponse | None = None
     providerConfig: AIProviderConfig | None = None
+
+
+class AssistantActionRequest(BaseModel):
+    """
+    POST /ai/assistant-actions request
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    instruction: str
+    currentTest: dict[str, Any] | None = None
+    assistantPermissions: dict[str, Any] | None = None
+    runOutcome: AssistantRunOutcome | None = None
+    """
+    Results of a run the assistant previously requested
+    """
+    engineConnected: bool | None = None
+    """
+    Whether the engine is reachable, so the assistant knows if running is possible
+    """
+    provider: AIProviderConfig | None = None
+    metadata: AIRequestMetadata | None = None
+
+
+class AssistantActionResponse(BaseModel):
+    """
+    POST /ai/assistant-actions response
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    message: str
+    operations: Annotated[
+        list[AssistantOperation] | None, Field(validate_default=True)
+    ] = []
+    plan: list[str] | None = None
+    suggestions: list[str] | None = None
+    steps: Annotated[list[AssistantStep] | None, Field(validate_default=True)] = []
+    continuation: AssistantContinuation | None = None
+    runRequest: AssistantRunRequest | None = None
+    metadata: AIResponseMetadata

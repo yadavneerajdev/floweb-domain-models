@@ -6,7 +6,7 @@ from __future__ import annotations
 from enum import StrEnum
 from typing import Annotated, Any
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, constr
 
 from ._base import FlowebActionBaseModel
 
@@ -322,7 +322,7 @@ class LoopType(StrEnum):
     Type of loop
     """
 
-    count_ = 'count'
+    count = 'count'
     condition = 'condition'
     foreach = 'foreach'
 
@@ -2504,7 +2504,7 @@ class ActionConfigurations(BaseModel):
     )
     actionConfigs: (
         dict[
-            str,
+            constr(pattern=r'.*'),
             ClickConfig
             | InputConfig
             | SendKeysConfig

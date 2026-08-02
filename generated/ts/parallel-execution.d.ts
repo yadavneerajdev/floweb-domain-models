@@ -1,6 +1,24 @@
 /* eslint-disable */
 // GENERATED from schemas/ by scripts/generate-ts.cjs — do not edit by hand.
 
+/**
+ * Named output format for a `date` variable. `custom` defers to the variable's dateFormatPattern.
+ */
+export type DateFormatPreset =
+  | "iso"
+  | "iso-datetime"
+  | "rfc3339"
+  | "date-slash-dmy"
+  | "date-slash-mdy"
+  | "date-dash-ymd"
+  | "date-medium"
+  | "date-long"
+  | "datetime-friendly"
+  | "time-24h"
+  | "unix-seconds"
+  | "unix-millis"
+  | "custom";
+
 export interface ParallelExecutionModelsSchema {
   parallelExecution?: {
     requests?: ParallelTestsRequest[];
@@ -20,6 +38,7 @@ export interface ParallelExecutionModelsSchema {
   FlowVariables?: FlowVariables1;
   FlowParameters?: FlowParameters1;
   FlowRoot?: Flow1;
+  DateFormatPreset?: DateFormatPreset;
   Environment?: Environment1;
   GlobalVariable?: GlobalVariable;
   Variable?: Variable;
@@ -304,13 +323,24 @@ export interface Variable {
     | "json"
     | "web-identifier"
     | "image"
-    | "secret";
+    | "secret"
+    | "date"
+    | "code"
+    | "email";
   /**
    * The variable's value; any JSON value is allowed (2026-07 decision: runtime stores structured values, aligned with TS JsonValue rather than the old string-only contract)
    */
   value: {
     [k: string]: unknown;
   };
+  /**
+   * Output format applied when a `date` variable is substituted into an action. The stored value stays canonical ISO-8601; this only affects rendering. Either a DateFormatPreset id or, when set to `custom`, the pattern in `dateFormatPattern`. Ignored for other types.
+   */
+  dateFormat?: string;
+  /**
+   * Token pattern used when `dateFormat` is `custom`, e.g. `DD MMM YYYY HH:mm`.
+   */
+  dateFormatPattern?: string;
   /**
    * Description of the variable's purpose
    */
@@ -410,13 +440,24 @@ export interface GlobalVariable {
     | "json"
     | "web-identifier"
     | "image"
-    | "secret";
+    | "secret"
+    | "date"
+    | "code"
+    | "email";
   /**
    * The variable's value; any JSON value is allowed (2026-07 decision: runtime stores structured values, aligned with TS JsonValue rather than the old string-only contract)
    */
   value: {
     [k: string]: unknown;
   };
+  /**
+   * Output format applied when a `date` variable is substituted into an action. The stored value stays canonical ISO-8601; this only affects rendering. Either a DateFormatPreset id or, when set to `custom`, the pattern in `dateFormatPattern`. Ignored for other types.
+   */
+  dateFormat?: string;
+  /**
+   * Token pattern used when `dateFormat` is `custom`, e.g. `DD MMM YYYY HH:mm`.
+   */
+  dateFormatPattern?: string;
   /**
    * Description of the variable's purpose
    */
