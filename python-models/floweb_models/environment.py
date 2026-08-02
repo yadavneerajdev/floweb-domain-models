@@ -9,6 +9,26 @@ from typing import Annotated, Any
 from pydantic import AwareDatetime, BaseModel, ConfigDict, Field
 
 
+class DateFormatPreset(StrEnum):
+    """
+    Named output format for a `date` variable. `custom` defers to the variable's dateFormatPattern.
+    """
+
+    iso = 'iso'
+    iso_datetime = 'iso-datetime'
+    rfc3339 = 'rfc3339'
+    date_slash_dmy = 'date-slash-dmy'
+    date_slash_mdy = 'date-slash-mdy'
+    date_dash_ymd = 'date-dash-ymd'
+    date_medium = 'date-medium'
+    date_long = 'date-long'
+    datetime_friendly = 'datetime-friendly'
+    time_24h = 'time-24h'
+    unix_seconds = 'unix-seconds'
+    unix_millis = 'unix-millis'
+    custom = 'custom'
+
+
 class Type(StrEnum):
     """
     Data type of the variable
@@ -25,6 +45,9 @@ class Type(StrEnum):
     web_identifier = 'web-identifier'
     image = 'image'
     secret = 'secret'
+    date = 'date'
+    code = 'code'
+    email = 'email'
 
 
 class GlobalVariable(BaseModel):
@@ -52,6 +75,14 @@ class GlobalVariable(BaseModel):
     value: Any
     """
     The variable's value; any JSON value is allowed (2026-07 decision: runtime stores structured values, aligned with TS JsonValue rather than the old string-only contract)
+    """
+    dateFormat: Annotated[str | None, Field(max_length=40)] = None
+    """
+    Output format applied when a `date` variable is substituted into an action. The stored value stays canonical ISO-8601; this only affects rendering. Either a DateFormatPreset id or, when set to `custom`, the pattern in `dateFormatPattern`. Ignored for other types.
+    """
+    dateFormatPattern: Annotated[str | None, Field(max_length=80)] = None
+    """
+    Token pattern used when `dateFormat` is `custom`, e.g. `DD MMM YYYY HH:mm`.
     """
     description: Annotated[str | None, Field(max_length=500)] = None
     """
@@ -96,6 +127,14 @@ class Variable(BaseModel):
     value: Any
     """
     The variable's value; any JSON value is allowed (2026-07 decision: runtime stores structured values, aligned with TS JsonValue rather than the old string-only contract)
+    """
+    dateFormat: Annotated[str | None, Field(max_length=40)] = None
+    """
+    Output format applied when a `date` variable is substituted into an action. The stored value stays canonical ISO-8601; this only affects rendering. Either a DateFormatPreset id or, when set to `custom`, the pattern in `dateFormatPattern`. Ignored for other types.
+    """
+    dateFormatPattern: Annotated[str | None, Field(max_length=80)] = None
+    """
+    Token pattern used when `dateFormat` is `custom`, e.g. `DD MMM YYYY HH:mm`.
     """
     description: Annotated[str | None, Field(max_length=500)] = None
     """

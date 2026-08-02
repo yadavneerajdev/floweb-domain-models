@@ -33,6 +33,11 @@
     "globalVariables"
   ],
   "$defs": {
+    "DateFormatPreset": {
+      "type": "string",
+      "description": "Named output format for a `date` variable. `custom` defers to the variable's dateFormatPattern.",
+      "enum": ["iso", "iso-datetime", "rfc3339", "date-slash-dmy", "date-slash-mdy", "date-dash-ymd", "date-medium", "date-long", "datetime-friendly", "time-24h", "unix-seconds", "unix-millis", "custom"]
+    },
     "Environment": {
       "type": "object",
       "description": "An environment configuration with its variables. Unifies the standalone-entity and embedded-in-flow forms: only id+name are required so embedded partial environments validate; the server always sets the remaining fields on stored environments.",
@@ -120,11 +125,24 @@
             "json",
             "web-identifier",
             "image",
-            "secret"
+            "secret",
+            "date",
+            "code",
+            "email"
           ]
         },
         "value": {
           "description": "The variable's value; any JSON value is allowed (2026-07 decision: runtime stores structured values, aligned with TS JsonValue rather than the old string-only contract)"
+        },
+        "dateFormat": {
+          "type": "string",
+          "description": "Output format applied when a `date` variable is substituted into an action. The stored value stays canonical ISO-8601; this only affects rendering. Either a DateFormatPreset id or, when set to `custom`, the pattern in `dateFormatPattern`. Ignored for other types.",
+          "maxLength": 40
+        },
+        "dateFormatPattern": {
+          "type": "string",
+          "description": "Token pattern used when `dateFormat` is `custom`, e.g. `DD MMM YYYY HH:mm`.",
+          "maxLength": 80
         },
         "description": {
           "type": "string",
@@ -186,11 +204,24 @@
             "json",
             "web-identifier",
             "image",
-            "secret"
+            "secret",
+            "date",
+            "code",
+            "email"
           ]
         },
         "value": {
           "description": "The variable's value; any JSON value is allowed (2026-07 decision: runtime stores structured values, aligned with TS JsonValue rather than the old string-only contract)"
+        },
+        "dateFormat": {
+          "type": "string",
+          "description": "Output format applied when a `date` variable is substituted into an action. The stored value stays canonical ISO-8601; this only affects rendering. Either a DateFormatPreset id or, when set to `custom`, the pattern in `dateFormatPattern`. Ignored for other types.",
+          "maxLength": 40
+        },
+        "dateFormatPattern": {
+          "type": "string",
+          "description": "Token pattern used when `dateFormat` is `custom`, e.g. `DD MMM YYYY HH:mm`.",
+          "maxLength": 80
         },
         "description": {
           "type": "string",

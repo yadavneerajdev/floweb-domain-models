@@ -89,6 +89,7 @@ export interface RuntimeContext {
   environments: Environment[];
   globalVariables: GlobalVariable[];
   selectedEnvironmentId?: string;
+  entitlements?: AccountEntitlements;
 }
 
 // Engine authentication handshake.

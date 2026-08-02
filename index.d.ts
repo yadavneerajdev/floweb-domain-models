@@ -71,6 +71,7 @@ export interface RuntimeContext {
   environments: Environment[];
   globalVariables: GlobalVariable[];
   selectedEnvironmentId?: string;
+  entitlements?: AccountEntitlements;
 }
 
 // Engine authentication handshake.
@@ -1965,6 +1966,53 @@ export type AIProviderType = "auto" | "ollama" | "openai" | "anthropic" | "opena
  */
 export type AssistantStepKind = "discovery" | "decision" | "edit" | "answer" | "error";
 /**
+ * Coarse stage of an assistant turn, streamed while the turn runs
+ */
+export type AssistantPhase =
+  | "reading_context"
+  | "consulting_docs"
+  | "awaiting_model"
+  | "executing_tools"
+  | "done"
+  | "failed"
+  | "cancelled";
+/**
+ * Billing plan identifier. 'custom' is assigned manually by a Floweb administrator.
+ */
+export type PlanId = "basic" | "premium" | "max" | "custom";
+/**
+ * A gateable product capability. Every enforcement point in the server, engine and UI keys off one of these.
+ */
+export type FeatureId =
+  | "test_creation"
+  | "test_execution"
+  | "reporting"
+  | "advanced_analytics"
+  | "recorder"
+  | "self_healing_basic"
+  | "self_healing_ai"
+  | "ai_assistant"
+  | "ai_test_generation"
+  | "ai_vibe_testing"
+  | "parallel_execution"
+  | "performance_testing";
+/**
+ * Lifecycle state of an account subscription. Only 'active' and 'trialing' grant entitlements.
+ */
+export type SubscriptionStatus = "active" | "trialing" | "past_due" | "cancelled";
+/**
+ * Outcome of a simulated payment attempt
+ */
+export type PaymentStatus = "succeeded" | "failed" | "refunded";
+/**
+ * Billing cadence for a plan price
+ */
+export type BillingInterval = "monthly" | "yearly";
+/**
+ * Why an entitlement check failed, so callers can render the right call to action
+ */
+export type FeatureDeniedReason = "not_in_plan" | "quota_exceeded" | "subscription_inactive" | "disabled_by_user";
+/**
  * Kind of generated dataset item
  */
 export type DatasetType = "test-scenario" | "xpath-selector";
@@ -1980,6 +2028,23 @@ export type DebugState = "ready" | "running" | "paused" | "stepping" | "complete
  * Reasons for debug execution pause
  */
 export type PauseReason = "breakpoint" | "manual" | "error" | "step";
+/**
+ * Named output format for a `date` variable. `custom` defers to the variable's dateFormatPattern.
+ */
+export type DateFormatPreset =
+  | "iso"
+  | "iso-datetime"
+  | "rfc3339"
+  | "date-slash-dmy"
+  | "date-slash-mdy"
+  | "date-dash-ymd"
+  | "date-medium"
+  | "date-long"
+  | "datetime-friendly"
+  | "time-24h"
+  | "unix-seconds"
+  | "unix-millis"
+  | "custom";
 /**
  * Severity level of the warning
  */
@@ -2648,8 +2713,34 @@ export interface AssistantActionRequest {
   instruction: string;
   currentTest?: AnyObject | null;
   assistantPermissions?: AnyObject | null;
+  /**
+   * Results of a run the assistant previously requested
+   */
+  runOutcome?: AssistantRunOutcome | null;
+  /**
+   * Whether the engine is reachable, so the assistant knows if running is possible
+   */
+  engineConnected?: boolean | null;
   provider?: AIProviderConfig;
   metadata?: AIRequestMetadata;
+}
+/**
+ * Execution results handed back to the assistant so it can decide whether to fix, continue, or stop.
+ */
+export interface AssistantRunOutcome {
+  status: "passed" | "failed" | "error" | "cancelled" | "not_run";
+  mode: "partial" | "full";
+  durationSeconds?: number | null;
+  failedNodeId?: string | null;
+  failedAction?: string | null;
+  errorMessage?: string | null;
+  /**
+   * Per-step outcomes from the engine report
+   */
+  steps?: AnyObject[];
+  consoleLogs?: string[];
+  reportId?: string | null;
+  [k: string]: unknown;
 }
 /**
  * POST /ai/assistant-actions response
@@ -2660,6 +2751,8 @@ export interface AssistantActionResponse {
   plan?: string[] | null;
   suggestions?: string[] | null;
   steps?: AssistantStep[];
+  continuation?: AssistantContinuation | null;
+  runRequest?: AssistantRunRequest | null;
   metadata: AIResponseMetadata;
 }
 /**
@@ -2678,6 +2771,66 @@ export interface AssistantStep {
    */
   tool?: string | null;
   status?: "ok" | "skipped" | "failed";
+  [k: string]: unknown;
+}
+/**
+ * Set when the assistant could not finish in one turn. The client applies this turn, then sends `nextInstruction` back to continue, so progress is visible per step instead of after the whole goal.
+ */
+export interface AssistantContinuation {
+  /**
+   * The overall objective being worked towards
+   */
+  goal: string;
+  /**
+   * Instruction the client should send to continue
+   */
+  nextInstruction: string;
+  /**
+   * Best estimate of turns still needed, when known
+   */
+  remaining?: number | null;
+  /**
+   * Why the work was split
+   */
+  reason?: string | null;
+  [k: string]: unknown;
+}
+/**
+ * The assistant asking for the test to be executed so it can check its own work. `partial` runs only what it changed; `full` runs everything.
+ */
+export interface AssistantRunRequest {
+  mode: "partial" | "full";
+  /**
+   * Why the run is needed, shown to the user when asking permission
+   */
+  reason: string;
+  /**
+   * Nodes to run for a partial run. The client prepends whatever setup steps are required, so a mid-flow action does not fail for want of a browser.
+   */
+  nodeIds?: string[];
+  /**
+   * What the assistant expects to happen, so a mismatch is meaningful
+   */
+  expectation?: string | null;
+  [k: string]: unknown;
+}
+/**
+ * One server-sent event emitted while an assistant turn runs. Terminal events carry the final response.
+ */
+export interface AssistantProgressEvent {
+  phase: AssistantPhase;
+  /**
+   * Human-readable description of the current phase
+   */
+  label: string;
+  /**
+   * Optional extra context for the phase
+   */
+  detail?: string | null;
+  /**
+   * The completed AssistantActionResponse, present only on a terminal event
+   */
+  response?: AnyObject | null;
   [k: string]: unknown;
 }
 /**
@@ -2830,6 +2983,124 @@ export interface VibeVerifyResponse {
   verified?: boolean;
   reason?: string;
   metadata: AIResponseMetadata;
+}
+/**
+ * Numeric limits attached to a plan. A null value means unlimited.
+ */
+export interface PlanQuotas {
+  executionsPerDay: number | null;
+  maxTests?: number | null;
+  maxMembers?: number | null;
+}
+/**
+ * A purchasable plan as advertised on the billing page
+ */
+export interface PlanCatalogEntry {
+  id: PlanId;
+  name: string;
+  description: string;
+  priceMonthly?: number | null;
+  priceYearly?: number | null;
+  currency?: string;
+  features: FeatureId[];
+  quotas: PlanQuotas;
+  highlights?: string[];
+  contactOnly?: boolean;
+}
+/**
+ * A simulated payment attempt retained for the billing history table. No real gateway is involved and no card data is stored.
+ */
+export interface PaymentRecord {
+  id: string;
+  planId: PlanId;
+  amount: number;
+  currency?: string;
+  interval?: BillingInterval;
+  status: PaymentStatus;
+  cardLast4?: string;
+  /**
+   * Simulated gateway reference
+   */
+  reference?: string;
+  createdAt: string;
+}
+/**
+ * The billing state of one account. featureOverrides lets an administrator grant or revoke individual capabilities independently of the plan, which is how the 'custom' plan is fulfilled.
+ */
+export interface AccountSubscription {
+  id?: string;
+  accountId: string;
+  planId: PlanId;
+  status: SubscriptionStatus;
+  interval?: BillingInterval;
+  /**
+   * Resolved feature list persisted at purchase time so a catalog change never silently alters a paid account
+   */
+  features: FeatureId[];
+  featureOverrides?: FeatureOverride[];
+  quotas: PlanQuotas;
+  currentPeriodStart: string;
+  currentPeriodEnd: string;
+  cancelAtPeriodEnd?: boolean;
+  payments?: PaymentRecord[];
+  createdAt?: string;
+  updatedAt?: string;
+}
+/**
+ * An administrator-set grant or revocation of a single feature, applied on top of the plan's feature list
+ */
+export interface FeatureOverride {
+  feature: FeatureId;
+  enabled: boolean;
+  note?: string;
+}
+/**
+ * Consumption for the current UTC day, used to enforce executionsPerDay
+ */
+export interface UsageSnapshot {
+  /**
+   * UTC day key, YYYY-MM-DD
+   */
+  date: string;
+  executions: number;
+  executionsLimit?: number | null;
+  executionsRemaining?: number | null;
+  /**
+   * Admin-granted credits left after this execution; spent only once the plan allowance is exhausted
+   */
+  creditsRemaining?: number | null;
+}
+/**
+ * The resolved answer to 'what may this account do right now'. Sent to the UI on load and to the engine in its runtime context; both treat it as read-only.
+ */
+export interface AccountEntitlements {
+  accountId: string;
+  planId: PlanId;
+  planName?: string;
+  status: SubscriptionStatus;
+  features: FeatureId[];
+  quotas: PlanQuotas;
+  usage?: UsageSnapshot;
+  /**
+   * Admin-granted credits available once the daily plan allowance is spent
+   */
+  credits?: number;
+  /**
+   * Account preference gating AI at runtime; AI runs only when this is true AND the matching feature is entitled
+   */
+  aiEnabledByUser?: boolean;
+  currentPeriodEnd?: string;
+}
+/**
+ * Error payload returned with HTTP 402 when a gated feature is refused
+ */
+export interface FeatureDenied {
+  code: string;
+  feature: FeatureId;
+  reason: FeatureDeniedReason;
+  message: string;
+  requiredPlan?: PlanId;
+  currentPlan?: PlanId;
 }
 /**
  * A participant in a collab room
@@ -3322,6 +3593,14 @@ export interface Variable {
   type: VariableType;
   value: JsonValue | undefined;
   /**
+   * Output format applied when a `date` variable is substituted into an action. The stored value stays canonical ISO-8601; this only affects rendering. Either a DateFormatPreset id or, when set to `custom`, the pattern in `dateFormatPattern`. Ignored for other types.
+   */
+  dateFormat?: string;
+  /**
+   * Token pattern used when `dateFormat` is `custom`, e.g. `DD MMM YYYY HH:mm`.
+   */
+  dateFormatPattern?: string;
+  /**
    * Description of the variable's purpose
    */
   description?: string;
@@ -3348,6 +3627,14 @@ export interface GlobalVariable {
   name: string;
   type: VariableType;
   value: JsonValue | undefined;
+  /**
+   * Output format applied when a `date` variable is substituted into an action. The stored value stays canonical ISO-8601; this only affects rendering. Either a DateFormatPreset id or, when set to `custom`, the pattern in `dateFormatPattern`. Ignored for other types.
+   */
+  dateFormat?: string;
+  /**
+   * Token pattern used when `dateFormat` is `custom`, e.g. `DD MMM YYYY HH:mm`.
+   */
+  dateFormatPattern?: string;
   /**
    * Description of the variable's purpose
    */
