@@ -318,6 +318,7 @@ from .server_entities import (
     AccountDataStore,
     AccountSettings,
     EngineSession,
+    ExecutedByType,
     ExecutionReport,
     FlowKind,
     FlowLastResult,
@@ -392,6 +393,15 @@ from .data_lab import (
     UniquenessEstimate,
 )
 
+from .api_key import (
+    APIKeyModels,
+    ApiKey,
+    ApiKeyScope,
+    ApiKeyStatus,
+    CreateApiKeyRequest,
+    CreateApiKeyResponse,
+)
+
 from .billing import (
     AccountEntitlements,
     AccountSubscription,
@@ -416,6 +426,7 @@ __all__ = [
     "AIProviderType",
     "AIRequestMetadata",
     "AIResponseMetadata",
+    "APIKeyModels",
     "AccessibilityAuditConfig",
     "Account",
     "AccountDataStore",
@@ -435,6 +446,9 @@ __all__ = [
     "AnalyzeFailureRequest",
     "AnalyzeFailureResponse",
     "ApiCallConfig",
+    "ApiKey",
+    "ApiKeyScope",
+    "ApiKeyStatus",
     "AssertType",
     "AssertVisibleConfig",
     "AssertionConfig",
@@ -500,6 +514,8 @@ __all__ = [
     "ConfigValidation",
     "ConnectedResponse",
     "ConvertRecordingToFlowCommand",
+    "CreateApiKeyRequest",
+    "CreateApiKeyResponse",
     "Credential",
     "CredentialRotationConfig",
     "CustomCodeConfig",
@@ -553,6 +569,7 @@ __all__ = [
     "Environment",
     "EnvironmentAndGlobalVariablesConfiguration",
     "ErrorResponse",
+    "ExecutedByType",
     "ExecutionReport",
     "ExecutionResults",
     "ExecutionResultsModels",

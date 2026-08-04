@@ -141,6 +141,10 @@ export interface ExecutionReport {
     [k: string]: unknown;
   } | null;
   executedBy: string;
+  /**
+   * What initiated the run. An API key is the initiator of a CI run; there is no user.
+   */
+  executedByType?: "user" | "api_key";
   executedByName?: string | null;
   executedByEmail?: string | null;
   createdAt: string;

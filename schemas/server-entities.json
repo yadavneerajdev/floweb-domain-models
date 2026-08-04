@@ -6,243 +6,685 @@
   "description": "Persisted server-side domain entities (wire shape after Mongoose toJSON: _id->id, server-only auth/storage fields stripped). Field-level source of truth is floweb-server *.model.ts. Dates are ISO strings on the wire.",
   "type": "object",
   "properties": {
-    "user": { "$ref": "#/$defs/User" },
-    "account": { "$ref": "#/$defs/Account" },
-    "folder": { "$ref": "#/$defs/Folder" },
-    "media": { "$ref": "#/$defs/MediaItem" },
-    "report": { "$ref": "#/$defs/ExecutionReport" },
-    "test": { "$ref": "#/$defs/StoredTestRecord" }
+    "user": {
+      "$ref": "#/$defs/User"
+    },
+    "account": {
+      "$ref": "#/$defs/Account"
+    },
+    "folder": {
+      "$ref": "#/$defs/Folder"
+    },
+    "media": {
+      "$ref": "#/$defs/MediaItem"
+    },
+    "report": {
+      "$ref": "#/$defs/ExecutionReport"
+    },
+    "test": {
+      "$ref": "#/$defs/StoredTestRecord"
+    }
   },
   "$defs": {
     "UserRole": {
       "type": "string",
       "description": "Account role",
-      "enum": ["owner", "admin", "member", "viewer"]
+      "enum": [
+        "owner",
+        "admin",
+        "member",
+        "viewer"
+      ]
     },
     "MediaStorageDriver": {
       "type": "string",
       "description": "Backing store for a media item",
-      "enum": ["local", "s3", "r2"]
+      "enum": [
+        "local",
+        "s3",
+        "r2"
+      ]
     },
     "ReportType": {
       "type": "string",
       "description": "Kind of execution report",
-      "enum": ["flow", "performance", "parallel", "suite"]
+      "enum": [
+        "flow",
+        "performance",
+        "parallel",
+        "suite"
+      ]
     },
     "ReportStatus": {
       "type": "string",
       "description": "Execution report status (full 6-value set; note test.recentRuns persists only passed/failed/pending/running)",
-      "enum": ["passed", "failed", "error", "running", "pending", "cancelled"]
+      "enum": [
+        "passed",
+        "failed",
+        "error",
+        "running",
+        "pending",
+        "cancelled"
+      ]
     },
     "FlowKind": {
       "type": "string",
       "description": "Stored test kind",
-      "enum": ["flow", "test", "performance"]
+      "enum": [
+        "flow",
+        "test",
+        "performance"
+      ]
     },
     "FlowLastResult": {
       "type": "string",
       "description": "Last execution result of a stored test",
-      "enum": ["passed", "failed", "pending", "running"]
+      "enum": [
+        "passed",
+        "failed",
+        "pending",
+        "running"
+      ]
     },
     "User": {
       "type": "object",
       "description": "A user account member (wire shape; auth secrets stripped by toJSON)",
       "properties": {
-        "id": { "type": "string" },
-        "name": { "type": "string", "maxLength": 100 },
-        "email": { "type": "string", "maxLength": 254 },
-        "role": { "$ref": "#/$defs/UserRole" },
-        "accountId": { "type": "string" },
-        "isActive": { "type": "boolean" },
-        "createdAt": { "type": "string", "format": "date-time" },
-        "updatedAt": { "type": "string", "format": "date-time" }
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 100
+        },
+        "email": {
+          "type": "string",
+          "maxLength": 254
+        },
+        "role": {
+          "$ref": "#/$defs/UserRole"
+        },
+        "accountId": {
+          "type": "string"
+        },
+        "isActive": {
+          "type": "boolean"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
       },
-      "required": ["id", "name", "email", "role", "accountId", "isActive", "createdAt", "updatedAt"]
+      "required": [
+        "id",
+        "name",
+        "email",
+        "role",
+        "accountId",
+        "isActive",
+        "createdAt",
+        "updatedAt"
+      ]
     },
     "AccountSettings": {
       "type": "object",
       "description": "Per-account preferences",
       "properties": {
-        "timezone": { "type": "string", "default": "UTC" },
-        "dateFormat": { "type": "string", "default": "YYYY-MM-DD" },
-        "language": { "type": "string", "default": "en" }
+        "timezone": {
+          "type": "string",
+          "default": "UTC"
+        },
+        "dateFormat": {
+          "type": "string",
+          "default": "YYYY-MM-DD"
+        },
+        "language": {
+          "type": "string",
+          "default": "en"
+        }
       },
-      "required": ["timezone", "dateFormat", "language"]
+      "required": [
+        "timezone",
+        "dateFormat",
+        "language"
+      ]
     },
     "Account": {
       "type": "object",
       "description": "A tenant account",
       "properties": {
-        "id": { "type": "string" },
-        "name": { "type": "string", "maxLength": 100 },
-        "ownerId": { "type": "string" },
-        "editLocked": { "type": "boolean", "default": false },
-        "settings": { "$ref": "#/$defs/AccountSettings" },
-        "createdAt": { "type": "string", "format": "date-time" },
-        "updatedAt": { "type": "string", "format": "date-time" }
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 100
+        },
+        "ownerId": {
+          "type": "string"
+        },
+        "editLocked": {
+          "type": "boolean",
+          "default": false
+        },
+        "settings": {
+          "$ref": "#/$defs/AccountSettings"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
       },
-      "required": ["id", "name", "ownerId", "settings", "createdAt", "updatedAt"]
+      "required": [
+        "id",
+        "name",
+        "ownerId",
+        "settings",
+        "createdAt",
+        "updatedAt"
+      ]
     },
     "AccountDataStore": {
       "type": "object",
       "description": "Decrypted per-account environments and global variables (persisted encrypted; plaintext arrays are the wire/domain shape). Elements follow environment.json Environment/GlobalVariable.",
       "properties": {
-        "accountId": { "type": "string" },
-        "environments": { "type": "array", "items": { "type": "object", "additionalProperties": true } },
-        "globalVariables": { "type": "array", "items": { "type": "object", "additionalProperties": true } },
-        "updatedAt": { "type": "string", "format": "date-time" }
+        "accountId": {
+          "type": "string"
+        },
+        "environments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "globalVariables": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
       },
-      "required": ["accountId", "environments", "globalVariables", "updatedAt"]
+      "required": [
+        "accountId",
+        "environments",
+        "globalVariables",
+        "updatedAt"
+      ]
     },
     "Folder": {
       "type": "object",
       "description": "A folder in the test tree",
       "properties": {
-        "id": { "type": "string" },
-        "name": { "type": "string", "maxLength": 200 },
-        "accountId": { "type": "string" },
-        "parentId": { "type": ["string", "null"], "default": null },
-        "path": { "type": "string" },
-        "createdBy": { "type": "string" },
-        "createdAt": { "type": "string", "format": "date-time" },
-        "updatedAt": { "type": "string", "format": "date-time" }
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "accountId": {
+          "type": "string"
+        },
+        "parentId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
+        "path": {
+          "type": "string"
+        },
+        "createdBy": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
       },
-      "required": ["id", "name", "accountId", "parentId", "path", "createdBy", "createdAt", "updatedAt"]
+      "required": [
+        "id",
+        "name",
+        "accountId",
+        "parentId",
+        "path",
+        "createdBy",
+        "createdAt",
+        "updatedAt"
+      ]
     },
     "MediaItem": {
       "type": "object",
       "description": "An uploaded media asset (storageKey stripped by toJSON; url populated at read time)",
       "properties": {
-        "id": { "type": "string" },
-        "accountId": { "type": "string" },
-        "filename": { "type": "string" },
-        "originalName": { "type": "string" },
-        "mimeType": { "type": "string" },
-        "sizeBytes": { "type": "integer", "minimum": 0 },
-        "storageDriver": { "$ref": "#/$defs/MediaStorageDriver" },
-        "storageKey": { "type": "string", "description": "Server-side only; stripped before it reaches the client" },
-        "url": { "type": "string", "description": "Resolved access URL (read-time only)" },
-        "uploadedBy": { "type": "string" },
-        "createdAt": { "type": "string", "format": "date-time" }
+        "id": {
+          "type": "string"
+        },
+        "accountId": {
+          "type": "string"
+        },
+        "filename": {
+          "type": "string"
+        },
+        "originalName": {
+          "type": "string"
+        },
+        "mimeType": {
+          "type": "string"
+        },
+        "sizeBytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "storageDriver": {
+          "$ref": "#/$defs/MediaStorageDriver"
+        },
+        "storageKey": {
+          "type": "string",
+          "description": "Server-side only; stripped before it reaches the client"
+        },
+        "url": {
+          "type": "string",
+          "description": "Resolved access URL (read-time only)"
+        },
+        "uploadedBy": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
       },
-      "required": ["id", "accountId", "filename", "originalName", "mimeType", "sizeBytes", "storageDriver", "storageKey", "uploadedBy", "createdAt"]
+      "required": [
+        "id",
+        "accountId",
+        "filename",
+        "originalName",
+        "mimeType",
+        "sizeBytes",
+        "storageDriver",
+        "storageKey",
+        "uploadedBy",
+        "createdAt"
+      ]
     },
     "ExecutionReport": {
       "type": "object",
       "description": "A stored execution report. `report` holds a FlowReport (execution-results.json), FlowExecutionResult (parallel-execution.json), or an opaque object depending on `type`.",
       "properties": {
-        "id": { "type": "string" },
-        "accountId": { "type": "string" },
-        "testId": { "type": ["string", "null"], "default": null },
-        "flowId": { "type": ["string", "null"], "default": null },
-        "flowName": { "type": ["string", "null"], "default": null },
-        "type": { "$ref": "#/$defs/ReportType" },
-        "status": { "$ref": "#/$defs/ReportStatus" },
-        "duration": { "type": "number", "minimum": 0 },
-        "report": { "type": "object", "additionalProperties": true },
-        "metadata": { "type": ["object", "null"], "additionalProperties": true, "default": null },
-        "executedBy": { "type": "string" },
-        "executedByName": { "type": ["string", "null"], "default": null },
-        "executedByEmail": { "type": ["string", "null"], "default": null },
-        "createdAt": { "type": "string", "format": "date-time" }
+        "id": {
+          "type": "string"
+        },
+        "accountId": {
+          "type": "string"
+        },
+        "testId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
+        "flowId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
+        "flowName": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
+        "type": {
+          "$ref": "#/$defs/ReportType"
+        },
+        "status": {
+          "$ref": "#/$defs/ReportStatus"
+        },
+        "duration": {
+          "type": "number",
+          "minimum": 0
+        },
+        "report": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "metadata": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": true,
+          "default": null
+        },
+        "executedBy": {
+          "type": "string"
+        },
+        "executedByType": {
+          "type": "string",
+          "description": "What initiated the run. An API key is the initiator of a CI run; there is no user.",
+          "enum": [
+            "user",
+            "api_key"
+          ],
+          "default": "user"
+        },
+        "executedByName": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
+        "executedByEmail": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
       },
-      "required": ["id", "accountId", "type", "status", "duration", "report", "executedBy", "createdAt"]
+      "required": [
+        "id",
+        "accountId",
+        "type",
+        "status",
+        "duration",
+        "report",
+        "executedBy",
+        "createdAt"
+      ]
     },
     "TestRecentRun": {
       "type": "object",
       "description": "A recent run summary on a stored test. status uses the full ReportStatus set on the domain side; the persistence layer enforces only passed/failed/pending/running.",
       "properties": {
-        "id": { "type": "string" },
-        "status": { "$ref": "#/$defs/ReportStatus" },
-        "createdAt": { "type": "string", "format": "date-time" }
+        "id": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/ReportStatus"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
       },
-      "required": ["id", "status", "createdAt"]
+      "required": [
+        "id",
+        "status",
+        "createdAt"
+      ]
     },
     "StoredTestInput": {
       "type": "object",
       "description": "Payload to create/update a stored test. flowData is a Flow (flow.json) or PerformanceTest (performance-test.json).",
       "properties": {
-        "id": { "type": "string" },
-        "name": { "type": "string", "maxLength": 300 },
-        "folderId": { "type": ["string", "null"] },
-        "flowData": { "type": "object", "additionalProperties": true },
-        "type": { "$ref": "#/$defs/FlowKind" },
-        "tags": { "type": "array", "items": { "type": "string" } }
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 300
+        },
+        "folderId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "flowData": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "type": {
+          "$ref": "#/$defs/FlowKind"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
       },
-      "required": ["id", "name", "flowData"]
+      "required": [
+        "id",
+        "name",
+        "flowData"
+      ]
     },
     "StoredTestRecord": {
       "type": "object",
       "description": "A persisted test record",
       "properties": {
-        "id": { "type": "string" },
-        "name": { "type": "string", "maxLength": 300 },
-        "accountId": { "type": "string" },
-        "folderId": { "type": ["string", "null"] },
-        "flowData": { "type": "object", "additionalProperties": true },
-        "type": { "$ref": "#/$defs/FlowKind" },
-        "tags": { "type": "array", "items": { "type": "string" } },
-        "lastResult": { "$ref": "#/$defs/FlowLastResult" },
-        "createdBy": { "type": "string" },
-        "updatedBy": { "type": "string" },
-        "syncedAt": { "type": "string", "format": "date-time" },
-        "createdAt": { "type": "string", "format": "date-time" },
-        "updatedAt": { "type": "string", "format": "date-time" }
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 300
+        },
+        "accountId": {
+          "type": "string"
+        },
+        "folderId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "flowData": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "type": {
+          "$ref": "#/$defs/FlowKind"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "lastResult": {
+          "$ref": "#/$defs/FlowLastResult"
+        },
+        "createdBy": {
+          "type": "string"
+        },
+        "updatedBy": {
+          "type": "string"
+        },
+        "syncedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
       },
-      "required": ["id", "name", "accountId", "folderId", "flowData", "type", "tags"]
+      "required": [
+        "id",
+        "name",
+        "accountId",
+        "folderId",
+        "flowData",
+        "type",
+        "tags"
+      ]
     },
     "TestCatalogItem": {
       "type": "object",
       "description": "A test catalog/list projection (carries recentRuns)",
       "properties": {
-        "id": { "type": "string" },
-        "name": { "type": "string" },
-        "folderId": { "type": ["string", "null"] },
-        "type": { "$ref": "#/$defs/FlowKind" },
-        "tags": { "type": "array", "items": { "type": "string" } },
-        "description": { "type": "string" },
-        "status": { "type": "string" },
-        "lastResult": { "$ref": "#/$defs/FlowLastResult" },
-        "recentRuns": { "type": "array", "items": { "$ref": "#/$defs/TestRecentRun" } },
-        "createdAt": { "type": "string", "format": "date-time" },
-        "updatedAt": { "type": "string", "format": "date-time" }
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "folderId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "type": {
+          "$ref": "#/$defs/FlowKind"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "description": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "lastResult": {
+          "$ref": "#/$defs/FlowLastResult"
+        },
+        "recentRuns": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TestRecentRun"
+          }
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
       },
-      "required": ["id", "name", "folderId", "type", "tags"]
+      "required": [
+        "id",
+        "name",
+        "folderId",
+        "type",
+        "tags"
+      ]
     },
     "EngineSession": {
       "type": "object",
       "description": "Engine handshake/JWT session payload (not persisted). issuedAt/expiresAt are epoch numbers.",
       "properties": {
-        "accountId": { "type": "string" },
-        "userId": { "type": "string" },
-        "role": { "$ref": "#/$defs/UserRole" },
-        "token": { "type": "string" },
-        "issuedAt": { "type": "integer" },
-        "expiresAt": { "type": "integer" }
+        "accountId": {
+          "type": "string"
+        },
+        "userId": {
+          "type": "string"
+        },
+        "role": {
+          "$ref": "#/$defs/UserRole"
+        },
+        "token": {
+          "type": "string"
+        },
+        "issuedAt": {
+          "type": "integer"
+        },
+        "expiresAt": {
+          "type": "integer"
+        }
       },
-      "required": ["accountId", "userId", "role", "token", "issuedAt", "expiresAt"]
+      "required": [
+        "accountId",
+        "userId",
+        "role",
+        "token",
+        "issuedAt",
+        "expiresAt"
+      ]
     },
     "PaginatedResponse": {
       "type": "object",
       "description": "Generic pagination envelope convention. `items` is the page of results (element type varies by endpoint). Uses items/page/limit/total/hasMore.",
       "properties": {
-        "items": { "type": "array", "items": {} },
-        "page": { "type": "integer", "minimum": 0 },
-        "limit": { "type": "integer", "minimum": 0 },
-        "total": { "type": "integer", "minimum": 0 },
-        "hasMore": { "type": "boolean" }
+        "items": {
+          "type": "array",
+          "items": {}
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "total": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "hasMore": {
+          "type": "boolean"
+        }
       },
-      "required": ["items", "page", "limit", "total", "hasMore"]
+      "required": [
+        "items",
+        "page",
+        "limit",
+        "total",
+        "hasMore"
+      ]
     },
     "ImageUploadResponse": {
       "type": "object",
       "description": "Response to an image upload",
       "properties": {
-        "mediaId": { "type": "string" },
-        "url": { "type": "string" },
-        "filename": { "type": "string" }
+        "mediaId": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "filename": {
+          "type": "string"
+        }
       },
-      "required": ["mediaId", "url", "filename"]
+      "required": [
+        "mediaId",
+        "url",
+        "filename"
+      ]
     }
   }
 }

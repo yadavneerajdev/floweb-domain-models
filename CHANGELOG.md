@@ -4,6 +4,26 @@ All notable changes to the domain-models schemas are recorded here. Versions
 refer to the `$version` field carried by every schema (independent of the npm/PyPI
 package version until the consumption switch in the package plan Phase 4).
 
+## [api-key 1.0.0, server-entities 1.1.0] — 2026-08-04 — API keys for CI/CD
+
+Adds the contract for account-scoped API keys, the credential non-interactive
+runs authenticate with. CI pipelines previously had to store a user password or
+a JWT that expires within a day.
+
+### Added
+- `api-key.json` — `ApiKey`, `ApiKeyScope` (`runs:execute` / `runs:read`),
+  `ApiKeyStatus` (`active` / `expired` / `revoked`), `CreateApiKeyRequest`,
+  `CreateApiKeyResponse`. The secret appears only in the creation response and is
+  stored solely as a hash; `keyPrefix` identifies a key in a list without
+  revealing it. `expiresAt` is fixed at creation and immutable — a key is never
+  extended, it is revoked and replaced.
+- `ExecutionReport.executedByType` (`user` | `api_key`) — a CI run has no human
+  user, so the initiator is the key itself. `executedBy` then holds the key id and
+  `executedByName` its label, which survives revocation. The plaintext key never
+  reaches a report.
+
+Additive only; no breaking changes.
+
 ## [flow 1.2.0] — 2026-08-04 — run state is no longer part of the document
 
 `ActionData.status` is removed. Run state describes the last execution, not the

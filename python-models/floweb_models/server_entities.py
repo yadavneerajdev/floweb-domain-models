@@ -182,6 +182,15 @@ class MediaItem(BaseModel):
     createdAt: AwareDatetime
 
 
+class ExecutedByType(StrEnum):
+    """
+    What initiated the run. An API key is the initiator of a CI run; there is no user.
+    """
+
+    user = 'user'
+    api_key = 'api_key'
+
+
 class ExecutionReport(BaseModel):
     """
     A stored execution report. `report` holds a FlowReport (execution-results.json), FlowExecutionResult (parallel-execution.json), or an opaque object depending on `type`.
@@ -201,6 +210,10 @@ class ExecutionReport(BaseModel):
     report: dict[str, Any]
     metadata: dict[str, Any] | None = None
     executedBy: str
+    executedByType: ExecutedByType | None = 'user'
+    """
+    What initiated the run. An API key is the initiator of a CI run; there is no user.
+    """
     executedByName: str | None = None
     executedByEmail: str | None = None
     createdAt: AwareDatetime

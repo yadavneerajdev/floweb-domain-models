@@ -1977,6 +1977,14 @@ export type AssistantPhase =
   | "failed"
   | "cancelled";
 /**
+ * What a key is permitted to do. 'runs:execute' triggers test runs; 'runs:read' reads runs and reports.
+ */
+export type ApiKeyScope = "runs:execute" | "runs:read";
+/**
+ * Derived state of a key. Keys are never extended: an expired or revoked key is replaced by a new one.
+ */
+export type ApiKeyStatus = "active" | "expired" | "revoked";
+/**
  * Billing plan identifier. 'custom' is assigned manually by a Floweb administrator.
  */
 export type PlanId = "basic" | "premium" | "max" | "custom";
@@ -3025,6 +3033,58 @@ export interface VibeVerifyResponse {
   verified?: boolean;
   reason?: string;
   metadata: AIResponseMetadata;
+}
+/**
+ * An API key as returned by the API. Never carries the secret.
+ */
+export interface ApiKey {
+  id: string;
+  accountId: string;
+  /**
+   * Human label shown in the UI and recorded on runs this key starts.
+   */
+  name: string;
+  /**
+   * Leading, non-secret portion of the key, so a key can be identified in a list without revealing it.
+   */
+  keyPrefix: string;
+  /**
+   * @minItems 1
+   */
+  scopes: [ApiKeyScope, ...ApiKeyScope[]];
+  status: ApiKeyStatus;
+  /**
+   * User who created the key. Retained for audit; the key itself is the initiator of its runs.
+   */
+  createdBy: string;
+  createdAt: string;
+  /**
+   * Fixed at creation and immutable. Null means the key does not expire.
+   */
+  expiresAt?: string | null;
+  revokedAt?: string | null;
+  lastUsedAt?: string | null;
+}
+export interface CreateApiKeyRequest {
+  name: string;
+  /**
+   * @minItems 1
+   */
+  scopes?: [ApiKeyScope, ...ApiKeyScope[]];
+  /**
+   * Lifetime in days, fixed at creation. Omit or null for a key that does not expire.
+   */
+  expiresInDays?: number | null;
+}
+/**
+ * Returned once at creation. This is the only time the secret is available.
+ */
+export interface CreateApiKeyResponse {
+  apiKey: ApiKey;
+  /**
+   * The full key. Never stored in plaintext and never retrievable again.
+   */
+  secret: string;
 }
 /**
  * Numeric limits attached to a plan. A null value means unlimited.
@@ -5093,6 +5153,10 @@ export interface ExecutionReport {
   report: AnyObject;
   metadata?: AnyObject | null;
   executedBy: string;
+  /**
+   * What initiated the run. An API key is the initiator of a CI run; there is no user.
+   */
+  executedByType?: "user" | "api_key";
   executedByName?: string | null;
   executedByEmail?: string | null;
   createdAt: string;

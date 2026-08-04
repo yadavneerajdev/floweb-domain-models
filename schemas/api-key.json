@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://floweb.com/schemas/api-key.json",
+  "$version": "1.0.0",
+  "title": "API Key Models",
+  "description": "Account-scoped API keys used to authenticate non-interactive runs (CI/CD). The secret is shown once at creation and only ever stored as a hash.",
+  "type": "object",
+  "properties": {
+    "apiKeys": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/ApiKey" }
+    }
+  },
+  "$defs": {
+    "ApiKeyScope": {
+      "type": "string",
+      "description": "What a key is permitted to do. 'runs:execute' triggers test runs; 'runs:read' reads runs and reports.",
+      "enum": ["runs:execute", "runs:read"]
+    },
+    "ApiKeyStatus": {
+      "type": "string",
+      "description": "Derived state of a key. Keys are never extended: an expired or revoked key is replaced by a new one.",
+      "enum": ["active", "expired", "revoked"]
+    },
+    "ApiKey": {
+      "type": "object",
+      "description": "An API key as returned by the API. Never carries the secret.",
+      "properties": {
+        "id": { "type": "string" },
+        "accountId": { "type": "string" },
+        "name": {
+          "type": "string",
+          "description": "Human label shown in the UI and recorded on runs this key starts.",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "keyPrefix": {
+          "type": "string",
+          "description": "Leading, non-secret portion of the key, so a key can be identified in a list without revealing it."
+        },
+        "scopes": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/ApiKeyScope" },
+          "minItems": 1
+        },
+        "status": { "$ref": "#/$defs/ApiKeyStatus" },
+        "createdBy": {
+          "type": "string",
+          "description": "User who created the key. Retained for audit; the key itself is the initiator of its runs."
+        },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "expiresAt": {
+          "type": ["string", "null"],
+          "format": "date-time",
+          "description": "Fixed at creation and immutable. Null means the key does not expire."
+        },
+        "revokedAt": { "type": ["string", "null"], "format": "date-time" },
+        "lastUsedAt": { "type": ["string", "null"], "format": "date-time" }
+      },
+      "required": [
+        "id",
+        "accountId",
+        "name",
+        "keyPrefix",
+        "scopes",
+        "status",
+        "createdBy",
+        "createdAt"
+      ],
+      "additionalProperties": false
+    },
+    "CreateApiKeyRequest": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "scopes": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/ApiKeyScope" },
+          "minItems": 1
+        },
+        "expiresInDays": {
+          "type": ["integer", "null"],
+          "description": "Lifetime in days, fixed at creation. Omit or null for a key that does not expire.",
+          "minimum": 1,
+          "maximum": 3650
+        }
+      },
+      "required": ["name"],
+      "additionalProperties": false
+    },
+    "CreateApiKeyResponse": {
+      "type": "object",
+      "description": "Returned once at creation. This is the only time the secret is available.",
+      "properties": {
+        "apiKey": { "$ref": "#/$defs/ApiKey" },
+        "secret": {
+          "type": "string",
+          "description": "The full key. Never stored in plaintext and never retrievable again."
+        }
+      },
+      "required": ["apiKey", "secret"],
+      "additionalProperties": false
+    }
+  }
+}
