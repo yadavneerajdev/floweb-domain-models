@@ -349,7 +349,12 @@ export type AuthenticateResponse = WebSocketResponse & {
   success: boolean;
   account_id?: string;
   message?: string;
-  code?: "ENGINE_TOKEN_MISSING" | "ENGINE_TOKEN_INVALID" | "ENGINE_CONNECTION_REFUSED";
+  code?:
+    | "ENGINE_TOKEN_MISSING"
+    | "ENGINE_TOKEN_INVALID"
+    | "ENGINE_CONNECTION_REFUSED"
+    | "ENGINE_AUTH_FAILED"
+    | "ENGINE_ACCOUNT_CONFLICT";
 };
 export type ConnectedResponse = WebSocketResponse & {
   command: "connected";
@@ -384,6 +389,43 @@ export type ErrorResponse = WebSocketResponse & {
   error: string;
   [k: string]: unknown;
 };
+/**
+ * Account-wide process lifecycle event. Broadcast to every live socket of an account so any client can bind a process to the test it belongs to and learn the outcome even if it did not start the work or has since reloaded.
+ */
+export type ProcessEventResponse = WebSocketResponse & {
+  command: "process_event";
+  success?: boolean;
+  /**
+   * Stable id of the process for its lifetime.
+   */
+  process_id: string;
+  kind: ProcessKind;
+  status: ProcessStatus;
+  /**
+   * Test this process belongs to, so clients gate only that test's controls.
+   */
+  test_id?: string | null;
+  /**
+   * User id that started the work, or the API key id for a CI run.
+   */
+  initiated_by?: string | null;
+  /**
+   * True when the process has reached a final state.
+   */
+  terminal: boolean;
+  mode?: string;
+  report_id?: string | null;
+  result?: string | null;
+  message?: string | null;
+};
+/**
+ * The kind of engine work a process represents.
+ */
+export type ProcessKind = "run" | "suite" | "recording";
+/**
+ * Lifecycle state of a process. finished/failed/cancelled/stopped are terminal.
+ */
+export type ProcessStatus = "started" | "running" | "finished" | "failed" | "cancelled" | "stopped";
 
 export interface WebSocketCommunicationModelsSchema {
   websocketCommunication?: {
@@ -437,6 +479,7 @@ export interface WebSocketCommunicationModelsSchema {
       | RunSuiteProgressResponse
       | RecordingSmartWaitDecision
       | ErrorResponse
+      | ProcessEventResponse
     )[];
   };
   WebSocketMessage?: WebSocketMessage;
@@ -490,6 +533,9 @@ export interface WebSocketCommunicationModelsSchema {
   RunSuiteProgressResponse?: RunSuiteProgressResponse;
   RecordingSmartWaitDecision?: RecordingSmartWaitDecision;
   ErrorResponse?: ErrorResponse;
+  ProcessKind?: ProcessKind;
+  ProcessStatus?: ProcessStatus;
+  ProcessEventResponse?: ProcessEventResponse;
 }
 /**
  * Base WebSocket message structure

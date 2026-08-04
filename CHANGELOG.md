@@ -4,6 +4,25 @@ All notable changes to the domain-models schemas are recorded here. Versions
 refer to the `$version` field carried by every schema (independent of the npm/PyPI
 package version until the consumption switch in the package plan Phase 4).
 
+## [websocket-communication 1.2.0] — 2026-08-04 — process lifecycle events
+
+Adds the shared contract for account-wide process lifecycle events, so the engine
+broadcaster and every client agree on one shape instead of duplicating literals.
+
+### Added
+- `ProcessEventResponse` (`command: "process_event"`) — carries `process_id`,
+  `kind`, `status`, `terminal`, plus the `test_id` a client uses to bind a process
+  to a test and `initiated_by` for attribution (a user id, or an API key id for
+  CI runs).
+- `ProcessKind` (`run` | `suite` | `recording`) and `ProcessStatus`
+  (`started` | `running` | `finished` | `failed` | `cancelled` | `stopped`;
+  the last four are terminal).
+- `AuthenticateResponse.code` gains `ENGINE_AUTH_FAILED` and
+  `ENGINE_ACCOUNT_CONFLICT` — the engine serves one account at a time and refuses
+  a second one while the first holds a live socket.
+
+Additive only; no breaking changes.
+
 ## Phase 4 — 2026-07-21 — STEP 2: `index.d.ts` is now generated from schemas
 
 The published TypeScript surface (`index.d.ts`) is no longer hand-written — it is

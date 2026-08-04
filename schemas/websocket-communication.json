@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://floweb.com/schemas/websocket-communication.json",
-  "$version": "1.1.0",
+  "$version": "1.2.0",
   "title": "WebSocket Communication Models",
   "description": "Schema for WebSocket API commands and responses",
   "type": "object",
@@ -160,6 +160,9 @@
               },
               {
                 "$ref": "#/$defs/ErrorResponse"
+              },
+              {
+                "$ref": "#/$defs/ProcessEventResponse"
               }
             ]
           }
@@ -1159,12 +1162,30 @@
       "type": "object",
       "description": "run_suite nested run_config. Interior is camelCase (exception to the snake_case wire); the engine also accepts snake_case aliases for the parallel flags.",
       "properties": {
-        "browser": { "type": "string" },
-        "headless": { "type": "boolean" },
-        "incognito": { "type": "boolean" },
-        "recordExecution": { "type": "boolean" },
-        "environmentId": { "type": ["string", "null"] },
-        "randomBrowserPool": { "type": "array", "items": { "type": "string" } }
+        "browser": {
+          "type": "string"
+        },
+        "headless": {
+          "type": "boolean"
+        },
+        "incognito": {
+          "type": "boolean"
+        },
+        "recordExecution": {
+          "type": "boolean"
+        },
+        "environmentId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "randomBrowserPool": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
       },
       "additionalProperties": true
     },
@@ -1172,199 +1193,470 @@
       "type": "object",
       "description": "Per-test result entry in run_suite responses/progress (snake_case)",
       "properties": {
-        "test_id": { "type": "string" },
-        "flow_name": { "type": "string" },
-        "status": { "type": "string" },
-        "report_id": { "type": ["string", "null"] },
-        "message": { "type": "string" }
+        "test_id": {
+          "type": "string"
+        },
+        "flow_name": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "report_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "message": {
+          "type": "string"
+        }
       },
-      "required": ["test_id", "flow_name", "status"]
+      "required": [
+        "test_id",
+        "flow_name",
+        "status"
+      ]
     },
     "RunSuiteCommand": {
       "allOf": [
-        { "$ref": "#/$defs/WebSocketMessage" },
+        {
+          "$ref": "#/$defs/WebSocketMessage"
+        },
         {
           "type": "object",
           "properties": {
-            "command": { "const": "run_suite" },
-            "suite_id": { "type": "string" },
-            "schedule_id": { "type": "string" },
-            "trigger_type": { "type": "string", "enum": ["manual", "scheduled"] },
-            "label": { "type": "string" },
-            "run_config": { "$ref": "#/$defs/SuiteRunConfigWire" },
-            "parallel": { "type": "boolean" },
-            "maxParallel": { "type": "integer" },
-            "stopOnFailure": { "type": "boolean" }
+            "command": {
+              "const": "run_suite"
+            },
+            "suite_id": {
+              "type": "string"
+            },
+            "schedule_id": {
+              "type": "string"
+            },
+            "trigger_type": {
+              "type": "string",
+              "enum": [
+                "manual",
+                "scheduled"
+              ]
+            },
+            "label": {
+              "type": "string"
+            },
+            "run_config": {
+              "$ref": "#/$defs/SuiteRunConfigWire"
+            },
+            "parallel": {
+              "type": "boolean"
+            },
+            "maxParallel": {
+              "type": "integer"
+            },
+            "stopOnFailure": {
+              "type": "boolean"
+            }
           },
-          "required": ["command", "suite_id"]
+          "required": [
+            "command",
+            "suite_id"
+          ]
         }
       ]
     },
     "CancelSuiteCommand": {
       "allOf": [
-        { "$ref": "#/$defs/WebSocketMessage" },
+        {
+          "$ref": "#/$defs/WebSocketMessage"
+        },
         {
           "type": "object",
           "properties": {
-            "command": { "const": "cancel_suite" },
-            "suite_id": { "type": "string" },
-            "running_test_ids": { "type": "array", "items": { "type": "string" }, "default": [] }
+            "command": {
+              "const": "cancel_suite"
+            },
+            "suite_id": {
+              "type": "string"
+            },
+            "running_test_ids": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "default": []
+            }
           },
-          "required": ["command", "suite_id", "running_test_ids"]
+          "required": [
+            "command",
+            "suite_id",
+            "running_test_ids"
+          ]
         }
       ]
     },
     "AddRecordingWaitCommand": {
       "allOf": [
-        { "$ref": "#/$defs/WebSocketMessage" },
+        {
+          "$ref": "#/$defs/WebSocketMessage"
+        },
         {
           "type": "object",
           "properties": {
-            "command": { "const": "add_recording_wait" },
-            "session_id": { "type": "string" },
-            "wait_type": { "type": "string", "enum": ["duration", "element", "interactable"] },
-            "duration": { "type": "number", "description": "ms; default 3000, min 100" },
-            "timeout": { "type": "number", "description": "ms; default 10000" },
-            "selector": { "type": "string", "description": "Required when wait_type is element or interactable" },
-            "fallback_to_duration": { "type": "boolean", "default": true },
-            "fallback_duration": { "type": "number", "description": "ms; default 2000" }
+            "command": {
+              "const": "add_recording_wait"
+            },
+            "session_id": {
+              "type": "string"
+            },
+            "wait_type": {
+              "type": "string",
+              "enum": [
+                "duration",
+                "element",
+                "interactable"
+              ]
+            },
+            "duration": {
+              "type": "number",
+              "description": "ms; default 3000, min 100"
+            },
+            "timeout": {
+              "type": "number",
+              "description": "ms; default 10000"
+            },
+            "selector": {
+              "type": "string",
+              "description": "Required when wait_type is element or interactable"
+            },
+            "fallback_to_duration": {
+              "type": "boolean",
+              "default": true
+            },
+            "fallback_duration": {
+              "type": "number",
+              "description": "ms; default 2000"
+            }
           },
-          "required": ["command", "session_id", "wait_type"]
+          "required": [
+            "command",
+            "session_id",
+            "wait_type"
+          ]
         }
       ]
     },
     "AuthenticateCommand": {
       "allOf": [
-        { "$ref": "#/$defs/WebSocketMessage" },
+        {
+          "$ref": "#/$defs/WebSocketMessage"
+        },
         {
           "type": "object",
           "properties": {
-            "command": { "const": "authenticate" },
-            "token": { "type": "string" },
-            "account_id": { "type": "string", "description": "Sent by the client but not consumed by the engine (account derived from token)" },
-            "server_url": { "type": "string" }
+            "command": {
+              "const": "authenticate"
+            },
+            "token": {
+              "type": "string"
+            },
+            "account_id": {
+              "type": "string",
+              "description": "Sent by the client but not consumed by the engine (account derived from token)"
+            },
+            "server_url": {
+              "type": "string"
+            }
           },
-          "required": ["command", "token"]
+          "required": [
+            "command",
+            "token"
+          ]
         }
       ]
     },
     "RunSuiteResponse": {
       "allOf": [
-        { "$ref": "#/$defs/WebSocketResponse" },
+        {
+          "$ref": "#/$defs/WebSocketResponse"
+        },
         {
           "type": "object",
           "properties": {
-            "command": { "const": "run_suite" },
-            "success": { "type": "boolean" },
-            "suite_id": { "type": "string" },
-            "suite_execution_id": { "type": "string" },
-            "status": { "type": "string", "enum": ["completed", "failed", "cancelled"] },
-            "total": { "type": "integer" },
-            "completed": { "type": "integer" },
-            "passed": { "type": "integer" },
-            "failed": { "type": "integer" },
-            "cancelled": { "type": "integer" },
-            "test_results": { "type": "array", "items": { "$ref": "#/$defs/SuiteTestResultWire" } },
-            "message": { "type": "string" },
-            "code": { "type": "string" },
-            "error": { "type": "string" }
+            "command": {
+              "const": "run_suite"
+            },
+            "success": {
+              "type": "boolean"
+            },
+            "suite_id": {
+              "type": "string"
+            },
+            "suite_execution_id": {
+              "type": "string"
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "completed",
+                "failed",
+                "cancelled"
+              ]
+            },
+            "total": {
+              "type": "integer"
+            },
+            "completed": {
+              "type": "integer"
+            },
+            "passed": {
+              "type": "integer"
+            },
+            "failed": {
+              "type": "integer"
+            },
+            "cancelled": {
+              "type": "integer"
+            },
+            "test_results": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/SuiteTestResultWire"
+              }
+            },
+            "message": {
+              "type": "string"
+            },
+            "code": {
+              "type": "string"
+            },
+            "error": {
+              "type": "string"
+            }
           },
-          "required": ["command", "success"]
+          "required": [
+            "command",
+            "success"
+          ]
         }
       ]
     },
     "CancelSuiteResponse": {
       "allOf": [
-        { "$ref": "#/$defs/WebSocketResponse" },
+        {
+          "$ref": "#/$defs/WebSocketResponse"
+        },
         {
           "type": "object",
           "properties": {
-            "command": { "const": "cancel_suite" },
-            "success": { "type": "boolean" },
-            "suite_id": { "type": "string" },
-            "signalled": { "type": "boolean" }
+            "command": {
+              "const": "cancel_suite"
+            },
+            "success": {
+              "type": "boolean"
+            },
+            "suite_id": {
+              "type": "string"
+            },
+            "signalled": {
+              "type": "boolean"
+            }
           },
-          "required": ["command", "success", "suite_id", "signalled"]
+          "required": [
+            "command",
+            "success",
+            "suite_id",
+            "signalled"
+          ]
         }
       ]
     },
     "AddRecordingWaitResponse": {
       "allOf": [
-        { "$ref": "#/$defs/WebSocketResponse" },
+        {
+          "$ref": "#/$defs/WebSocketResponse"
+        },
         {
           "type": "object",
           "properties": {
-            "command": { "const": "add_recording_wait" },
-            "success": { "type": "boolean" },
-            "session_id": { "type": "string" },
-            "wait_action": { "type": ["object", "null"], "additionalProperties": true },
-            "message": { "type": "string" },
-            "error": { "type": "string" }
+            "command": {
+              "const": "add_recording_wait"
+            },
+            "success": {
+              "type": "boolean"
+            },
+            "session_id": {
+              "type": "string"
+            },
+            "wait_action": {
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": true
+            },
+            "message": {
+              "type": "string"
+            },
+            "error": {
+              "type": "string"
+            }
           },
-          "required": ["command", "success", "session_id"]
+          "required": [
+            "command",
+            "success",
+            "session_id"
+          ]
         }
       ]
     },
     "AuthenticateResponse": {
       "allOf": [
-        { "$ref": "#/$defs/WebSocketResponse" },
+        {
+          "$ref": "#/$defs/WebSocketResponse"
+        },
         {
           "type": "object",
           "properties": {
-            "command": { "const": "authenticate" },
-            "success": { "type": "boolean" },
-            "account_id": { "type": "string" },
-            "message": { "type": "string" },
-            "code": { "type": "string", "enum": ["ENGINE_TOKEN_MISSING", "ENGINE_TOKEN_INVALID", "ENGINE_CONNECTION_REFUSED"] }
+            "command": {
+              "const": "authenticate"
+            },
+            "success": {
+              "type": "boolean"
+            },
+            "account_id": {
+              "type": "string"
+            },
+            "message": {
+              "type": "string"
+            },
+            "code": {
+              "type": "string",
+              "enum": [
+                "ENGINE_TOKEN_MISSING",
+                "ENGINE_TOKEN_INVALID",
+                "ENGINE_CONNECTION_REFUSED",
+                "ENGINE_AUTH_FAILED",
+                "ENGINE_ACCOUNT_CONFLICT"
+              ]
+            }
           },
-          "required": ["command", "success"]
+          "required": [
+            "command",
+            "success"
+          ]
         }
       ]
     },
     "ConnectedResponse": {
       "allOf": [
-        { "$ref": "#/$defs/WebSocketResponse" },
+        {
+          "$ref": "#/$defs/WebSocketResponse"
+        },
         {
           "type": "object",
           "properties": {
-            "command": { "const": "connected" },
-            "success": { "type": "boolean" },
-            "host": { "type": "string" },
-            "ws_port": { "type": "integer" },
-            "http_port": { "type": "integer" },
+            "command": {
+              "const": "connected"
+            },
+            "success": {
+              "type": "boolean"
+            },
+            "host": {
+              "type": "string"
+            },
+            "ws_port": {
+              "type": "integer"
+            },
+            "http_port": {
+              "type": "integer"
+            },
             "runtime": {
               "type": "object",
               "properties": {
-                "is_docker": { "type": "boolean" },
-                "platform": { "type": "string" }
+                "is_docker": {
+                  "type": "boolean"
+                },
+                "platform": {
+                  "type": "string"
+                }
               },
               "additionalProperties": true
             }
           },
-          "required": ["command", "success", "host", "ws_port", "http_port", "runtime"]
+          "required": [
+            "command",
+            "success",
+            "host",
+            "ws_port",
+            "http_port",
+            "runtime"
+          ]
         }
       ]
     },
     "RunSuiteProgressResponse": {
       "allOf": [
-        { "$ref": "#/$defs/WebSocketResponse" },
+        {
+          "$ref": "#/$defs/WebSocketResponse"
+        },
         {
           "type": "object",
           "properties": {
-            "command": { "const": "run_suite_progress" },
-            "success": { "type": "boolean" },
-            "suite_id": { "type": "string" },
-            "suite_execution_id": { "type": "string" },
-            "status": { "type": "string", "const": "running" },
-            "total": { "type": "integer" },
-            "completed": { "type": "integer" },
-            "passed": { "type": "integer" },
-            "failed": { "type": "integer" },
-            "cancelled": { "type": "integer" },
-            "running": { "type": "array", "items": { "type": "string" } },
-            "current": { "$ref": "#/$defs/SuiteTestResultWire" }
+            "command": {
+              "const": "run_suite_progress"
+            },
+            "success": {
+              "type": "boolean"
+            },
+            "suite_id": {
+              "type": "string"
+            },
+            "suite_execution_id": {
+              "type": "string"
+            },
+            "status": {
+              "type": "string",
+              "const": "running"
+            },
+            "total": {
+              "type": "integer"
+            },
+            "completed": {
+              "type": "integer"
+            },
+            "passed": {
+              "type": "integer"
+            },
+            "failed": {
+              "type": "integer"
+            },
+            "cancelled": {
+              "type": "integer"
+            },
+            "running": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "current": {
+              "$ref": "#/$defs/SuiteTestResultWire"
+            }
           },
-          "required": ["command", "success", "suite_id", "suite_execution_id", "status", "total", "completed", "passed", "failed", "cancelled", "running"]
+          "required": [
+            "command",
+            "success",
+            "suite_id",
+            "suite_execution_id",
+            "status",
+            "total",
+            "completed",
+            "passed",
+            "failed",
+            "cancelled",
+            "running"
+          ]
         }
       ]
     },
@@ -1372,46 +1664,218 @@
       "type": "object",
       "description": "engine->frontend diagnostic emitted when a smart wait is inserted during recording. Top-level is snake_case; the data sub-object is camelCase (exception to the wire convention).",
       "properties": {
-        "event": { "const": "recording_smart_wait_decision" },
-        "command": { "const": "recording_smart_wait_decision" },
-        "action_type": { "const": "smart_wait_decision" },
-        "timestamp": { "type": "integer", "description": "epoch ms" },
-        "session_id": { "type": "string" },
-        "flow_id": { "type": "string" },
+        "event": {
+          "const": "recording_smart_wait_decision"
+        },
+        "command": {
+          "const": "recording_smart_wait_decision"
+        },
+        "action_type": {
+          "const": "smart_wait_decision"
+        },
+        "timestamp": {
+          "type": "integer",
+          "description": "epoch ms"
+        },
+        "session_id": {
+          "type": "string"
+        },
+        "flow_id": {
+          "type": "string"
+        },
         "data": {
           "type": "object",
           "properties": {
-            "waitActionId": { "type": "string" },
-            "triggerActionId": { "type": "string" },
-            "dependentActionId": { "type": "string" },
-            "dependentActionType": { "type": "string" },
-            "reason": { "type": "string" },
-            "confidence": { "type": ["number", "null"] },
-            "waitType": { "type": "string" },
-            "duration": { "type": "integer" },
-            "effectiveWaitMs": { "type": "integer" },
-            "selector": { "type": "string" },
-            "selectors": { "type": "array", "items": { "type": "string" } }
+            "waitActionId": {
+              "type": "string"
+            },
+            "triggerActionId": {
+              "type": "string"
+            },
+            "dependentActionId": {
+              "type": "string"
+            },
+            "dependentActionType": {
+              "type": "string"
+            },
+            "reason": {
+              "type": "string"
+            },
+            "confidence": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "waitType": {
+              "type": "string"
+            },
+            "duration": {
+              "type": "integer"
+            },
+            "effectiveWaitMs": {
+              "type": "integer"
+            },
+            "selector": {
+              "type": "string"
+            },
+            "selectors": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
           },
-          "required": ["waitActionId", "triggerActionId", "dependentActionId", "dependentActionType", "reason", "confidence", "waitType", "duration", "effectiveWaitMs", "selector", "selectors"]
+          "required": [
+            "waitActionId",
+            "triggerActionId",
+            "dependentActionId",
+            "dependentActionType",
+            "reason",
+            "confidence",
+            "waitType",
+            "duration",
+            "effectiveWaitMs",
+            "selector",
+            "selectors"
+          ]
         }
       },
-      "required": ["event", "command", "action_type", "timestamp", "session_id", "flow_id", "data"]
+      "required": [
+        "event",
+        "command",
+        "action_type",
+        "timestamp",
+        "session_id",
+        "flow_id",
+        "data"
+      ]
     },
     "ErrorResponse": {
       "allOf": [
-        { "$ref": "#/$defs/WebSocketResponse" },
+        {
+          "$ref": "#/$defs/WebSocketResponse"
+        },
         {
           "type": "object",
           "description": "Message-loop-level failure. `command` is 'error' for loop-level errors, or echoes the failing command name for handler-level errors. Additional keys (code, required_component, ...) may be present.",
           "properties": {
-            "command": { "type": "string" },
-            "success": { "type": "boolean" },
-            "message": { "type": "string" },
-            "error": { "type": "string" }
+            "command": {
+              "type": "string"
+            },
+            "success": {
+              "type": "boolean"
+            },
+            "message": {
+              "type": "string"
+            },
+            "error": {
+              "type": "string"
+            }
           },
-          "required": ["command", "success", "message", "error"],
+          "required": [
+            "command",
+            "success",
+            "message",
+            "error"
+          ],
           "additionalProperties": true
+        }
+      ]
+    },
+    "ProcessKind": {
+      "type": "string",
+      "description": "The kind of engine work a process represents.",
+      "enum": [
+        "run",
+        "suite",
+        "recording"
+      ]
+    },
+    "ProcessStatus": {
+      "type": "string",
+      "description": "Lifecycle state of a process. finished/failed/cancelled/stopped are terminal.",
+      "enum": [
+        "started",
+        "running",
+        "finished",
+        "failed",
+        "cancelled",
+        "stopped"
+      ]
+    },
+    "ProcessEventResponse": {
+      "description": "Account-wide process lifecycle event. Broadcast to every live socket of an account so any client can bind a process to the test it belongs to and learn the outcome even if it did not start the work or has since reloaded.",
+      "allOf": [
+        {
+          "$ref": "#/$defs/WebSocketResponse"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "command": {
+              "const": "process_event"
+            },
+            "success": {
+              "type": "boolean"
+            },
+            "process_id": {
+              "type": "string",
+              "description": "Stable id of the process for its lifetime."
+            },
+            "kind": {
+              "$ref": "#/$defs/ProcessKind"
+            },
+            "status": {
+              "$ref": "#/$defs/ProcessStatus"
+            },
+            "test_id": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "Test this process belongs to, so clients gate only that test's controls."
+            },
+            "initiated_by": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "User id that started the work, or the API key id for a CI run."
+            },
+            "terminal": {
+              "type": "boolean",
+              "description": "True when the process has reached a final state."
+            },
+            "mode": {
+              "type": "string"
+            },
+            "report_id": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "result": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "message": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "command",
+            "process_id",
+            "kind",
+            "status",
+            "terminal"
+          ]
         }
       ]
     }

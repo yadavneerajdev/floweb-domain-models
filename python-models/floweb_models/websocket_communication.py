@@ -832,6 +832,8 @@ class Code(StrEnum):
     ENGINE_TOKEN_MISSING = 'ENGINE_TOKEN_MISSING'
     ENGINE_TOKEN_INVALID = 'ENGINE_TOKEN_INVALID'
     ENGINE_CONNECTION_REFUSED = 'ENGINE_CONNECTION_REFUSED'
+    ENGINE_AUTH_FAILED = 'ENGINE_AUTH_FAILED'
+    ENGINE_ACCOUNT_CONFLICT = 'ENGINE_ACCOUNT_CONFLICT'
 
 
 class AuthenticateResponse(WebSocketResponse):
@@ -961,6 +963,72 @@ class ErrorResponse(WebSocketResponse):
     error: str
 
 
+class ProcessKind(StrEnum):
+    """
+    The kind of engine work a process represents.
+    """
+
+    run = 'run'
+    suite = 'suite'
+    recording = 'recording'
+
+
+class ProcessStatus(StrEnum):
+    """
+    Lifecycle state of a process. finished/failed/cancelled/stopped are terminal.
+    """
+
+    started = 'started'
+    running = 'running'
+    finished = 'finished'
+    failed = 'failed'
+    cancelled = 'cancelled'
+    stopped = 'stopped'
+
+
+class ProcessEventResponse(WebSocketResponse):
+    """
+    Account-wide process lifecycle event. Broadcast to every live socket of an account so any client can bind a process to the test it belongs to and learn the outcome even if it did not start the work or has since reloaded.
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    command: Literal['process_event']
+    """
+    Command that was executed
+    """
+    success: bool
+    """
+    Whether the command succeeded
+    """
+    process_id: str
+    """
+    Stable id of the process for its lifetime.
+    """
+    kind: ProcessKind
+    status: ProcessStatus
+    test_id: str | None = None
+    """
+    Test this process belongs to, so clients gate only that test's controls.
+    """
+    initiated_by: str | None = None
+    """
+    User id that started the work, or the API key id for a CI run.
+    """
+    terminal: bool
+    """
+    True when the process has reached a final state.
+    """
+    mode: str | None = None
+    report_id: str | None = None
+    result: str | None = None
+    message: str | None = None
+    """
+    Response message
+    """
+
+
 class WebsocketCommunication(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
@@ -1019,6 +1087,7 @@ class WebsocketCommunication(BaseModel):
             | RunSuiteProgressResponse
             | RecordingSmartWaitDecision
             | ErrorResponse
+            | ProcessEventResponse
         ]
         | None
     ) = None
