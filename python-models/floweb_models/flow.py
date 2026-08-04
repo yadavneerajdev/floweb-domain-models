@@ -115,6 +115,10 @@ class Position(BaseModel):
 
 
 class ActionData(BaseModel):
+    """
+    Authored content of an action node. Run state (status, message, screenshot) is deliberately absent: it is ephemeral engine/UI state and must never be persisted onto the saved document.
+    """
+
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -133,10 +137,6 @@ class ActionData(BaseModel):
     image: str | None = None
     """
     Screenshot or icon associated with the action
-    """
-    status: str | None = None
-    """
-    Last known execution status of the action
     """
     expanded: bool | None = None
     """

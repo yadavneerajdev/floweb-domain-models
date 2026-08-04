@@ -120,6 +120,9 @@ export interface Position {
    */
   y: number;
 }
+/**
+ * Authored content of an action node. Run state (status, message, screenshot) is deliberately absent: it is ephemeral engine/UI state and must never be persisted onto the saved document.
+ */
 export interface ActionData {
   /**
    * Human-readable label
@@ -137,10 +140,6 @@ export interface ActionData {
    * Screenshot or icon associated with the action
    */
   image?: string;
-  /**
-   * Last known execution status of the action
-   */
-  status?: string;
   /**
    * Whether the node is expanded in the canvas UI
    */

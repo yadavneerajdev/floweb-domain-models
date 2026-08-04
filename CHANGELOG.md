@@ -4,6 +4,19 @@ All notable changes to the domain-models schemas are recorded here. Versions
 refer to the `$version` field carried by every schema (independent of the npm/PyPI
 package version until the consumption switch in the package plan Phase 4).
 
+## [flow 1.2.0] — 2026-08-04 — run state is no longer part of the document
+
+`ActionData.status` is removed. Run state describes the last execution, not the
+authored test, so it does not belong on the saved document: persisting it made a
+reload restore stale running/passed badges, and the screenshot payloads that
+travelled with it bloated every saved document.
+
+Clients keep run state in their own runtime types (the frontend node data still
+carries `status`); it is simply never serialised. No engine code read this field.
+
+### Removed
+- `ActionData.status` (was optional; removal is additive-safe for readers).
+
 ## [websocket-communication 1.2.0] — 2026-08-04 — process lifecycle events
 
 Adds the shared contract for account-wide process lifecycle events, so the engine
