@@ -1877,6 +1877,190 @@ export type DesktopSwitchDesktopConfig = BaseActionConfig & {
   postActionWaitMs?: number;
   presses?: number;
 };
+export type GmailConfig = BaseActionConfig & {
+  /**
+   * Gmail operation to perform
+   */
+  operation: "sendEmail" | "listMessages" | "getMessage";
+  /**
+   * Recipient address(es), comma separated
+   */
+  to?: string;
+  /**
+   * Cc address(es), comma separated
+   */
+  cc?: string;
+  /**
+   * Email subject
+   */
+  subject?: string;
+  /**
+   * Email body
+   */
+  body?: string;
+  /**
+   * Gmail search query, for listMessages
+   */
+  query?: string;
+  /**
+   * Message id, for getMessage
+   */
+  messageId?: string;
+  /**
+   * Token, webhook URL or API key for the target app. Use a variable reference such as {{env.SLACK_TOKEN}} so the secret lives in the account's environment, never in the test.
+   */
+  credential?: string;
+  /**
+   * Variable to store the app's response
+   */
+  outputVariable?: string;
+  /**
+   * Request timeout in seconds
+   */
+  timeout?: number;
+  /**
+   * Fail the step when the app returns an error
+   */
+  failOnError?: boolean;
+};
+export type SlackConfig = BaseActionConfig & {
+  /**
+   * postMessage uses a bot token and a channel; postWebhook posts to an incoming webhook URL.
+   */
+  operation: "postMessage" | "postWebhook";
+  /**
+   * Channel id or name, for postMessage
+   */
+  channel?: string;
+  /**
+   * Message text
+   */
+  message?: string;
+  /**
+   * Reply in this thread, optional
+   */
+  threadTs?: string;
+  /**
+   * Slack Block Kit JSON, optional
+   */
+  blocks?: string;
+  /**
+   * Token, webhook URL or API key for the target app. Use a variable reference such as {{env.SLACK_TOKEN}} so the secret lives in the account's environment, never in the test.
+   */
+  credential?: string;
+  /**
+   * Variable to store the app's response
+   */
+  outputVariable?: string;
+  /**
+   * Request timeout in seconds
+   */
+  timeout?: number;
+  /**
+   * Fail the step when the app returns an error
+   */
+  failOnError?: boolean;
+};
+export type DiscordConfig = BaseActionConfig & {
+  /**
+   * postWebhook posts to a channel webhook URL; postMessage uses a bot token and a channel id.
+   */
+  operation: "postWebhook" | "postMessage";
+  /**
+   * Channel id, for postMessage
+   */
+  channelId?: string;
+  /**
+   * Message content
+   */
+  message?: string;
+  /**
+   * Override the webhook's display name
+   */
+  username?: string;
+  /**
+   * Discord embeds JSON, optional
+   */
+  embeds?: string;
+  /**
+   * Token, webhook URL or API key for the target app. Use a variable reference such as {{env.SLACK_TOKEN}} so the secret lives in the account's environment, never in the test.
+   */
+  credential?: string;
+  /**
+   * Variable to store the app's response
+   */
+  outputVariable?: string;
+  /**
+   * Request timeout in seconds
+   */
+  timeout?: number;
+  /**
+   * Fail the step when the app returns an error
+   */
+  failOnError?: boolean;
+};
+export type JiraConfig = BaseActionConfig & {
+  /**
+   * Jira operation to perform
+   */
+  operation: "createIssue" | "updateIssue" | "addComment" | "transitionIssue" | "getIssue";
+  /**
+   * Jira site URL, e.g. https://your-org.atlassian.net
+   */
+  baseUrl?: string;
+  /**
+   * Atlassian account email, paired with an API token
+   */
+  email?: string;
+  /**
+   * Project key, for createIssue
+   */
+  projectKey?: string;
+  /**
+   * Issue key, for everything except createIssue
+   */
+  issueKey?: string;
+  /**
+   * Issue type, for createIssue
+   */
+  issueType?: string;
+  /**
+   * Issue summary
+   */
+  summary?: string;
+  /**
+   * Issue description
+   */
+  description?: string;
+  /**
+   * Comment body, for addComment
+   */
+  comment?: string;
+  /**
+   * Target status name, for transitionIssue
+   */
+  transitionTo?: string;
+  /**
+   * Extra Jira fields as JSON, optional
+   */
+  fields?: string;
+  /**
+   * Token, webhook URL or API key for the target app. Use a variable reference such as {{env.SLACK_TOKEN}} so the secret lives in the account's environment, never in the test.
+   */
+  credential?: string;
+  /**
+   * Variable to store the app's response
+   */
+  outputVariable?: string;
+  /**
+   * Request timeout in seconds
+   */
+  timeout?: number;
+  /**
+   * Fail the step when the app returns an error
+   */
+  failOnError?: boolean;
+};
 /**
  * Every automation action-type identifier (33 web + 17 desktop = 50).
  */
@@ -1935,7 +2119,11 @@ export type ActionType =
   | "desktopOpenApplication"
   | "desktopSwitchDesktop"
   | "desktopListProcesses"
-  | "desktopOpenPath";
+  | "desktopOpenPath"
+  | "gmail"
+  | "slack"
+  | "discord"
+  | "jira";
 /**
  * The 17 desktop automation action types (subset of ActionType).
  */
@@ -1957,6 +2145,10 @@ export type DesktopActionType =
   | "desktopSwitchDesktop"
   | "desktopListProcesses"
   | "desktopOpenPath";
+/**
+ * Actions that call an external application's API.
+ */
+export type IntegrationActionType = "gmail" | "slack" | "discord" | "jira";
 /**
  * AI provider selector
  */

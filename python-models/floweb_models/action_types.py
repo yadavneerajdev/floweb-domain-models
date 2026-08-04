@@ -68,6 +68,10 @@ class ActionType(StrEnum):
     desktopSwitchDesktop = 'desktopSwitchDesktop'
     desktopListProcesses = 'desktopListProcesses'
     desktopOpenPath = 'desktopOpenPath'
+    gmail = 'gmail'
+    slack = 'slack'
+    discord = 'discord'
+    jira = 'jira'
 
 
 class DesktopActionType(StrEnum):
@@ -92,6 +96,17 @@ class DesktopActionType(StrEnum):
     desktopSwitchDesktop = 'desktopSwitchDesktop'
     desktopListProcesses = 'desktopListProcesses'
     desktopOpenPath = 'desktopOpenPath'
+
+
+class IntegrationActionType(StrEnum):
+    """
+    Actions that call an external application's API.
+    """
+
+    gmail = 'gmail'
+    slack = 'slack'
+    discord = 'discord'
+    jira = 'jira'
 
 
 class ActionTypes(BaseModel):

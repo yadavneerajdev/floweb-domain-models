@@ -4,6 +4,26 @@ All notable changes to the domain-models schemas are recorded here. Versions
 refer to the `$version` field carried by every schema (independent of the npm/PyPI
 package version until the consumption switch in the package plan Phase 4).
 
+## [action-types 1.1.0, action-configs 1.1.0] — 2026-08-05 — app integration actions
+
+Adds four actions that call an external application's API from inside a test, so a
+flow can email a report, post a result to chat, or file a Jira issue when it fails.
+
+### Added
+- `ActionType` gains `gmail`, `slack`, `discord`, `jira`, plus an
+  `IntegrationActionType` enum naming the group.
+- `GmailConfig` (sendEmail / listMessages / getMessage), `SlackConfig`
+  (postMessage / postWebhook), `DiscordConfig` (postWebhook / postMessage) and
+  `JiraConfig` (createIssue / updateIssue / addComment / transitionIssue /
+  getIssue), each registered in the action config union.
+
+Every integration takes a `credential` that is meant to hold a variable reference
+such as `{{env.SLACK_TOKEN}}`, so the secret lives in the account's environment and
+never in a saved test. Each also shares `outputVariable`, `timeout` and
+`failOnError`.
+
+Additive only; no breaking changes.
+
 ## [api-key 1.0.0, server-entities 1.1.0] — 2026-08-04 — API keys for CI/CD
 
 Adds the contract for account-scoped API keys, the credential non-interactive

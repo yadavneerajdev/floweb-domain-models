@@ -418,6 +418,46 @@ class Format2(StrEnum):
     jpg = 'jpg'
 
 
+class Operation(StrEnum):
+    """
+    Gmail operation to perform
+    """
+
+    sendEmail = 'sendEmail'
+    listMessages = 'listMessages'
+    getMessage = 'getMessage'
+
+
+class Operation1(StrEnum):
+    """
+    postMessage uses a bot token and a channel; postWebhook posts to an incoming webhook URL.
+    """
+
+    postMessage = 'postMessage'
+    postWebhook = 'postWebhook'
+
+
+class Operation2(StrEnum):
+    """
+    postWebhook posts to a channel webhook URL; postMessage uses a bot token and a channel id.
+    """
+
+    postWebhook = 'postWebhook'
+    postMessage = 'postMessage'
+
+
+class Operation3(StrEnum):
+    """
+    Jira operation to perform
+    """
+
+    createIssue = 'createIssue'
+    updateIssue = 'updateIssue'
+    addComment = 'addComment'
+    transitionIssue = 'transitionIssue'
+    getIssue = 'getIssue'
+
+
 class BaseActionConfig(FlowebActionBaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
@@ -2494,6 +2534,206 @@ class DesktopSwitchDesktopConfig(BaseActionConfig):
     presses: int | None = 1
 
 
+class GmailConfig(BaseActionConfig):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    operation: Operation
+    """
+    Gmail operation to perform
+    """
+    to: str | None = ''
+    """
+    Recipient address(es), comma separated
+    """
+    cc: str | None = ''
+    """
+    Cc address(es), comma separated
+    """
+    subject: str | None = ''
+    """
+    Email subject
+    """
+    body: str | None = ''
+    """
+    Email body
+    """
+    query: str | None = ''
+    """
+    Gmail search query, for listMessages
+    """
+    messageId: str | None = ''
+    """
+    Message id, for getMessage
+    """
+    credential: str | None = ''
+    """
+    Token, webhook URL or API key for the target app. Use a variable reference such as {{env.SLACK_TOKEN}} so the secret lives in the account's environment, never in the test.
+    """
+    outputVariable: str | None = 'gmailResponse'
+    """
+    Variable to store the app's response
+    """
+    timeout: Annotated[int | None, Field(ge=1)] = 30
+    """
+    Request timeout in seconds
+    """
+    failOnError: bool | None = True
+    """
+    Fail the step when the app returns an error
+    """
+
+
+class SlackConfig(BaseActionConfig):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    operation: Operation1
+    """
+    postMessage uses a bot token and a channel; postWebhook posts to an incoming webhook URL.
+    """
+    channel: str | None = ''
+    """
+    Channel id or name, for postMessage
+    """
+    message: str | None = ''
+    """
+    Message text
+    """
+    threadTs: str | None = ''
+    """
+    Reply in this thread, optional
+    """
+    blocks: str | None = ''
+    """
+    Slack Block Kit JSON, optional
+    """
+    credential: str | None = ''
+    """
+    Token, webhook URL or API key for the target app. Use a variable reference such as {{env.SLACK_TOKEN}} so the secret lives in the account's environment, never in the test.
+    """
+    outputVariable: str | None = 'slackResponse'
+    """
+    Variable to store the app's response
+    """
+    timeout: Annotated[int | None, Field(ge=1)] = 30
+    """
+    Request timeout in seconds
+    """
+    failOnError: bool | None = True
+    """
+    Fail the step when the app returns an error
+    """
+
+
+class DiscordConfig(BaseActionConfig):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    operation: Operation2
+    """
+    postWebhook posts to a channel webhook URL; postMessage uses a bot token and a channel id.
+    """
+    channelId: str | None = ''
+    """
+    Channel id, for postMessage
+    """
+    message: str | None = ''
+    """
+    Message content
+    """
+    username: str | None = ''
+    """
+    Override the webhook's display name
+    """
+    embeds: str | None = ''
+    """
+    Discord embeds JSON, optional
+    """
+    credential: str | None = ''
+    """
+    Token, webhook URL or API key for the target app. Use a variable reference such as {{env.SLACK_TOKEN}} so the secret lives in the account's environment, never in the test.
+    """
+    outputVariable: str | None = 'discordResponse'
+    """
+    Variable to store the app's response
+    """
+    timeout: Annotated[int | None, Field(ge=1)] = 30
+    """
+    Request timeout in seconds
+    """
+    failOnError: bool | None = True
+    """
+    Fail the step when the app returns an error
+    """
+
+
+class JiraConfig(BaseActionConfig):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    operation: Operation3
+    """
+    Jira operation to perform
+    """
+    baseUrl: str | None = ''
+    """
+    Jira site URL, e.g. https://your-org.atlassian.net
+    """
+    email: str | None = ''
+    """
+    Atlassian account email, paired with an API token
+    """
+    projectKey: str | None = ''
+    """
+    Project key, for createIssue
+    """
+    issueKey: str | None = ''
+    """
+    Issue key, for everything except createIssue
+    """
+    issueType: str | None = 'Bug'
+    """
+    Issue type, for createIssue
+    """
+    summary: str | None = ''
+    """
+    Issue summary
+    """
+    description: str | None = ''
+    """
+    Issue description
+    """
+    comment: str | None = ''
+    """
+    Comment body, for addComment
+    """
+    transitionTo: str | None = ''
+    """
+    Target status name, for transitionIssue
+    """
+    fields: str | None = ''
+    """
+    Extra Jira fields as JSON, optional
+    """
+    credential: str | None = ''
+    """
+    Token, webhook URL or API key for the target app. Use a variable reference such as {{env.SLACK_TOKEN}} so the secret lives in the account's environment, never in the test.
+    """
+    outputVariable: str | None = 'jiraResponse'
+    """
+    Variable to store the app's response
+    """
+    timeout: Annotated[int | None, Field(ge=1)] = 30
+    """
+    Request timeout in seconds
+    """
+    failOnError: bool | None = True
+    """
+    Fail the step when the app returns an error
+    """
+
+
 class ActionConfigurations(BaseModel):
     """
     Configuration schemas for all automation actions
@@ -2552,7 +2792,11 @@ class ActionConfigurations(BaseModel):
             | DesktopMoveMouseConfig
             | DesktopHotkeyConfig
             | DesktopRunCommandConfig
-            | DesktopCaptureScreenConfig,
+            | DesktopCaptureScreenConfig
+            | GmailConfig
+            | SlackConfig
+            | DiscordConfig
+            | JiraConfig,
         ]
         | None
     ) = None

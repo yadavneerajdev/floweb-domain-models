@@ -67,7 +67,11 @@ export type ActionType =
   | "desktopOpenApplication"
   | "desktopSwitchDesktop"
   | "desktopListProcesses"
-  | "desktopOpenPath";
+  | "desktopOpenPath"
+  | "gmail"
+  | "slack"
+  | "discord"
+  | "jira";
 /**
  * AI provider selector
  */
@@ -108,6 +112,10 @@ export type DesktopActionType =
   | "desktopSwitchDesktop"
   | "desktopListProcesses"
   | "desktopOpenPath";
+/**
+ * Actions that call an external application's API.
+ */
+export type IntegrationActionType = "gmail" | "slack" | "discord" | "jira";
 
 export interface DataLabSchema {
   generateTestsRequest?: GenerateTestsRequest;
@@ -159,6 +167,7 @@ export interface DataLabSchema {
   VibeVerifyResponse?: VibeVerifyResponse;
   ActionType?: ActionType;
   DesktopActionType?: DesktopActionType;
+  IntegrationActionType?: IntegrationActionType;
 }
 /**
  * POST /data-lab/generate-tests body (all fields optional; server applies defaults)

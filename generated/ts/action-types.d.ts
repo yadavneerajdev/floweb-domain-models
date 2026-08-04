@@ -59,7 +59,11 @@ export type ActionType =
   | "desktopOpenApplication"
   | "desktopSwitchDesktop"
   | "desktopListProcesses"
-  | "desktopOpenPath";
+  | "desktopOpenPath"
+  | "gmail"
+  | "slack"
+  | "discord"
+  | "jira";
 /**
  * The 17 desktop automation action types (subset of ActionType).
  */
@@ -81,9 +85,14 @@ export type DesktopActionType =
   | "desktopSwitchDesktop"
   | "desktopListProcesses"
   | "desktopOpenPath";
+/**
+ * Actions that call an external application's API.
+ */
+export type IntegrationActionType = "gmail" | "slack" | "discord" | "jira";
 
 export interface ActionTypesSchema {
   actionType?: ActionType;
   ActionType?: ActionType;
   DesktopActionType?: DesktopActionType;
+  IntegrationActionType?: IntegrationActionType;
 }

@@ -1,12 +1,14 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://floweb.com/schemas/action-types.json",
-  "$version": "1.5.0",
+  "$version": "1.1.0",
   "title": "Action Types",
-  "description": "Canonical registry of automation action-type identifiers. The runtime strings are uniform camelCase across all consumers (AI catalog, backend factory/recorder, frontend, config classes); this schema is the single source. Config class names still diverge from the string in some cases (fillForm->FormFillConfig, dbQuery->DatabaseQueryConfig, dbInsert->DatabaseInsertConfig, custom->CustomCodeConfig) — that alignment is tracked in the backend/action-configs plans, not here.",
+  "description": "Canonical registry of automation action-type identifiers. The runtime strings are uniform camelCase across all consumers (AI catalog, backend factory/recorder, frontend, config classes); this schema is the single source. Config class names still diverge from the string in some cases (fillForm->FormFillConfig, dbQuery->DatabaseQueryConfig, dbInsert->DatabaseInsertConfig, custom->CustomCodeConfig) \u2014 that alignment is tracked in the backend/action-configs plans, not here.",
   "type": "object",
   "properties": {
-    "actionType": { "$ref": "#/$defs/ActionType" }
+    "actionType": {
+      "$ref": "#/$defs/ActionType"
+    }
   },
   "$defs": {
     "ActionType": {
@@ -67,7 +69,11 @@
         "desktopOpenApplication",
         "desktopSwitchDesktop",
         "desktopListProcesses",
-        "desktopOpenPath"
+        "desktopOpenPath",
+        "gmail",
+        "slack",
+        "discord",
+        "jira"
       ]
     },
     "DesktopActionType": {
@@ -91,6 +97,16 @@
         "desktopSwitchDesktop",
         "desktopListProcesses",
         "desktopOpenPath"
+      ]
+    },
+    "IntegrationActionType": {
+      "type": "string",
+      "description": "Actions that call an external application's API.",
+      "enum": [
+        "gmail",
+        "slack",
+        "discord",
+        "jira"
       ]
     }
   }

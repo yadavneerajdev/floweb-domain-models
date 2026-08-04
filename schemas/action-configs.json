@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://floweb.com/schemas/action-configs.json",
-  "$version": "1.8.0",
+  "$version": "1.1.0",
   "title": "Action Configurations",
   "description": "Configuration schemas for all automation actions",
   "type": "object",
@@ -154,6 +154,18 @@
             },
             {
               "$ref": "#/$defs/DesktopCaptureScreenConfig"
+            },
+            {
+              "$ref": "#/$defs/GmailConfig"
+            },
+            {
+              "$ref": "#/$defs/SlackConfig"
+            },
+            {
+              "$ref": "#/$defs/DiscordConfig"
+            },
+            {
+              "$ref": "#/$defs/JiraConfig"
             }
           ]
         }
@@ -3486,6 +3498,310 @@
         }
       ],
       "description": "Switch to next/previous virtual desktop (workspace)."
+    },
+    "GmailConfig": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/BaseActionConfig"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "operation": {
+              "type": "string",
+              "enum": [
+                "sendEmail",
+                "listMessages",
+                "getMessage"
+              ],
+              "default": "sendEmail",
+              "description": "Gmail operation to perform"
+            },
+            "to": {
+              "type": "string",
+              "default": "",
+              "description": "Recipient address(es), comma separated"
+            },
+            "cc": {
+              "type": "string",
+              "default": "",
+              "description": "Cc address(es), comma separated"
+            },
+            "subject": {
+              "type": "string",
+              "default": "",
+              "description": "Email subject"
+            },
+            "body": {
+              "type": "string",
+              "default": "",
+              "description": "Email body"
+            },
+            "query": {
+              "type": "string",
+              "default": "",
+              "description": "Gmail search query, for listMessages"
+            },
+            "messageId": {
+              "type": "string",
+              "default": "",
+              "description": "Message id, for getMessage"
+            },
+            "credential": {
+              "type": "string",
+              "default": "",
+              "description": "Token, webhook URL or API key for the target app. Use a variable reference such as {{env.SLACK_TOKEN}} so the secret lives in the account's environment, never in the test."
+            },
+            "outputVariable": {
+              "type": "string",
+              "default": "gmailResponse",
+              "description": "Variable to store the app's response"
+            },
+            "timeout": {
+              "type": "integer",
+              "default": 30,
+              "minimum": 1,
+              "description": "Request timeout in seconds"
+            },
+            "failOnError": {
+              "type": "boolean",
+              "default": true,
+              "description": "Fail the step when the app returns an error"
+            }
+          },
+          "required": [
+            "operation"
+          ]
+        }
+      ]
+    },
+    "SlackConfig": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/BaseActionConfig"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "operation": {
+              "type": "string",
+              "enum": [
+                "postMessage",
+                "postWebhook"
+              ],
+              "default": "postMessage",
+              "description": "postMessage uses a bot token and a channel; postWebhook posts to an incoming webhook URL."
+            },
+            "channel": {
+              "type": "string",
+              "default": "",
+              "description": "Channel id or name, for postMessage"
+            },
+            "message": {
+              "type": "string",
+              "default": "",
+              "description": "Message text"
+            },
+            "threadTs": {
+              "type": "string",
+              "default": "",
+              "description": "Reply in this thread, optional"
+            },
+            "blocks": {
+              "type": "string",
+              "default": "",
+              "description": "Slack Block Kit JSON, optional"
+            },
+            "credential": {
+              "type": "string",
+              "default": "",
+              "description": "Token, webhook URL or API key for the target app. Use a variable reference such as {{env.SLACK_TOKEN}} so the secret lives in the account's environment, never in the test."
+            },
+            "outputVariable": {
+              "type": "string",
+              "default": "slackResponse",
+              "description": "Variable to store the app's response"
+            },
+            "timeout": {
+              "type": "integer",
+              "default": 30,
+              "minimum": 1,
+              "description": "Request timeout in seconds"
+            },
+            "failOnError": {
+              "type": "boolean",
+              "default": true,
+              "description": "Fail the step when the app returns an error"
+            }
+          },
+          "required": [
+            "operation"
+          ]
+        }
+      ]
+    },
+    "DiscordConfig": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/BaseActionConfig"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "operation": {
+              "type": "string",
+              "enum": [
+                "postWebhook",
+                "postMessage"
+              ],
+              "default": "postWebhook",
+              "description": "postWebhook posts to a channel webhook URL; postMessage uses a bot token and a channel id."
+            },
+            "channelId": {
+              "type": "string",
+              "default": "",
+              "description": "Channel id, for postMessage"
+            },
+            "message": {
+              "type": "string",
+              "default": "",
+              "description": "Message content"
+            },
+            "username": {
+              "type": "string",
+              "default": "",
+              "description": "Override the webhook's display name"
+            },
+            "embeds": {
+              "type": "string",
+              "default": "",
+              "description": "Discord embeds JSON, optional"
+            },
+            "credential": {
+              "type": "string",
+              "default": "",
+              "description": "Token, webhook URL or API key for the target app. Use a variable reference such as {{env.SLACK_TOKEN}} so the secret lives in the account's environment, never in the test."
+            },
+            "outputVariable": {
+              "type": "string",
+              "default": "discordResponse",
+              "description": "Variable to store the app's response"
+            },
+            "timeout": {
+              "type": "integer",
+              "default": 30,
+              "minimum": 1,
+              "description": "Request timeout in seconds"
+            },
+            "failOnError": {
+              "type": "boolean",
+              "default": true,
+              "description": "Fail the step when the app returns an error"
+            }
+          },
+          "required": [
+            "operation"
+          ]
+        }
+      ]
+    },
+    "JiraConfig": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/BaseActionConfig"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "operation": {
+              "type": "string",
+              "enum": [
+                "createIssue",
+                "updateIssue",
+                "addComment",
+                "transitionIssue",
+                "getIssue"
+              ],
+              "default": "createIssue",
+              "description": "Jira operation to perform"
+            },
+            "baseUrl": {
+              "type": "string",
+              "default": "",
+              "description": "Jira site URL, e.g. https://your-org.atlassian.net"
+            },
+            "email": {
+              "type": "string",
+              "default": "",
+              "description": "Atlassian account email, paired with an API token"
+            },
+            "projectKey": {
+              "type": "string",
+              "default": "",
+              "description": "Project key, for createIssue"
+            },
+            "issueKey": {
+              "type": "string",
+              "default": "",
+              "description": "Issue key, for everything except createIssue"
+            },
+            "issueType": {
+              "type": "string",
+              "default": "Bug",
+              "description": "Issue type, for createIssue"
+            },
+            "summary": {
+              "type": "string",
+              "default": "",
+              "description": "Issue summary"
+            },
+            "description": {
+              "type": "string",
+              "default": "",
+              "description": "Issue description"
+            },
+            "comment": {
+              "type": "string",
+              "default": "",
+              "description": "Comment body, for addComment"
+            },
+            "transitionTo": {
+              "type": "string",
+              "default": "",
+              "description": "Target status name, for transitionIssue"
+            },
+            "fields": {
+              "type": "string",
+              "default": "",
+              "description": "Extra Jira fields as JSON, optional"
+            },
+            "credential": {
+              "type": "string",
+              "default": "",
+              "description": "Token, webhook URL or API key for the target app. Use a variable reference such as {{env.SLACK_TOKEN}} so the secret lives in the account's environment, never in the test."
+            },
+            "outputVariable": {
+              "type": "string",
+              "default": "jiraResponse",
+              "description": "Variable to store the app's response"
+            },
+            "timeout": {
+              "type": "integer",
+              "default": 30,
+              "minimum": 1,
+              "description": "Request timeout in seconds"
+            },
+            "failOnError": {
+              "type": "boolean",
+              "default": true,
+              "description": "Fail the step when the app returns an error"
+            }
+          },
+          "required": [
+            "operation"
+          ]
+        }
+      ]
     }
   }
 }
