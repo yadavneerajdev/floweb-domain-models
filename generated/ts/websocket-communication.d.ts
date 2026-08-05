@@ -417,6 +417,7 @@ export type ProcessEventResponse = WebSocketResponse & {
   report_id?: string | null;
   result?: string | null;
   message?: string | null;
+  actions?: ProcessActionStatuses;
 };
 /**
  * The kind of engine work a process represents.
@@ -426,6 +427,17 @@ export type ProcessKind = "run" | "suite" | "recording";
  * Lifecycle state of a process. finished/failed/cancelled/stopped are terminal.
  */
 export type ProcessStatus = "started" | "running" | "finished" | "failed" | "cancelled" | "stopped";
+/**
+ * The engine's full view of an account's processes, sent on every successful authenticate. This is how a reconnecting or reloaded client recovers work that started while it was away, including how far each run had progressed.
+ */
+export type ProcessSnapshotResponse = WebSocketResponse & {
+  command: "process_snapshot";
+  success?: boolean;
+  /**
+   * Every process the engine still retains for the account. A process absent from this list is finished and forgotten.
+   */
+  processes: ProcessEventResponse[];
+};
 
 export interface WebSocketCommunicationModelsSchema {
   websocketCommunication?: {
@@ -480,6 +492,7 @@ export interface WebSocketCommunicationModelsSchema {
       | RecordingSmartWaitDecision
       | ErrorResponse
       | ProcessEventResponse
+      | ProcessSnapshotResponse
     )[];
   };
   WebSocketMessage?: WebSocketMessage;
@@ -535,6 +548,8 @@ export interface WebSocketCommunicationModelsSchema {
   ErrorResponse?: ErrorResponse;
   ProcessKind?: ProcessKind;
   ProcessStatus?: ProcessStatus;
+  ProcessActionStatuses?: ProcessActionStatuses;
+  ProcessSnapshotResponse?: ProcessSnapshotResponse;
   ProcessEventResponse?: ProcessEventResponse;
 }
 /**
@@ -640,4 +655,10 @@ export interface RecordingSmartWaitDecision {
     selector: string;
     selectors: string[];
   };
+}
+/**
+ * Per-action progress within a process, keyed by node id. Events carry only the actions that changed, so receivers merge rather than replace.
+ */
+export interface ProcessActionStatuses {
+  [k: string]: "running" | "success" | "error";
 }

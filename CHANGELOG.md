@@ -4,6 +4,22 @@ All notable changes to the domain-models schemas are recorded here. Versions
 refer to the `$version` field carried by every schema (independent of the npm/PyPI
 package version until the consumption switch in the package plan Phase 4).
 
+## [websocket-communication 1.3.0] — 2026-08-05 — recoverable run state
+
+A client that reloaded or reconnected mid-run had no way to learn what the engine
+was still doing, so controls looked idle while work continued and action badges
+were lost. The engine now retains its view of an account's processes and replays
+it on connect.
+
+### Added
+- `ProcessSnapshotResponse` (`command: "process_snapshot"`), sent after every
+  successful authenticate. Carries every process the engine still retains for the
+  account; a process absent from the list is finished and forgotten.
+- `ProcessActionStatuses`, a node-id-keyed map of `running`/`success`/`error`, and
+  an `actions` property on `ProcessEventResponse` carrying it. Events report only
+  the actions that changed, so receivers merge rather than replace — which is what
+  lets a client rebuild per-action progress for a run already under way.
+
 ## [action-configs 1.2.0] — 2026-08-05 — strict colour matching for image actions
 
 Image matching runs on grayscale, so the same icon in a different colour matched

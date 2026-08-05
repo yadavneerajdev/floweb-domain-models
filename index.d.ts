@@ -2695,6 +2695,17 @@ export type ProcessKind = "run" | "suite" | "recording";
  */
 export type ProcessStatus = "started" | "running" | "finished" | "failed" | "cancelled" | "stopped";
 /**
+ * The engine's full view of an account's processes, sent on every successful authenticate. This is how a reconnecting or reloaded client recovers work that started while it was away, including how far each run had progressed.
+ */
+export type ProcessSnapshotResponse = WebSocketResponse & {
+  command: "process_snapshot";
+  success?: boolean;
+  /**
+   * Every process the engine still retains for the account. A process absent from this list is finished and forgotten.
+   */
+  processes: ProcessEventResponse[];
+};
+/**
  * Account-wide process lifecycle event. Broadcast to every live socket of an account so any client can bind a process to the test it belongs to and learn the outcome even if it did not start the work or has since reloaded.
  */
 export type ProcessEventResponse = WebSocketResponse & {
@@ -2722,6 +2733,7 @@ export type ProcessEventResponse = WebSocketResponse & {
   report_id?: string | null;
   result?: string | null;
   message?: string | null;
+  actions?: ProcessActionStatuses;
 };
 
 export interface BaseActionConfig {
@@ -5850,6 +5862,12 @@ export interface RecordingSmartWaitDecision {
     selector: string;
     selectors: string[];
   };
+}
+/**
+ * Per-action progress within a process, keyed by node id. Events carry only the actions that changed, so receivers merge rather than replace.
+ */
+export interface ProcessActionStatuses {
+  [k: string]: "running" | "success" | "error";
 }
 /**
  * Schema for environment configurations and global variables used in Floweb automation flows

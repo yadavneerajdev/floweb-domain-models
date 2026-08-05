@@ -6,7 +6,7 @@ from __future__ import annotations
 from enum import StrEnum
 from typing import Any, Literal
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, RootModel
 
 
 class WebSocketMessage(BaseModel):
@@ -986,6 +986,20 @@ class ProcessStatus(StrEnum):
     stopped = 'stopped'
 
 
+class ProcessActionStatuses1(StrEnum):
+    running = 'running'
+    success = 'success'
+    error = 'error'
+
+
+class ProcessActionStatuses(RootModel[dict[str, ProcessActionStatuses1]]):
+    """
+    Per-action progress within a process, keyed by node id. Events carry only the actions that changed, so receivers merge rather than replace.
+    """
+
+    root: dict[str, ProcessActionStatuses1]
+
+
 class ProcessEventResponse(WebSocketResponse):
     """
     Account-wide process lifecycle event. Broadcast to every live socket of an account so any client can bind a process to the test it belongs to and learn the outcome even if it did not start the work or has since reloaded.
@@ -1026,6 +1040,29 @@ class ProcessEventResponse(WebSocketResponse):
     message: str | None = None
     """
     Response message
+    """
+    actions: ProcessActionStatuses | None = None
+
+
+class ProcessSnapshotResponse(WebSocketResponse):
+    """
+    The engine's full view of an account's processes, sent on every successful authenticate. This is how a reconnecting or reloaded client recovers work that started while it was away, including how far each run had progressed.
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    command: Literal['process_snapshot']
+    """
+    Command that was executed
+    """
+    success: bool
+    """
+    Whether the command succeeded
+    """
+    processes: list[ProcessEventResponse]
+    """
+    Every process the engine still retains for the account. A process absent from this list is finished and forgotten.
     """
 
 
@@ -1088,6 +1125,7 @@ class WebsocketCommunication(BaseModel):
             | RecordingSmartWaitDecision
             | ErrorResponse
             | ProcessEventResponse
+            | ProcessSnapshotResponse
         ]
         | None
     ) = None
