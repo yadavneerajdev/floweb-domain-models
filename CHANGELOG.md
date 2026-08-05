@@ -4,6 +4,26 @@ All notable changes to the domain-models schemas are recorded here. Versions
 refer to the `$version` field carried by every schema (independent of the npm/PyPI
 package version until the consumption switch in the package plan Phase 4).
 
+## [action-configs 1.2.0] — 2026-08-05 — strict colour matching for image actions
+
+Image matching runs on grayscale, so the same icon in a different colour matched
+perfectly — a yellow icon satisfied an orange reference. Actions can now require
+the colour to agree too.
+
+### Added
+- `colorTolerance` on `BaseActionConfig` (so every action taking an image or image
+  identifier inherits it), on `DesktopVisualBaseConfig` (inherited by the wait,
+  find, click and type desktop actions) and on `DesktopDragAndDropConfig`, which
+  does not use the visual base.
+  Mean CIE76 deltaE a match may differ from its reference by; defaults to 30, which
+  absorbs theme and anti-aliasing drift while rejecting a deliberate hue change.
+  Set it to 0 to match an image in any colour.
+- `DesktopVerifyImageConfig`, which was missing: `desktopVerifyImage` has been in
+  the action-type enum and the engine all along, but had no config def, so its
+  config was never validated. Authored from the engine model.
+
+Additive only; no breaking changes.
+
 ## [action-types 1.1.0, action-configs 1.1.0] — 2026-08-05 — app integration actions
 
 Adds four actions that call an external application's API from inside a test, so a

@@ -1430,6 +1430,10 @@ export type DesktopVisualBaseConfig = BaseActionConfig & {
    */
   grayscale?: boolean;
   /**
+   * Mean CIE76 deltaE a match may differ from its reference image by. Template matching runs on grayscale, so without this a recoloured copy of the image matches perfectly. 0 disables the check, matching the image in any colour.
+   */
+  colorTolerance?: number;
+  /**
    * Limit search to a specific screen region
    */
   useRegion?: boolean;
@@ -1887,6 +1891,23 @@ export type JiraConfig = BaseActionConfig & {
   failOnError?: boolean;
 };
 /**
+ * Configuration for verifying desktop image presence or absence.
+ */
+export type DesktopVerifyImageConfig = DesktopVisualBaseConfig & {
+  /**
+   * Reference image to verify
+   */
+  image?: string;
+  /**
+   * Whether to assert the image is there, gone, or to wait for either
+   */
+  verifyMode?: "present" | "notPresent" | "waitPresent" | "waitDisappear";
+  requireStability?: boolean;
+  stableDurationMs?: number;
+  outputVariable?: string;
+  failOnMismatch?: boolean;
+};
+/**
  * Drag from desktop image/coordinates to image/coordinates.
  */
 export type DesktopDragAndDropConfig = BaseActionConfig & {
@@ -1898,6 +1919,10 @@ export type DesktopDragAndDropConfig = BaseActionConfig & {
   dropY?: number;
   failIfTargetNotFound?: boolean;
   grayscale?: boolean;
+  /**
+   * Mean CIE76 deltaE a match may differ from its reference image by. Template matching runs on grayscale, so without this a recoloured copy of the image matches perfectly. 0 disables the check, matching the image in any colour.
+   */
+  colorTolerance?: number;
   holdAtDropMs?: number;
   holdBeforeDragMs?: number;
   moveDurationMs?: number;
@@ -2045,7 +2070,8 @@ export interface ActionConfigurationsSchema {
       | GmailConfig
       | SlackConfig
       | DiscordConfig
-      | JiraConfig;
+      | JiraConfig
+      | DesktopVerifyImageConfig;
   };
   BaseActionConfig?: BaseActionConfig;
   SemanticExpectedStates?: SemanticExpectedStates;
@@ -2115,12 +2141,17 @@ export interface ActionConfigurationsSchema {
   SlackConfig?: SlackConfig;
   DiscordConfig?: DiscordConfig;
   JiraConfig?: JiraConfig;
+  DesktopVerifyImageConfig?: DesktopVerifyImageConfig;
 }
 export interface BaseActionConfig {
   /**
    * Base64 encoded reference image
    */
   image?: string;
+  /**
+   * Mean CIE76 deltaE a match may differ from its reference image by. Template matching runs on grayscale, so without this a recoloured copy of the image matches perfectly. 0 disables the check, matching the image in any colour.
+   */
+  colorTolerance?: number;
   /**
    * Ordered fallback identifiers to locate the target element
    */

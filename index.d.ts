@@ -1482,6 +1482,10 @@ export type DesktopVisualBaseConfig = BaseActionConfig & {
    */
   grayscale?: boolean;
   /**
+   * Mean CIE76 deltaE a match may differ from its reference image by. Template matching runs on grayscale, so without this a recoloured copy of the image matches perfectly. 0 disables the check, matching the image in any colour.
+   */
+  colorTolerance?: number;
+  /**
    * Limit search to a specific screen region
    */
   useRegion?: boolean;
@@ -1791,6 +1795,10 @@ export type DesktopDragAndDropConfig = BaseActionConfig & {
   dropY?: number;
   failIfTargetNotFound?: boolean;
   grayscale?: boolean;
+  /**
+   * Mean CIE76 deltaE a match may differ from its reference image by. Template matching runs on grayscale, so without this a recoloured copy of the image matches perfectly. 0 disables the check, matching the image in any colour.
+   */
+  colorTolerance?: number;
   holdAtDropMs?: number;
   holdBeforeDragMs?: number;
   moveDurationMs?: number;
@@ -2060,6 +2068,23 @@ export type JiraConfig = BaseActionConfig & {
    * Fail the step when the app returns an error
    */
   failOnError?: boolean;
+};
+/**
+ * Configuration for verifying desktop image presence or absence.
+ */
+export type DesktopVerifyImageConfig = DesktopVisualBaseConfig & {
+  /**
+   * Reference image to verify
+   */
+  image?: string;
+  /**
+   * Whether to assert the image is there, gone, or to wait for either
+   */
+  verifyMode?: "present" | "notPresent" | "waitPresent" | "waitDisappear";
+  requireStability?: boolean;
+  stableDurationMs?: number;
+  outputVariable?: string;
+  failOnMismatch?: boolean;
 };
 /**
  * Every automation action-type identifier (33 web + 17 desktop = 50).
@@ -2704,6 +2729,10 @@ export interface BaseActionConfig {
    * Base64 encoded reference image
    */
   image?: string;
+  /**
+   * Mean CIE76 deltaE a match may differ from its reference image by. Template matching runs on grayscale, so without this a recoloured copy of the image matches perfectly. 0 disables the check, matching the image in any colour.
+   */
+  colorTolerance?: number;
   /**
    * Ordered fallback identifiers to locate the target element
    */

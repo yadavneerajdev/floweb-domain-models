@@ -458,6 +458,17 @@ class Operation3(StrEnum):
     getIssue = 'getIssue'
 
 
+class VerifyMode(StrEnum):
+    """
+    Whether to assert the image is there, gone, or to wait for either
+    """
+
+    present = 'present'
+    notPresent = 'notPresent'
+    waitPresent = 'waitPresent'
+    waitDisappear = 'waitDisappear'
+
+
 class BaseActionConfig(FlowebActionBaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
@@ -465,6 +476,10 @@ class BaseActionConfig(FlowebActionBaseModel):
     image: str | None = None
     """
     Base64 encoded reference image
+    """
+    colorTolerance: Annotated[float | None, Field(ge=0.0)] = 30
+    """
+    Mean CIE76 deltaE a match may differ from its reference image by. Template matching runs on grayscale, so without this a recoloured copy of the image matches perfectly. 0 disables the check, matching the image in any colour.
     """
     identifiers: list[str | Identifiers] | None = None
     """
@@ -2057,6 +2072,10 @@ class DesktopVisualBaseConfig(BaseActionConfig):
     """
     Use grayscale matching for better performance
     """
+    colorTolerance: Annotated[float | None, Field(ge=0.0)] = 30
+    """
+    Mean CIE76 deltaE a match may differ from its reference image by. Template matching runs on grayscale, so without this a recoloured copy of the image matches perfectly. 0 disables the check, matching the image in any colour.
+    """
     useRegion: bool | None = False
     """
     Limit search to a specific screen region
@@ -2417,6 +2436,10 @@ class DesktopDragAndDropConfig(BaseActionConfig):
     dropY: int | None = 0
     failIfTargetNotFound: bool | None = True
     grayscale: bool | None = True
+    colorTolerance: Annotated[float | None, Field(ge=0.0)] = 30
+    """
+    Mean CIE76 deltaE a match may differ from its reference image by. Template matching runs on grayscale, so without this a recoloured copy of the image matches perfectly. 0 disables the check, matching the image in any colour.
+    """
     holdAtDropMs: int | None = 80
     holdBeforeDragMs: int | None = 120
     moveDurationMs: int | None = 120
@@ -2734,6 +2757,28 @@ class JiraConfig(BaseActionConfig):
     """
 
 
+class DesktopVerifyImageConfig(DesktopVisualBaseConfig):
+    """
+    Configuration for verifying desktop image presence or absence.
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    image: str | None = None
+    """
+    Reference image to verify
+    """
+    verifyMode: VerifyMode | None = 'present'
+    """
+    Whether to assert the image is there, gone, or to wait for either
+    """
+    requireStability: bool | None = False
+    stableDurationMs: Annotated[int | None, Field(ge=100)] = 600
+    outputVariable: str | None = 'desktopVerification'
+    failOnMismatch: bool | None = True
+
+
 class ActionConfigurations(BaseModel):
     """
     Configuration schemas for all automation actions
@@ -2796,7 +2841,8 @@ class ActionConfigurations(BaseModel):
             | GmailConfig
             | SlackConfig
             | DiscordConfig
-            | JiraConfig,
+            | JiraConfig
+            | DesktopVerifyImageConfig,
         ]
         | None
     ) = None
