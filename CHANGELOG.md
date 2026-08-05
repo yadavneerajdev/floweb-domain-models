@@ -4,6 +4,17 @@ All notable changes to the domain-models schemas are recorded here. Versions
 refer to the `$version` field carried by every schema (independent of the npm/PyPI
 package version until the consumption switch in the package plan Phase 4).
 
+## [action-configs 1.4.0] — 2026-08-06 — web colour tolerance raised to 50
+
+Web image actions were flaky: a page varies more between the machine a reference
+was captured on and the one replaying it than a desktop screen does, and the
+tighter tolerance failed correctly located matches.
+
+### Changed
+- `colorTolerance` on `BaseActionConfig` (web actions) now defaults to 50, up from
+  30. Desktop actions keep 30, where captures are more controlled. A deliberate
+  recolour is still rejected; a moderate text-colour change is the trade.
+
 ## [action-configs 1.3.0] — 2026-08-05 — grayscale matching is now opt-in
 
 Image matching blends shape correlation with edge agreement, which is what tells

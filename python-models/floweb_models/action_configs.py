@@ -477,9 +477,9 @@ class BaseActionConfig(FlowebActionBaseModel):
     """
     Base64 encoded reference image
     """
-    colorTolerance: Annotated[float | None, Field(ge=0.0)] = 30
+    colorTolerance: Annotated[float | None, Field(ge=0.0)] = 50
     """
-    Mean CIE76 deltaE a match may differ from its reference image by. Template matching runs on grayscale, so without this a recoloured copy of the image matches perfectly. 0 disables the check, matching the image in any colour.
+    Mean CIE76 deltaE a match may differ from its reference image by. Template matching runs on grayscale, so without this a recoloured copy of the image matches perfectly. Defaults to 50 for web actions, which absorbs the font, sub-pixel and compression differences between the machine a reference was captured on and the one replaying it. Lower it to catch subtler colour changes; 0 disables the check, matching the image in any colour.
     """
     identifiers: list[str | Identifiers] | None = None
     """
