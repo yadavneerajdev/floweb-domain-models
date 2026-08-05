@@ -2068,9 +2068,9 @@ class DesktopVisualBaseConfig(BaseActionConfig):
     """
     Polling interval while waiting for image matches
     """
-    grayscale: bool | None = True
+    grayscale: bool | None = False
     """
-    Use grayscale matching for better performance
+    Match on shape alone, ignoring the edge-consistency check. Faster, but less able to tell visually similar images apart, so it is off by default.
     """
     colorTolerance: Annotated[float | None, Field(ge=0.0)] = 30
     """
@@ -2435,7 +2435,10 @@ class DesktopDragAndDropConfig(BaseActionConfig):
     dropX: int | None = 0
     dropY: int | None = 0
     failIfTargetNotFound: bool | None = True
-    grayscale: bool | None = True
+    grayscale: bool | None = False
+    """
+    Match on shape alone, ignoring the edge-consistency check. Faster, but less able to tell visually similar images apart, so it is off by default.
+    """
     colorTolerance: Annotated[float | None, Field(ge=0.0)] = 30
     """
     Mean CIE76 deltaE a match may differ from its reference image by. Template matching runs on grayscale, so without this a recoloured copy of the image matches perfectly. 0 disables the check, matching the image in any colour.

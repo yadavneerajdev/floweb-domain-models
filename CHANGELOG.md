@@ -4,6 +4,17 @@ All notable changes to the domain-models schemas are recorded here. Versions
 refer to the `$version` field carried by every schema (independent of the npm/PyPI
 package version until the consumption switch in the package plan Phase 4).
 
+## [action-configs 1.3.0] — 2026-08-05 — grayscale matching is now opt-in
+
+Image matching blends shape correlation with edge agreement, which is what tells
+visually similar icons apart. Grayscale-only matching skips that check, so it is
+no longer the default.
+
+### Changed
+- `grayscale` on `DesktopVisualBaseConfig` and `DesktopDragAndDropConfig` now
+  defaults to `false`. Enable it per action to trade some ability to distinguish
+  similar images for a faster match.
+
 ## [websocket-communication 1.3.0] — 2026-08-05 — recoverable run state
 
 A client that reloaded or reconnected mid-run had no way to learn what the engine

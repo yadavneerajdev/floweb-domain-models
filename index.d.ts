@@ -1478,7 +1478,7 @@ export type DesktopVisualBaseConfig = BaseActionConfig & {
    */
   pollIntervalMs?: number;
   /**
-   * Use grayscale matching for better performance
+   * Match on shape alone, ignoring the edge-consistency check. Faster, but less able to tell visually similar images apart, so it is off by default.
    */
   grayscale?: boolean;
   /**
@@ -1794,6 +1794,9 @@ export type DesktopDragAndDropConfig = BaseActionConfig & {
   dropX?: number;
   dropY?: number;
   failIfTargetNotFound?: boolean;
+  /**
+   * Match on shape alone, ignoring the edge-consistency check. Faster, but less able to tell visually similar images apart, so it is off by default.
+   */
   grayscale?: boolean;
   /**
    * Mean CIE76 deltaE a match may differ from its reference image by. Template matching runs on grayscale, so without this a recoloured copy of the image matches perfectly. 0 disables the check, matching the image in any colour.
