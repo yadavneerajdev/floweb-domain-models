@@ -3271,6 +3271,64 @@ export interface VibeVerifyResponse {
   metadata: AIResponseMetadata;
 }
 /**
+ * POST /ai/generate-tests request
+ */
+export interface AutonomousTestsRequest {
+  /**
+   * Page to crawl and generate tests for
+   */
+  url: string;
+  /**
+   * What the generated suite should verify
+   */
+  goal?: string;
+  /**
+   * Upper bound on generated test suites
+   */
+  maxSuites?: number;
+  provider?: AIProviderConfig;
+  metadata?: AIRequestMetadata;
+}
+/**
+ * Summary of what the crawler found on the target page
+ */
+export interface AutonomousCrawlInspection {
+  url: string;
+  statusCode: number;
+  formCount: number;
+  buttonCount: number;
+  inputCount: number;
+  linkCount: number;
+}
+/**
+ * A single generated test suite with its runnable steps
+ */
+export interface AutonomousGeneratedSuite {
+  name: string;
+  description?: string;
+  steps: FlowStep[];
+}
+/**
+ * POST /ai/generate-tests response
+ */
+export interface AutonomousTestsResponse {
+  inspection: AutonomousCrawlInspection;
+  suite: AutonomousGeneratedSuite;
+  /**
+   * All generated suites, ordered as planned
+   */
+  suites?: AutonomousGeneratedSuite[];
+  /**
+   * Typed placeholders referenced by the generated steps
+   */
+  variables?: AnyObject[];
+  plan?: AnyObject;
+  metadata: AIResponseMetadata;
+}
+/**
+ * A single generated test suite with its runnable steps
+ */
+/**
  * An API key as returned by the API. Never carries the secret.
  */
 export interface ApiKey {

@@ -1,9 +1,9 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://floweb.com/schemas/ai-contracts.json",
-  "$version": "1.1.0",
+  "$version": "1.2.0",
   "title": "AI Contracts",
-  "description": "Request/response contracts for the AI service routes. Authored in canonical camelCase (the aliases the Pydantic models already accept via populate_by_name). NOTE: the ai-service currently emits snake_case for a few aliased response fields (testData, optimizedActions, removedActions) unless dumped by_alias; aligning that is ai-service Phase 3. The floweb-server proxy defines requests only and passes responses through opaquely. There is NO generate-tests route; the two extra routes are vibe-next-action and vibe-verify.",
+  "description": "Request/response contracts for the AI service routes. Authored in canonical camelCase (the aliases the Pydantic models already accept via populate_by_name). NOTE: the ai-service currently emits snake_case for a few aliased response fields (testData, optimizedActions, removedActions) unless dumped by_alias; aligning that is ai-service Phase 3. The floweb-server proxy defines requests only and passes responses through opaquely. The autonomous generate-tests contracts are prefixed Autonomous* because data-lab.json defines an unrelated GenerateTestsRequest for dataset generation.",
   "type": "object",
   "properties": {
     "generateFlowRequest": { "$ref": "#/$defs/GenerateFlowRequest" },
@@ -391,6 +391,77 @@
         "metadata": { "$ref": "#/$defs/AIResponseMetadata" }
       },
       "required": ["metadata"]
+    },
+    "AutonomousTestsRequest": {
+      "type": "object",
+      "description": "POST /ai/generate-tests request",
+      "properties": {
+        "url": { "type": "string", "minLength": 5, "description": "Page to crawl and generate tests for" },
+        "goal": {
+          "type": "string",
+          "default": "Generate smoke tests",
+          "description": "What the generated suite should verify"
+        },
+        "maxSuites": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10,
+          "default": 3,
+          "description": "Upper bound on generated test suites"
+        },
+        "provider": { "$ref": "#/$defs/AIProviderConfig" },
+        "metadata": { "$ref": "#/$defs/AIRequestMetadata" }
+      },
+      "required": ["url"]
+    },
+    "AutonomousCrawlInspection": {
+      "type": "object",
+      "description": "Summary of what the crawler found on the target page",
+      "properties": {
+        "url": { "type": "string" },
+        "statusCode": { "type": "integer" },
+        "formCount": { "type": "integer" },
+        "buttonCount": { "type": "integer" },
+        "inputCount": { "type": "integer" },
+        "linkCount": { "type": "integer" }
+      },
+      "required": ["url", "statusCode", "formCount", "buttonCount", "inputCount", "linkCount"]
+    },
+    "AutonomousGeneratedSuite": {
+      "type": "object",
+      "description": "A single generated test suite with its runnable steps",
+      "properties": {
+        "name": { "type": "string" },
+        "description": { "type": "string", "default": "" },
+        "steps": { "type": "array", "items": { "$ref": "#/$defs/FlowStep" } }
+      },
+      "required": ["name", "steps"]
+    },
+    "AutonomousTestsResponse": {
+      "type": "object",
+      "description": "POST /ai/generate-tests response",
+      "properties": {
+        "inspection": { "$ref": "#/$defs/AutonomousCrawlInspection" },
+        "suite": {
+          "$ref": "#/$defs/AutonomousGeneratedSuite",
+          "description": "First generated suite, retained for single-suite consumers"
+        },
+        "suites": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/AutonomousGeneratedSuite" },
+          "default": [],
+          "description": "All generated suites, ordered as planned"
+        },
+        "variables": {
+          "type": "array",
+          "items": { "type": "object", "additionalProperties": true },
+          "default": [],
+          "description": "Typed placeholders referenced by the generated steps"
+        },
+        "plan": { "type": "object", "additionalProperties": true, "default": {} },
+        "metadata": { "$ref": "#/$defs/AIResponseMetadata" }
+      },
+      "required": ["inspection", "suite", "metadata"]
     }
   }
 }

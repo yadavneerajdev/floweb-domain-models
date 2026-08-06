@@ -541,9 +541,89 @@ class VibeVerifyResponse(BaseModel):
     metadata: AIResponseMetadata
 
 
+class AutonomousTestsRequest(BaseModel):
+    """
+    POST /ai/generate-tests request
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    url: Annotated[str, Field(min_length=5)]
+    """
+    Page to crawl and generate tests for
+    """
+    goal: str | None = 'Generate smoke tests'
+    """
+    What the generated suite should verify
+    """
+    maxSuites: Annotated[int | None, Field(ge=1, le=10)] = 3
+    """
+    Upper bound on generated test suites
+    """
+    provider: AIProviderConfig | None = None
+    metadata: AIRequestMetadata | None = None
+
+
+class AutonomousCrawlInspection(BaseModel):
+    """
+    Summary of what the crawler found on the target page
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    url: str
+    statusCode: int
+    formCount: int
+    buttonCount: int
+    inputCount: int
+    linkCount: int
+
+
+class AutonomousGeneratedSuite(BaseModel):
+    """
+    A single generated test suite with its runnable steps
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    name: str
+    description: str | None = ''
+    steps: list[FlowStep]
+
+
+class AutonomousTestsResponse(BaseModel):
+    """
+    POST /ai/generate-tests response
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    inspection: AutonomousCrawlInspection
+    suite: AutonomousGeneratedSuite
+    """
+    First generated suite, retained for single-suite consumers
+    """
+    suites: Annotated[
+        list[AutonomousGeneratedSuite] | None, Field(validate_default=True)
+    ] = []
+    """
+    All generated suites, ordered as planned
+    """
+    variables: list[dict[str, Any]] | None = []
+    """
+    Typed placeholders referenced by the generated steps
+    """
+    plan: dict[str, Any] | None = {}
+    metadata: AIResponseMetadata
+
+
 class AIContracts(BaseModel):
     """
-    Request/response contracts for the AI service routes. Authored in canonical camelCase (the aliases the Pydantic models already accept via populate_by_name). NOTE: the ai-service currently emits snake_case for a few aliased response fields (testData, optimizedActions, removedActions) unless dumped by_alias; aligning that is ai-service Phase 3. The floweb-server proxy defines requests only and passes responses through opaquely. There is NO generate-tests route; the two extra routes are vibe-next-action and vibe-verify.
+    Request/response contracts for the AI service routes. Authored in canonical camelCase (the aliases the Pydantic models already accept via populate_by_name). NOTE: the ai-service currently emits snake_case for a few aliased response fields (testData, optimizedActions, removedActions) unless dumped by_alias; aligning that is ai-service Phase 3. The floweb-server proxy defines requests only and passes responses through opaquely. The autonomous generate-tests contracts are prefixed Autonomous* because data-lab.json defines an unrelated GenerateTestsRequest for dataset generation.
     """
 
     model_config = ConfigDict(
