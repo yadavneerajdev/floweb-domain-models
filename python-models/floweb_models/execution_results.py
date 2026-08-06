@@ -6,7 +6,7 @@ from __future__ import annotations
 from enum import StrEnum
 from typing import Annotated, Any
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, constr
 
 
 class ActionResult(BaseModel):
@@ -308,18 +308,11 @@ class FlowReport(BaseModel):
     """
     Results of all actions
     """
-    variables: dict[str, list[dict[str, Any]]]
+    variables: dict[constr(pattern=r'.*'), list[dict[str, Any]]]
     """
     Variables used during execution (input/output)
     """
-    parameters: Annotated[
-        Parameters,
-        Field(
-            default_factory=lambda: Parameters.model_validate(
-                {'input': [], 'output': []}
-            )
-        ),
-    ]
+    parameters: Parameters
     """
     Parameters used during execution (input/output)
     """

@@ -152,7 +152,7 @@ class Suite(BaseModel):
     Suite tags
     """
     runConfig: SuiteRunConfig
-    tests: Annotated[list[SuiteTestRef], Field(default_factory=list)]
+    tests: list[SuiteTestRef]
     """
     Tests in the suite
     """
@@ -264,7 +264,7 @@ class SuiteExecution(BaseModel):
     """
     Ordered test ids
     """
-    tests: Annotated[list[SuiteExecutionTest], Field(default_factory=list)]
+    tests: list[SuiteExecutionTest]
     """
     Per-test records
     """
@@ -344,7 +344,7 @@ class SuiteSchedule(BaseModel):
     When the run window expires
     """
     runConfig: SuiteRunConfig
-    tests: Annotated[list[SuiteTestRef], Field(default_factory=list)]
+    tests: list[SuiteTestRef]
     """
     Scheduled tests
     """
