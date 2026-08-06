@@ -413,6 +413,16 @@ from .data_lab import (
     UniquenessEstimate,
 )
 
+from .openapi_import import (
+    GroupBy,
+    OpenAPIImport,
+    OpenApiAuthKind,
+    OpenApiGeneratedFlow,
+    OpenApiImportRequest,
+    OpenApiImportResponse,
+    OpenApiSkippedOperation,
+)
+
 from .api_key import (
     APIKeyModels,
     ApiKey,
@@ -649,6 +659,7 @@ __all__ = [
     "GmailConfig",
     "GoBackConfig",
     "GoForwardConfig",
+    "GroupBy",
     "HandlePopupConfig",
     "HealedSelectorRecord",
     "HealedSelectorSuggestion",
@@ -678,6 +689,12 @@ __all__ = [
     "NavigateConfig",
     "NetworkControlConfig",
     "NodeValidationResult",
+    "OpenAPIImport",
+    "OpenApiAuthKind",
+    "OpenApiGeneratedFlow",
+    "OpenApiImportRequest",
+    "OpenApiImportResponse",
+    "OpenApiSkippedOperation",
     "OpenNewTabConfig",
     "Operation",
     "Operation1",

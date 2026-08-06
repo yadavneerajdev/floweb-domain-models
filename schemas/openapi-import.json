@@ -1,0 +1,112 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://floweb.com/schemas/openapi-import.json",
+  "$version": "1.0.0",
+  "title": "OpenAPI Import",
+  "description": "Contracts for turning an OpenAPI 3 / Swagger 2 document into runnable apiCall flows. Parsing is deterministic (no LLM): each spec operation becomes one apiCall action whose config is an ApiCallConfig from action-configs.json, with assertions derived from the operation's declared responses.",
+  "type": "object",
+  "properties": {
+    "request": { "$ref": "#/$defs/OpenApiImportRequest" },
+    "response": { "$ref": "#/$defs/OpenApiImportResponse" }
+  },
+  "$defs": {
+    "OpenApiAuthKind": {
+      "type": "string",
+      "description": "How generated requests authenticate, derived from the spec's security schemes",
+      "enum": ["none", "bearer", "basic", "apiKeyHeader", "apiKeyQuery"]
+    },
+    "OpenApiImportRequest": {
+      "type": "object",
+      "description": "POST /openapi/import request. Supply the document inline via `spec`; the server does not fetch remote URLs on the caller's behalf.",
+      "properties": {
+        "spec": {
+          "type": "string",
+          "minLength": 2,
+          "description": "The OpenAPI/Swagger document as JSON or YAML text"
+        },
+        "baseUrl": {
+          "type": "string",
+          "default": "",
+          "description": "Overrides the server URL taken from the spec. Useful when the spec points at production and the tests should hit staging."
+        },
+        "includeTags": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": [],
+          "description": "When non-empty, only operations carrying one of these tags are imported"
+        },
+        "includeMethods": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": [],
+          "description": "When non-empty, only these HTTP methods are imported (case-insensitive)"
+        },
+        "groupBy": {
+          "type": "string",
+          "enum": ["tag", "operation"],
+          "default": "tag",
+          "description": "'tag' produces one flow per spec tag containing its operations; 'operation' produces one flow per operation."
+        },
+        "generateAssertions": {
+          "type": "boolean",
+          "default": true,
+          "description": "Derive response assertions from each operation's declared success response"
+        },
+        "folderId": {
+          "type": ["string", "null"],
+          "default": null,
+          "description": "Folder the generated tests are created in"
+        },
+        "persist": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true the generated flows are saved as tests; when false they are returned for preview only"
+        }
+      },
+      "required": ["spec"]
+    },
+    "OpenApiSkippedOperation": {
+      "type": "object",
+      "description": "An operation the importer chose not to generate, and why. Surfaced so a short import is explainable rather than looking like operations silently vanished.",
+      "properties": {
+        "method": { "type": "string" },
+        "path": { "type": "string" },
+        "reason": { "type": "string", "description": "Why this operation was skipped" }
+      },
+      "required": ["method", "path", "reason"]
+    },
+    "OpenApiGeneratedFlow": {
+      "type": "object",
+      "description": "One generated flow. `flow` is a Flow graph whose nodes are apiCall actions; `testId` is set only when the import persisted it.",
+      "properties": {
+        "name": { "type": "string" },
+        "description": { "type": "string", "default": "" },
+        "operationCount": { "type": "integer", "minimum": 0 },
+        "flow": { "type": "object", "additionalProperties": true, "description": "Flow graph: { nodes, edges, variables, parameters }" },
+        "testId": { "type": ["string", "null"], "default": null }
+      },
+      "required": ["name", "operationCount", "flow"]
+    },
+    "OpenApiImportResponse": {
+      "type": "object",
+      "description": "POST /openapi/import response",
+      "properties": {
+        "title": { "type": "string", "description": "Spec title, used to name the generated group" },
+        "specVersion": { "type": "string", "description": "Spec version string as declared by the document" },
+        "baseUrl": { "type": "string", "description": "Resolved base URL the generated requests target" },
+        "authKind": { "$ref": "#/$defs/OpenApiAuthKind" },
+        "operationCount": { "type": "integer", "minimum": 0, "description": "Operations that produced an action" },
+        "flows": { "type": "array", "items": { "$ref": "#/$defs/OpenApiGeneratedFlow" }, "default": [] },
+        "variables": {
+          "type": "array",
+          "items": { "type": "object", "additionalProperties": true },
+          "default": [],
+          "description": "Typed placeholders the generated steps reference (auth token, path parameters)"
+        },
+        "skipped": { "type": "array", "items": { "$ref": "#/$defs/OpenApiSkippedOperation" }, "default": [] },
+        "warnings": { "type": "array", "items": { "type": "string" }, "default": [] }
+      },
+      "required": ["title", "specVersion", "baseUrl", "authKind", "operationCount", "flows"]
+    }
+  }
+}
