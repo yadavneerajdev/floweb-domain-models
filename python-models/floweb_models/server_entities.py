@@ -248,27 +248,37 @@ class StoredTestInput(BaseModel):
     tags: list[str] | None = None
 
 
-class StoredTestRecord(BaseModel):
+class QuarantineReason(StrEnum):
     """
-    A persisted test record
+    Why a test was quarantined
+    """
+
+    flaky = 'flaky'
+    manual = 'manual'
+
+
+class TestQuarantine(BaseModel):
+    """
+    Quarantine state for a test. A quarantined test is excluded from suite runs but stays runnable on its own so a fix can be verified.
     """
 
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    id: str
-    name: Annotated[str, Field(max_length=300)]
-    accountId: str
-    folderId: str | None
-    flowData: dict[str, Any]
-    type: FlowKind
-    tags: list[str]
-    lastResult: FlowLastResult | None = None
-    createdBy: str | None = None
-    updatedBy: str | None = None
-    syncedAt: AwareDatetime | None = None
-    createdAt: AwareDatetime | None = None
-    updatedAt: AwareDatetime | None = None
+    reason: QuarantineReason
+    note: Annotated[str | None, Field(max_length=2000)] = ''
+    """
+    Why this test was quarantined, for whoever picks it up
+    """
+    flakinessScore: Annotated[float | None, Field(ge=0.0, le=1.0)] = None
+    """
+    Flakiness score at the time of quarantine, when quarantined from analytics
+    """
+    quarantinedAt: AwareDatetime
+    quarantinedBy: str
+    """
+    User ID that quarantined the test
+    """
 
 
 class TestCatalogItem(BaseModel):
@@ -288,6 +298,7 @@ class TestCatalogItem(BaseModel):
     status: str | None = None
     lastResult: FlowLastResult | None = None
     recentRuns: list[TestRecentRun] | None = None
+    quarantine: TestQuarantine | None = None
     createdAt: AwareDatetime | None = None
     updatedAt: AwareDatetime | None = None
 
@@ -334,6 +345,33 @@ class ImageUploadResponse(BaseModel):
     mediaId: str
     url: str
     filename: str
+
+
+class StoredTestRecord(BaseModel):
+    """
+    A persisted test record
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    id: str
+    name: Annotated[str, Field(max_length=300)]
+    accountId: str
+    folderId: str | None
+    flowData: dict[str, Any]
+    type: FlowKind
+    tags: list[str]
+    lastResult: FlowLastResult | None = None
+    quarantine: TestQuarantine | None = None
+    """
+    Set when the test is quarantined; null when it runs normally
+    """
+    createdBy: str | None = None
+    updatedBy: str | None = None
+    syncedAt: AwareDatetime | None = None
+    createdAt: AwareDatetime | None = None
+    updatedAt: AwareDatetime | None = None
 
 
 class ServerEntities(BaseModel):

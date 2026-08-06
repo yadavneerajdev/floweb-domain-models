@@ -268,6 +268,10 @@ class SuiteExecution(BaseModel):
     """
     Per-test records
     """
+    skippedTestIds: list[str] | None = []
+    """
+    Tests excluded from this run because they were quarantined. Recorded so a short run is explainable rather than looking like tests silently vanished.
+    """
     createdBy: str
     """
     Creator user id

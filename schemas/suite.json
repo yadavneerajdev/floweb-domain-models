@@ -107,6 +107,12 @@
         "runConfig": { "$ref": "#/$defs/SuiteRunConfig" },
         "testIds": { "type": "array", "items": { "type": "string" }, "description": "Ordered test ids" },
         "tests": { "type": "array", "items": { "$ref": "#/$defs/SuiteExecutionTest" }, "default": [], "description": "Per-test records" },
+        "skippedTestIds": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": [],
+          "description": "Tests excluded from this run because they were quarantined. Recorded so a short run is explainable rather than looking like tests silently vanished."
+        },
         "createdBy": { "type": "string", "description": "Creator user id" },
         "updatedBy": { "type": "string", "description": "Last updater user id" },
         "startedAt": { "type": ["string", "null"], "format": "date-time", "default": null, "description": "Start timestamp" },

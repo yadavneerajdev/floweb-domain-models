@@ -2302,6 +2302,10 @@ export type FlowKind = "flow" | "test" | "performance";
  */
 export type FlowLastResult = "passed" | "failed" | "pending" | "running";
 /**
+ * Why a test was quarantined
+ */
+export type QuarantineReason = "flaky" | "manual";
+/**
  * Lifecycle status of a suite execution
  */
 export type SuiteExecutionStatus = "pending" | "queued" | "running" | "completed" | "failed" | "cancelled" | "not_run";
@@ -5486,11 +5490,37 @@ export interface StoredTestRecord {
   type: FlowKind;
   tags: string[];
   lastResult?: FlowLastResult;
+  /**
+   * Set when the test is quarantined; null when it runs normally
+   */
+  quarantine?: TestQuarantine | null;
   createdBy?: string;
   updatedBy?: string;
   syncedAt?: string;
   createdAt?: string;
   updatedAt?: string;
+}
+/**
+ * Quarantine state for a test. A quarantined test is excluded from suite runs but stays runnable on its own so a fix can be verified.
+ */
+export interface TestQuarantine {
+  /**
+   * Why a test was quarantined
+   */
+  reason: "flaky" | "manual";
+  /**
+   * Why this test was quarantined, for whoever picks it up
+   */
+  note?: string;
+  /**
+   * Flakiness score at the time of quarantine, when quarantined from analytics
+   */
+  flakinessScore?: number | null;
+  quarantinedAt: string;
+  /**
+   * User ID that quarantined the test
+   */
+  quarantinedBy: string;
 }
 /**
  * A test catalog/list projection (carries recentRuns)
@@ -5505,6 +5535,7 @@ export interface TestCatalogItem {
   status?: string;
   lastResult?: FlowLastResult;
   recentRuns?: TestRecentRun[];
+  quarantine?: TestQuarantine | null;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -5712,6 +5743,10 @@ export interface SuiteExecution {
    * Per-test records
    */
   tests: SuiteExecutionTest[];
+  /**
+   * Tests excluded from this run because they were quarantined. Recorded so a short run is explainable rather than looking like tests silently vanished.
+   */
+  skippedTestIds?: string[];
   /**
    * Creator user id
    */

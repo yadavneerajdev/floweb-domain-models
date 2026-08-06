@@ -25,6 +25,10 @@ export type FlowKind = "flow" | "test" | "performance";
  * Last execution result of a stored test
  */
 export type FlowLastResult = "passed" | "failed" | "pending" | "running";
+/**
+ * Why a test was quarantined
+ */
+export type QuarantineReason = "flaky" | "manual";
 
 export interface ServerEntitiesSchema {
   user?: User;
@@ -49,6 +53,8 @@ export interface ServerEntitiesSchema {
   TestRecentRun?: TestRecentRun;
   StoredTestInput?: StoredTestInput;
   StoredTestRecord?: StoredTestRecord;
+  QuarantineReason?: QuarantineReason;
+  TestQuarantine?: TestQuarantine;
   TestCatalogItem?: TestCatalogItem;
   EngineSession?: EngineSession;
   PaginatedResponse?: PaginatedResponse;
@@ -163,11 +169,37 @@ export interface StoredTestRecord {
   type: FlowKind;
   tags: string[];
   lastResult?: FlowLastResult;
+  /**
+   * Set when the test is quarantined; null when it runs normally
+   */
+  quarantine?: TestQuarantine | null;
   createdBy?: string;
   updatedBy?: string;
   syncedAt?: string;
   createdAt?: string;
   updatedAt?: string;
+}
+/**
+ * Quarantine state for a test. A quarantined test is excluded from suite runs but stays runnable on its own so a fix can be verified.
+ */
+export interface TestQuarantine {
+  /**
+   * Why a test was quarantined
+   */
+  reason: "flaky" | "manual";
+  /**
+   * Why this test was quarantined, for whoever picks it up
+   */
+  note?: string;
+  /**
+   * Flakiness score at the time of quarantine, when quarantined from analytics
+   */
+  flakinessScore?: number | null;
+  quarantinedAt: string;
+  /**
+   * User ID that quarantined the test
+   */
+  quarantinedBy: string;
 }
 /**
  * Decrypted per-account environments and global variables (persisted encrypted; plaintext arrays are the wire/domain shape). Elements follow environment.json Environment/GlobalVariable.
@@ -216,6 +248,7 @@ export interface TestCatalogItem {
   status?: string;
   lastResult?: FlowLastResult;
   recentRuns?: TestRecentRun[];
+  quarantine?: TestQuarantine | null;
   createdAt?: string;
   updatedAt?: string;
 }
