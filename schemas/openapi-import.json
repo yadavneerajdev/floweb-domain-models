@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://floweb.com/schemas/openapi-import.json",
-  "$version": "1.1.0",
+  "$version": "1.2.0",
   "title": "OpenAPI Import",
   "description": "Contracts for turning an OpenAPI 3 / Swagger 2 document into runnable apiCall flows. Parsing is deterministic (no LLM): each spec operation becomes one apiCall action whose config is an ApiCallConfig from action-configs.json, with assertions derived from the operation's declared responses.",
   "type": "object",
@@ -66,6 +66,11 @@
           "type": ["string", "null"],
           "default": null,
           "description": "Folder the generated tests are created in"
+        },
+        "commitAccountVariables": {
+          "type": "boolean",
+          "default": false,
+          "description": "Create the environment/global variables on the account. Separate from `persist`, which controls whether tests are saved: an append merges the flow client-side but still needs these variables to exist. Defaults to the value of `persist`."
         },
         "persist": {
           "type": "boolean",

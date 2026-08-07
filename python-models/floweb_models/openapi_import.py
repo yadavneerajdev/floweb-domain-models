@@ -81,6 +81,10 @@ class OpenApiImportRequest(BaseModel):
     """
     Folder the generated tests are created in
     """
+    commitAccountVariables: bool | None = False
+    """
+    Create the environment/global variables on the account. Separate from `persist`, which controls whether tests are saved: an append merges the flow client-side but still needs these variables to exist. Defaults to the value of `persist`.
+    """
     persist: bool | None = False
     """
     When true the generated flows are saved as tests; when false they are returned for preview only

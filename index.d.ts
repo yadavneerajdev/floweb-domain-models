@@ -4776,6 +4776,10 @@ export interface OpenApiImportRequest {
    */
   folderId?: string | null;
   /**
+   * Create the environment/global variables on the account. Separate from `persist`, which controls whether tests are saved: an append merges the flow client-side but still needs these variables to exist. Defaults to the value of `persist`.
+   */
+  commitAccountVariables?: boolean;
+  /**
    * When true the generated flows are saved as tests; when false they are returned for preview only
    */
   persist?: boolean;
