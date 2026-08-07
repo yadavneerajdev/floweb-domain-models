@@ -396,6 +396,16 @@ export type ApiCallConfig = BaseActionConfig & {
    */
   assertions?: ResponseAssertion[];
   /**
+   * Files to send as multipart/form-data. When set, the request is sent as multipart and the `body` field is ignored; use formFields for the non-file parts. Content-Type is set by the HTTP client so the multipart boundary is correct.
+   */
+  files?: ApiFilePart[];
+  /**
+   * Non-file form fields sent alongside `files` in a multipart request.
+   */
+  formFields?: {
+    [k: string]: string;
+  };
+  /**
    * Fail the step when the response is not acceptable — an unexpected status or a failed assertion. Turn off to record the response and continue: the output variable is still written and the reason is kept in the message, but the step is marked passed. Does not cover transport failures; see failOnRequestError.
    */
   failOnError?: boolean;
@@ -2923,6 +2933,27 @@ export interface ResponseAssertion {
    * Comparison value. Its type depends on the operator and target (string, number, or list).
    */
   value?: JsonValue;
+}
+/**
+ * One file sent as part of a multipart/form-data request.
+ */
+export interface ApiFilePart {
+  /**
+   * Form field name the file is sent under, e.g. 'avatar'
+   */
+  field: string;
+  /**
+   * Where the file comes from: 'mediaId:<id>' to use stored media (travels with the account, so it works on any engine), or an absolute path on the engine machine.
+   */
+  source: string;
+  /**
+   * Name sent to the server. Defaults to the basename of a path, or the mediaId.
+   */
+  fileName?: string;
+  /**
+   * MIME type of the part. Left to the server to infer when empty.
+   */
+  contentType?: string;
 }
 /**
  * Provider/model selection for an AI request

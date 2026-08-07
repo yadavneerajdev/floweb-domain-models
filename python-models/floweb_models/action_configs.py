@@ -196,6 +196,32 @@ class Method(StrEnum):
     TRACE = 'TRACE'
 
 
+class ApiFilePart(BaseModel):
+    """
+    One file sent as part of a multipart/form-data request.
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    field: str
+    """
+    Form field name the file is sent under, e.g. 'avatar'
+    """
+    source: str
+    """
+    Where the file comes from: 'mediaId:<id>' to use stored media (travels with the account, so it works on any engine), or an absolute path on the engine machine.
+    """
+    fileName: str | None = ''
+    """
+    Name sent to the server. Defaults to the basename of a path, or the mediaId.
+    """
+    contentType: str | None = ''
+    """
+    MIME type of the part. Left to the server to infer when empty.
+    """
+
+
 class Target(StrEnum):
     """
     What to assert on: HTTP status, a response header, a JSONPath into the parsed body, the raw body text, or the total response time in ms.
@@ -883,6 +909,14 @@ class ApiCallConfig(BaseActionConfig):
     assertions: list[ResponseAssertion] | None = None
     """
     Response assertions evaluated after the request. All must pass for the action to succeed.
+    """
+    files: Annotated[list[ApiFilePart] | None, Field(validate_default=True)] = []
+    """
+    Files to send as multipart/form-data. When set, the request is sent as multipart and the `body` field is ignored; use formFields for the non-file parts. Content-Type is set by the HTTP client so the multipart boundary is correct.
+    """
+    formFields: dict[str, str] | None = {}
+    """
+    Non-file form fields sent alongside `files` in a multipart request.
     """
     failOnError: bool | None = True
     """
