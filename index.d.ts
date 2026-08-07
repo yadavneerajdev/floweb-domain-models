@@ -326,7 +326,7 @@ export type FormFillConfig = BaseActionConfig & {
   smartFieldDetection?: boolean;
 };
 /**
- * Make an HTTP API request. Set responsePath to store only a path of the response (e.g. data.token) in the output variable; leave empty to store the full {status_code, headers, data, url} object. Use validateStatus/expectedStatus and assertions to turn the call into a network/response check.
+ * Make an HTTP API request. Set responsePath to store only a path of the response (e.g. data.token) in the output variable; leave empty to store the full {status_code, headers, data, url} object. Use validateStatus/expectedStatus and assertions to turn the call into a network/response check. failOnError/failOnRequestError let a call be advisory when you only want its response.
  */
 export type ApiCallConfig = BaseActionConfig & {
   /**
@@ -395,6 +395,14 @@ export type ApiCallConfig = BaseActionConfig & {
    * Response assertions evaluated after the request. All must pass for the action to succeed.
    */
   assertions?: ResponseAssertion[];
+  /**
+   * Fail the step when the response is not acceptable — an unexpected status or a failed assertion. Turn off to record the response and continue: the output variable is still written and the reason is kept in the message, but the step is marked passed. Does not cover transport failures; see failOnRequestError.
+   */
+  failOnError?: boolean;
+  /**
+   * Fail the step when the request never completes (DNS failure, connection refused, timeout). Separate from failOnError because there is no response to record in this case, so the output variable is left unwritten.
+   */
+  failOnRequestError?: boolean;
 };
 /**
  * Control the browser's network layer via Chrome DevTools: block hosts, throttle bandwidth, inject headers/User-Agent, or capture the network log. Chromium only.

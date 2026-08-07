@@ -814,7 +814,7 @@ class FormFillConfig(BaseActionConfig):
 
 class ApiCallConfig(BaseActionConfig):
     """
-    Make an HTTP API request. Set responsePath to store only a path of the response (e.g. data.token) in the output variable; leave empty to store the full {status_code, headers, data, url} object. Use validateStatus/expectedStatus and assertions to turn the call into a network/response check.
+    Make an HTTP API request. Set responsePath to store only a path of the response (e.g. data.token) in the output variable; leave empty to store the full {status_code, headers, data, url} object. Use validateStatus/expectedStatus and assertions to turn the call into a network/response check. failOnError/failOnRequestError let a call be advisory when you only want its response.
     """
 
     model_config = ConfigDict(
@@ -883,6 +883,14 @@ class ApiCallConfig(BaseActionConfig):
     assertions: list[ResponseAssertion] | None = None
     """
     Response assertions evaluated after the request. All must pass for the action to succeed.
+    """
+    failOnError: bool | None = True
+    """
+    Fail the step when the response is not acceptable — an unexpected status or a failed assertion. Turn off to record the response and continue: the output variable is still written and the reason is kept in the message, but the step is marked passed. Does not cover transport failures; see failOnRequestError.
+    """
+    failOnRequestError: bool | None = True
+    """
+    Fail the step when the request never completes (DNS failure, connection refused, timeout). Separate from failOnError because there is no response to record in this case, so the output variable is left unwritten.
     """
 
 
