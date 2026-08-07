@@ -9,6 +9,17 @@ from typing import Annotated, Any
 from pydantic import BaseModel, ConfigDict, Field
 
 
+class OpenApiVariableTarget(StrEnum):
+    """
+    Where the generated placeholders are created. Test variables and parameters live on the flow; environment and global variables are account-scoped and shared across tests, so importing to them can affect other flows.
+    """
+
+    variable = 'variable'
+    parameter = 'parameter'
+    environment = 'environment'
+    global_ = 'global'
+
+
 class OpenApiAuthKind(StrEnum):
     """
     How generated requests authenticate, derived from the spec's security schemes
@@ -57,6 +68,10 @@ class OpenApiImportRequest(BaseModel):
     groupBy: GroupBy | None = 'tag'
     """
     'tag' produces one flow per spec tag containing its operations; 'operation' produces one flow per operation.
+    """
+    variableTarget: OpenApiVariableTarget | None = 'variable'
+    """
+    Defaults to test variables, which are scoped to the generated flow
     """
     generateAssertions: bool | None = True
     """
@@ -127,6 +142,7 @@ class OpenApiImportResponse(BaseModel):
     Resolved base URL the generated requests target
     """
     authKind: OpenApiAuthKind
+    variableTarget: OpenApiVariableTarget | None = None
     operationCount: Annotated[int, Field(ge=0)]
     """
     Operations that produced an action

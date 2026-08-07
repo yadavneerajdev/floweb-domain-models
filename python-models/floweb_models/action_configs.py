@@ -183,7 +183,7 @@ class FormFieldOption(BaseModel):
 
 class Method(StrEnum):
     """
-    HTTP method
+    HTTP method. The engine dispatches through requests.request, which supports all of these; only POST/PUT/PATCH send a body.
     """
 
     GET = 'GET'
@@ -191,6 +191,9 @@ class Method(StrEnum):
     PUT = 'PUT'
     DELETE = 'DELETE'
     PATCH = 'PATCH'
+    HEAD = 'HEAD'
+    OPTIONS = 'OPTIONS'
+    TRACE = 'TRACE'
 
 
 class Target(StrEnum):
@@ -819,7 +822,7 @@ class ApiCallConfig(BaseActionConfig):
     )
     method: Method | None = 'GET'
     """
-    HTTP method
+    HTTP method. The engine dispatches through requests.request, which supports all of these; only POST/PUT/PATCH send a body.
     """
     url: str | None = ''
     """

@@ -497,9 +497,9 @@ export type JunctionConfig = BaseActionConfig & {
  */
 export type ApiCallConfig = BaseActionConfig & {
   /**
-   * HTTP method
+   * HTTP method. The engine dispatches through requests.request, which supports all of these; only POST/PUT/PATCH send a body.
    */
-  method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
+  method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "HEAD" | "OPTIONS" | "TRACE";
   /**
    * API endpoint URL
    */

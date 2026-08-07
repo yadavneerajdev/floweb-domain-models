@@ -421,6 +421,7 @@ from .openapi_import import (
     OpenApiImportRequest,
     OpenApiImportResponse,
     OpenApiSkippedOperation,
+    OpenApiVariableTarget,
 )
 
 from .api_key import (
@@ -695,6 +696,7 @@ __all__ = [
     "OpenApiImportRequest",
     "OpenApiImportResponse",
     "OpenApiSkippedOperation",
+    "OpenApiVariableTarget",
     "OpenNewTabConfig",
     "Operation",
     "Operation1",

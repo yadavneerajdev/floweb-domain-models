@@ -330,9 +330,9 @@ export type FormFillConfig = BaseActionConfig & {
  */
 export type ApiCallConfig = BaseActionConfig & {
   /**
-   * HTTP method
+   * HTTP method. The engine dispatches through requests.request, which supports all of these; only POST/PUT/PATCH send a body.
    */
-  method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
+  method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "HEAD" | "OPTIONS" | "TRACE";
   /**
    * API endpoint URL
    */
@@ -2277,6 +2277,10 @@ export type DateFormatPreset =
  * Severity level of the warning
  */
 export type WarningSeverity = "minor" | "medium" | "critical";
+/**
+ * Where the generated placeholders are created. Test variables and parameters live on the flow; environment and global variables are account-scoped and shared across tests, so importing to them can affect other flows.
+ */
+export type OpenApiVariableTarget = "variable" | "parameter" | "environment" | "global";
 /**
  * How generated requests authenticate, derived from the spec's security schemes
  */
@@ -4721,6 +4725,10 @@ export interface OpenApiImportRequest {
    */
   groupBy?: "tag" | "operation";
   /**
+   * Where the generated placeholders are created. Test variables and parameters live on the flow; environment and global variables are account-scoped and shared across tests, so importing to them can affect other flows.
+   */
+  variableTarget?: "variable" | "parameter" | "environment" | "global";
+  /**
    * Derive response assertions from each operation's declared success response
    */
   generateAssertions?: boolean;
@@ -4774,6 +4782,7 @@ export interface OpenApiImportResponse {
    */
   baseUrl: string;
   authKind: OpenApiAuthKind;
+  variableTarget?: OpenApiVariableTarget;
   /**
    * Operations that produced an action
    */

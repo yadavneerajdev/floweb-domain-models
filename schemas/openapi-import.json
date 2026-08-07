@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://floweb.com/schemas/openapi-import.json",
-  "$version": "1.0.0",
+  "$version": "1.1.0",
   "title": "OpenAPI Import",
   "description": "Contracts for turning an OpenAPI 3 / Swagger 2 document into runnable apiCall flows. Parsing is deterministic (no LLM): each spec operation becomes one apiCall action whose config is an ApiCallConfig from action-configs.json, with assertions derived from the operation's declared responses.",
   "type": "object",
@@ -10,6 +10,11 @@
     "response": { "$ref": "#/$defs/OpenApiImportResponse" }
   },
   "$defs": {
+    "OpenApiVariableTarget": {
+      "type": "string",
+      "description": "Where the generated placeholders are created. Test variables and parameters live on the flow; environment and global variables are account-scoped and shared across tests, so importing to them can affect other flows.",
+      "enum": ["variable", "parameter", "environment", "global"]
+    },
     "OpenApiAuthKind": {
       "type": "string",
       "description": "How generated requests authenticate, derived from the spec's security schemes",
@@ -46,6 +51,11 @@
           "enum": ["tag", "operation"],
           "default": "tag",
           "description": "'tag' produces one flow per spec tag containing its operations; 'operation' produces one flow per operation."
+        },
+        "variableTarget": {
+          "$ref": "#/$defs/OpenApiVariableTarget",
+          "default": "variable",
+          "description": "Defaults to test variables, which are scoped to the generated flow"
         },
         "generateAssertions": {
           "type": "boolean",
@@ -95,6 +105,7 @@
         "specVersion": { "type": "string", "description": "Spec version string as declared by the document" },
         "baseUrl": { "type": "string", "description": "Resolved base URL the generated requests target" },
         "authKind": { "$ref": "#/$defs/OpenApiAuthKind" },
+        "variableTarget": { "$ref": "#/$defs/OpenApiVariableTarget" },
         "operationCount": { "type": "integer", "minimum": 0, "description": "Operations that produced an action" },
         "flows": { "type": "array", "items": { "$ref": "#/$defs/OpenApiGeneratedFlow" }, "default": [] },
         "variables": {

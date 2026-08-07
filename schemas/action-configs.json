@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://floweb.com/schemas/action-configs.json",
-  "$version": "1.4.0",
+  "$version": "1.5.0",
   "title": "Action Configurations",
   "description": "Configuration schemas for all automation actions",
   "type": "object",
@@ -837,10 +837,13 @@
                 "POST",
                 "PUT",
                 "DELETE",
-                "PATCH"
+                "PATCH",
+                "HEAD",
+                "OPTIONS",
+                "TRACE"
               ],
               "default": "GET",
-              "description": "HTTP method"
+              "description": "HTTP method. The engine dispatches through requests.request, which supports all of these; only POST/PUT/PATCH send a body."
             },
             "url": {
               "type": "string",

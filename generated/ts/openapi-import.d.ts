@@ -5,10 +5,15 @@
  * How generated requests authenticate, derived from the spec's security schemes
  */
 export type OpenApiAuthKind = "none" | "bearer" | "basic" | "apiKeyHeader" | "apiKeyQuery";
+/**
+ * Where the generated placeholders are created. Test variables and parameters live on the flow; environment and global variables are account-scoped and shared across tests, so importing to them can affect other flows.
+ */
+export type OpenApiVariableTarget = "variable" | "parameter" | "environment" | "global";
 
 export interface OpenAPIImportSchema {
   request?: OpenApiImportRequest;
   response?: OpenApiImportResponse;
+  OpenApiVariableTarget?: OpenApiVariableTarget;
   OpenApiAuthKind?: OpenApiAuthKind;
   OpenApiImportRequest?: OpenApiImportRequest;
   OpenApiSkippedOperation?: OpenApiSkippedOperation;
@@ -40,6 +45,10 @@ export interface OpenApiImportRequest {
    */
   groupBy?: "tag" | "operation";
   /**
+   * Defaults to test variables, which are scoped to the generated flow
+   */
+  variableTarget?: "variable" | "parameter" | "environment" | "global";
+  /**
    * Derive response assertions from each operation's declared success response
    */
   generateAssertions?: boolean;
@@ -69,6 +78,7 @@ export interface OpenApiImportResponse {
    */
   baseUrl: string;
   authKind: OpenApiAuthKind;
+  variableTarget?: OpenApiVariableTarget;
   /**
    * Operations that produced an action
    */
