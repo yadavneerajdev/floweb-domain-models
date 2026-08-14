@@ -4,9 +4,9 @@
 from __future__ import annotations
 
 from enum import StrEnum
-from typing import Any, Literal
+from typing import Annotated, Any, Literal
 
-from pydantic import BaseModel, ConfigDict, RootModel
+from pydantic import BaseModel, ConfigDict, Field, RootModel
 
 
 class WebSocketMessage(BaseModel):
@@ -76,20 +76,49 @@ class Mode(StrEnum):
     partial = 'partial'
 
 
-class RunCommand(WebSocketMessage):
+class Platform(StrEnum):
+    android = 'android'
+    ios = 'ios'
+
+
+class MobileRunConfig(BaseModel):
+    """
+    Appium capabilities for a run's mobile device session. Nested (rather than flat fields on RunCommand) so a single 'mobile is None' check means 'no mobile target configured for this run'. extraCapabilities is merged last over every derived capability, which is what makes a cloud device farm (BrowserStack/Sauce/etc.) reachable without any provider-specific schema.
+    """
+
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    command: Literal['run']
+    platform: Platform
+    automationName: str | None = None
     """
-    Command type
+    Appium driver name; defaults to UiAutomator2 on Android and XCUITest on iOS
     """
-    flow: Flow
+    deviceName: str | None = ''
+    udid: str | None = ''
     """
-    Flow to execute
+    Exact device/simulator id; takes precedence over deviceName
     """
-    mode: Mode | None = 'full'
-    recording: dict[str, Any] | None = None
+    platformVersion: str | None = ''
+    app: str | None = ''
+    """
+    Local path to an installed .apk/.ipa/.app, resolved by the engine from an appBinaryId: reference
+    """
+    appPackage: str | None = ''
+    appActivity: str | None = ''
+    bundleId: str | None = ''
+    appiumServerUrl: str | None = 'http://127.0.0.1:4723'
+    """
+    Relative to the engine process, not the browser — matters when the engine runs remotely or in Docker
+    """
+    noReset: bool | None = True
+    fullReset: bool | None = False
+    autoGrantPermissions: bool | None = False
+    newCommandTimeout: Annotated[int | None, Field(ge=0)] = 120
+    extraCapabilities: dict[str, Any] | None = None
+    """
+    Raw Appium capabilities merged last, for cloud device farms or anything not modeled above
+    """
 
 
 class RecordCommand(WebSocketMessage):
@@ -1042,6 +1071,26 @@ class ProcessEventResponse(WebSocketResponse):
     Response message
     """
     actions: ProcessActionStatuses | None = None
+
+
+class RunCommand(WebSocketMessage):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    command: Literal['run']
+    """
+    Command type
+    """
+    flow: Flow
+    """
+    Flow to execute
+    """
+    mode: Mode | None = 'full'
+    recording: dict[str, Any] | None = None
+    mobile: MobileRunConfig | None = None
+    """
+    Appium session target for this run; required if the flow contains mobile* actions. NOTE: this schema's RunCommand is a documentation model only — the real wire contract is the hand-maintained RunCommand in backend/engine/types/websocket_models.py, which must be edited to match.
+    """
 
 
 class ProcessSnapshotResponse(WebSocketResponse):

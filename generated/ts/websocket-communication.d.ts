@@ -16,6 +16,7 @@ export type RunCommand = WebSocketMessage & {
   recording?: {
     [k: string]: unknown;
   };
+  mobile?: MobileRunConfig;
 };
 export type RecordCommand = WebSocketMessage & {
   command: "record";
@@ -498,6 +499,7 @@ export interface WebSocketCommunicationModelsSchema {
   WebSocketMessage?: WebSocketMessage;
   SessionInfo?: SessionInfo;
   RunCommand?: RunCommand;
+  MobileRunConfig?: MobileRunConfig1;
   RecordCommand?: RecordCommand;
   PauseRecordingCommand?: PauseRecordingCommand;
   ResumeRecordingCommand?: ResumeRecordingCommand;
@@ -564,6 +566,43 @@ export interface WebSocketMessage {
    * Flow ID for the command
    */
   flow_id?: string;
+}
+/**
+ * Appium session target for this run; required if the flow contains mobile* actions. NOTE: this schema's RunCommand is a documentation model only — the real wire contract is the hand-maintained RunCommand in backend/engine/types/websocket_models.py, which must be edited to match.
+ */
+export interface MobileRunConfig {
+  platform: "android" | "ios";
+  /**
+   * Appium driver name; defaults to UiAutomator2 on Android and XCUITest on iOS
+   */
+  automationName?: string;
+  deviceName?: string;
+  /**
+   * Exact device/simulator id; takes precedence over deviceName
+   */
+  udid?: string;
+  platformVersion?: string;
+  /**
+   * Local path to an installed .apk/.ipa/.app, resolved by the engine from an appBinaryId: reference
+   */
+  app?: string;
+  appPackage?: string;
+  appActivity?: string;
+  bundleId?: string;
+  /**
+   * Relative to the engine process, not the browser — matters when the engine runs remotely or in Docker
+   */
+  appiumServerUrl?: string;
+  noReset?: boolean;
+  fullReset?: boolean;
+  autoGrantPermissions?: boolean;
+  newCommandTimeout?: number;
+  /**
+   * Raw Appium capabilities merged last, for cloud device farms or anything not modeled above
+   */
+  extraCapabilities?: {
+    [k: string]: unknown;
+  };
 }
 /**
  * run_suite nested run_config. Interior is camelCase (exception to the snake_case wire); the engine also accepts snake_case aliases for the parallel flags.
@@ -661,4 +700,41 @@ export interface RecordingSmartWaitDecision {
  */
 export interface ProcessActionStatuses {
   [k: string]: "running" | "success" | "error";
+}
+/**
+ * Appium capabilities for a run's mobile device session. Nested (rather than flat fields on RunCommand) so a single 'mobile is None' check means 'no mobile target configured for this run'. extraCapabilities is merged last over every derived capability, which is what makes a cloud device farm (BrowserStack/Sauce/etc.) reachable without any provider-specific schema.
+ */
+export interface MobileRunConfig1 {
+  platform: "android" | "ios";
+  /**
+   * Appium driver name; defaults to UiAutomator2 on Android and XCUITest on iOS
+   */
+  automationName?: string;
+  deviceName?: string;
+  /**
+   * Exact device/simulator id; takes precedence over deviceName
+   */
+  udid?: string;
+  platformVersion?: string;
+  /**
+   * Local path to an installed .apk/.ipa/.app, resolved by the engine from an appBinaryId: reference
+   */
+  app?: string;
+  appPackage?: string;
+  appActivity?: string;
+  bundleId?: string;
+  /**
+   * Relative to the engine process, not the browser — matters when the engine runs remotely or in Docker
+   */
+  appiumServerUrl?: string;
+  noReset?: boolean;
+  fullReset?: boolean;
+  autoGrantPermissions?: boolean;
+  newCommandTimeout?: number;
+  /**
+   * Raw Appium capabilities merged last, for cloud device farms or anything not modeled above
+   */
+  extraCapabilities?: {
+    [k: string]: unknown;
+  };
 }

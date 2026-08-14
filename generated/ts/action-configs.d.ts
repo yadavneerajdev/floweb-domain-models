@@ -1755,6 +1755,283 @@ export type DesktopCaptureScreenConfig = BaseActionConfig & {
    */
   outputVariable?: string;
 };
+/**
+ * Activate the target app on the connected device, installing it first when requested.
+ */
+export type MobileLaunchAppConfig = BaseActionConfig & {
+  /**
+   * Where the app comes from: already installed by package/bundle id, an uploaded binary, a cloud device-farm's own app id, or whatever app is currently in the foreground
+   */
+  appSource?: "installed" | "upload" | "providerAppId" | "runningApp";
+  /**
+   * appBinaryId:<uuid> reference to an uploaded .apk/.ipa, used when appSource is 'upload'
+   */
+  appBinaryId?: string;
+  /**
+   * A cloud device-farm's own app identifier (e.g. bs://<hash>), used when appSource is 'providerAppId'
+   */
+  providerAppId?: string;
+  /**
+   * Android package name, used when appSource is 'installed' on an Android session
+   */
+  appPackage?: string;
+  /**
+   * Android launch activity, optional
+   */
+  appActivity?: string;
+  /**
+   * iOS bundle identifier, used when appSource is 'installed' on an iOS session
+   */
+  bundleId?: string;
+  /**
+   * Install the app first if it isn't already installed (appSource 'upload' only)
+   */
+  installIfMissing?: boolean;
+  /**
+   * Extra delay after activation before the next action runs
+   */
+  waitForReadyMs?: number;
+  outputVariable?: string;
+};
+/**
+ * Force-stop the target app.
+ */
+export type MobileTerminateAppConfig = BaseActionConfig & {
+  appPackage?: string;
+  bundleId?: string;
+  postActionWaitMs?: number;
+};
+/**
+ * Install an app binary onto the connected device without launching it.
+ */
+export type MobileInstallAppConfig = BaseActionConfig & {
+  /**
+   * appBinaryId:<uuid> reference to the uploaded .apk/.ipa to install
+   */
+  appBinaryId: string;
+  /**
+   * Reinstall over an existing install of the same app
+   */
+  replaceExisting?: boolean;
+  postActionWaitMs?: number;
+};
+/**
+ * Tap a located element on the connected device.
+ */
+export type MobileTapElementConfig = MobileElementBaseConfig & {
+  /**
+   * Number of taps (2 for double-tap)
+   */
+  tapCount?: number;
+  /**
+   * Horizontal tap offset from the element's center
+   */
+  offsetX?: number;
+  /**
+   * Vertical tap offset from the element's center
+   */
+  offsetY?: number;
+  /**
+   * Fail the action if the element can't be located
+   */
+  failIfNotFound?: boolean;
+  outputVariable?: string;
+};
+export type MobileElementBaseConfig = BaseActionConfig & {
+  /**
+   * Appium locator strategy used to find the element. accessibilityId/id/xpath/className work on both platforms; the android* /ios* strategies only apply to a session running that platform — set androidLocator/iosLocator instead when this app's identifiers genuinely differ per platform.
+   */
+  locatorStrategy?:
+    | "accessibilityId"
+    | "id"
+    | "xpath"
+    | "className"
+    | "androidUiautomator"
+    | "androidViewtag"
+    | "androidDataMatcher"
+    | "iosPredicateString"
+    | "iosClassChain";
+  /**
+   * Value interpreted according to locatorStrategy
+   */
+  locatorValue?: string;
+  androidLocator?: MobileLocatorOverride;
+  iosLocator?: MobileLocatorOverride1;
+  /**
+   * Which match to act on when the locator resolves to more than one element
+   */
+  elementIndex?: number;
+  /**
+   * Require the element to be visible on screen, not just present in the hierarchy
+   */
+  requireVisible?: boolean;
+  /**
+   * Scroll the nearest scrollable container until the element is visible before acting on it
+   */
+  scrollIntoView?: boolean;
+  /**
+   * Maximum wait time in milliseconds for the element to appear
+   */
+  timeout?: number;
+  /**
+   * Polling interval while waiting for the element
+   */
+  pollIntervalMs?: number;
+  /**
+   * Delay after the action completes
+   */
+  postActionWaitMs?: number;
+};
+/**
+ * Type text into a located element on the connected device.
+ */
+export type MobileTypeTextConfig = MobileElementBaseConfig & {
+  /**
+   * Text to type into the element
+   */
+  text?: string;
+  /**
+   * Clear the element's existing value before typing
+   */
+  clearBeforeType?: boolean;
+  /**
+   * Dismiss the soft keyboard after typing
+   */
+  hideKeyboardAfter?: boolean;
+  /**
+   * Press Enter/Return after typing
+   */
+  submitWithEnter?: boolean;
+};
+/**
+ * Press and hold a located element on the connected device.
+ */
+export type MobileLongPressConfig = MobileElementBaseConfig & {
+  /**
+   * How long to hold the press, in milliseconds
+   */
+  durationMs?: number;
+  offsetX?: number;
+  offsetY?: number;
+};
+/**
+ * Swipe on the device screen, either by named direction/percent or explicit start/end coordinates, optionally scoped to a located element.
+ */
+export type MobileSwipeConfig = BaseActionConfig & {
+  /**
+   * Whether to swipe by named direction+percent, or by explicit start/end coordinates
+   */
+  mode?: "direction" | "coordinates";
+  direction?: "up" | "down" | "left" | "right";
+  /**
+   * Fraction of the swipeable area (or scoped element) to traverse
+   */
+  percent?: number;
+  startX?: number;
+  startY?: number;
+  endX?: number;
+  endY?: number;
+  /**
+   * Optional: scope the swipe to within this element instead of the whole screen
+   */
+  locatorStrategy?:
+    | "accessibilityId"
+    | "id"
+    | "xpath"
+    | "className"
+    | "androidUiautomator"
+    | "androidViewtag"
+    | "androidDataMatcher"
+    | "iosPredicateString"
+    | "iosClassChain";
+  locatorValue?: string;
+  androidLocator?: MobileLocatorOverride2;
+  iosLocator?: MobileLocatorOverride2;
+  durationMs?: number;
+  postActionWaitMs?: number;
+};
+/**
+ * Scroll the nearest scrollable container until the target element is visible.
+ */
+export type MobileScrollToElementConfig = MobileElementBaseConfig & {
+  /**
+   * Maximum number of scroll gestures to attempt before failing
+   */
+  maxSwipes?: number;
+  direction?: "down" | "up";
+};
+/**
+ * Wait for an element to appear, become visible, or disappear.
+ */
+export type MobileWaitForElementConfig = MobileElementBaseConfig & {
+  waitMode?: "present" | "visible" | "gone";
+  outputVariable?: string;
+};
+/**
+ * Assert a located element's visibility, text, or attribute value.
+ */
+export type MobileVerifyElementConfig = MobileElementBaseConfig & {
+  verifyMode?: "visible" | "notVisible" | "text" | "attribute";
+  expectedText?: string;
+  matchMode?: "exact" | "contains" | "regex";
+  attributeName?: string;
+  expectedValue?: string;
+  failOnMismatch?: boolean;
+  outputVariable?: string;
+};
+/**
+ * Read a property (text, attribute, visibility, or bounding rect) off a located element into a variable.
+ */
+export type MobileGetElementPropertiesConfig = MobileElementBaseConfig & {
+  property?: "text" | "enabled" | "displayed" | "selected" | "attribute" | "rect";
+  attributeName?: string;
+  outputVariable?: string;
+};
+/**
+ * Capture the connected device's screen.
+ */
+export type MobileCaptureScreenConfig = BaseActionConfig & {
+  /**
+   * Optional local file path to save the screenshot to
+   */
+  savePath?: string;
+  /**
+   * Include the base64-encoded screenshot in the output variable
+   */
+  includeBase64?: boolean;
+  /**
+   * Attach the screenshot to the run report
+   */
+  attachToReport?: boolean;
+  outputVariable?: string;
+};
+/**
+ * Press a hardware/system key (Android keycode, or an iOS system button).
+ */
+export type MobilePressKeyConfig = BaseActionConfig & {
+  /**
+   * Platform-neutral key name. 'back' and 'recentApps' are Android-only and are a no-op (with a warning) on an iOS session.
+   */
+  key?: "back" | "home" | "recentApps" | "enter" | "volumeUp" | "volumeDown" | "power";
+  postActionWaitMs?: number;
+};
+/**
+ * Set the device's screen orientation.
+ */
+export type MobileSetOrientationConfig = BaseActionConfig & {
+  orientation?: "portrait" | "landscape";
+  postActionWaitMs?: number;
+};
+/**
+ * Dismiss the on-screen soft keyboard, if shown.
+ */
+export type MobileHideKeyboardConfig = BaseActionConfig & {
+  /**
+   * Fail the action if the keyboard wasn't visible to begin with
+   */
+  failIfNotShown?: boolean;
+  postActionWaitMs?: number;
+};
 export type GmailConfig = BaseActionConfig & {
   /**
    * Gmail operation to perform
@@ -2120,6 +2397,21 @@ export interface ActionConfigurationsSchema {
       | DesktopHotkeyConfig
       | DesktopRunCommandConfig
       | DesktopCaptureScreenConfig
+      | MobileLaunchAppConfig
+      | MobileTerminateAppConfig
+      | MobileInstallAppConfig
+      | MobileTapElementConfig
+      | MobileTypeTextConfig
+      | MobileLongPressConfig
+      | MobileSwipeConfig
+      | MobileScrollToElementConfig
+      | MobileWaitForElementConfig
+      | MobileVerifyElementConfig
+      | MobileGetElementPropertiesConfig
+      | MobileCaptureScreenConfig
+      | MobilePressKeyConfig
+      | MobileSetOrientationConfig
+      | MobileHideKeyboardConfig
       | GmailConfig
       | SlackConfig
       | DiscordConfig
@@ -2197,6 +2489,23 @@ export interface ActionConfigurationsSchema {
   DiscordConfig?: DiscordConfig;
   JiraConfig?: JiraConfig;
   DesktopVerifyImageConfig?: DesktopVerifyImageConfig;
+  MobileLocatorOverride?: MobileLocatorOverride2;
+  MobileElementBaseConfig?: MobileElementBaseConfig;
+  MobileTapElementConfig?: MobileTapElementConfig;
+  MobileTypeTextConfig?: MobileTypeTextConfig;
+  MobileLongPressConfig?: MobileLongPressConfig;
+  MobileSwipeConfig?: MobileSwipeConfig;
+  MobileScrollToElementConfig?: MobileScrollToElementConfig;
+  MobileWaitForElementConfig?: MobileWaitForElementConfig;
+  MobileVerifyElementConfig?: MobileVerifyElementConfig;
+  MobileGetElementPropertiesConfig?: MobileGetElementPropertiesConfig;
+  MobileLaunchAppConfig?: MobileLaunchAppConfig;
+  MobileTerminateAppConfig?: MobileTerminateAppConfig;
+  MobileInstallAppConfig?: MobileInstallAppConfig;
+  MobileCaptureScreenConfig?: MobileCaptureScreenConfig;
+  MobilePressKeyConfig?: MobilePressKeyConfig;
+  MobileSetOrientationConfig?: MobileSetOrientationConfig;
+  MobileHideKeyboardConfig?: MobileHideKeyboardConfig;
 }
 export interface BaseActionConfig {
   /**
@@ -2403,4 +2712,52 @@ export interface DesktopFormField {
    * Select-all and clear the field before typing (text/password/select/file only)
    */
   clearBeforeType?: boolean;
+}
+/**
+ * Overrides locatorStrategy/locatorValue when the live session is Android
+ */
+export interface MobileLocatorOverride {
+  locatorStrategy?:
+    | "accessibilityId"
+    | "id"
+    | "xpath"
+    | "className"
+    | "androidUiautomator"
+    | "androidViewtag"
+    | "androidDataMatcher"
+    | "iosPredicateString"
+    | "iosClassChain";
+  locatorValue?: string;
+}
+/**
+ * Overrides locatorStrategy/locatorValue when the live session is iOS
+ */
+export interface MobileLocatorOverride1 {
+  locatorStrategy?:
+    | "accessibilityId"
+    | "id"
+    | "xpath"
+    | "className"
+    | "androidUiautomator"
+    | "androidViewtag"
+    | "androidDataMatcher"
+    | "iosPredicateString"
+    | "iosClassChain";
+  locatorValue?: string;
+}
+/**
+ * A platform-specific locator override, used only when the flow's shared locatorStrategy/locatorValue doesn't apply to that platform's session (e.g. the app's Android resource-id and iOS accessibilityIdentifier genuinely differ).
+ */
+export interface MobileLocatorOverride2 {
+  locatorStrategy?:
+    | "accessibilityId"
+    | "id"
+    | "xpath"
+    | "className"
+    | "androidUiautomator"
+    | "androidViewtag"
+    | "androidDataMatcher"
+    | "iosPredicateString"
+    | "iosClassChain";
+  locatorValue?: string;
 }

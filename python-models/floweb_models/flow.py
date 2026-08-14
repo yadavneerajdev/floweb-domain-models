@@ -9,6 +9,7 @@ from typing import Annotated, Any
 from pydantic import AwareDatetime, BaseModel, ConfigDict, Field
 
 from . import environment as environment_1
+from . import websocket_communication
 
 
 class Type(StrEnum):
@@ -319,6 +320,10 @@ class Flow(BaseModel):
     environment: environment_1.Environment | None = None
     """
     Environment configuration
+    """
+    mobileSession: websocket_communication.MobileRunConfig | None = None
+    """
+    Persisted mobile device/app target for this test (platform, device, app source). appiumServerUrl/extraCapabilities are intentionally left at their schema defaults here — those stay run-level/account-level overrides, not part of the saved test.
     """
     globalVariables: list[environment_1.GlobalVariable] | None = None
     """

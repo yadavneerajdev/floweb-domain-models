@@ -10,7 +10,7 @@ export type DataLabGenerationMode = "ai" | "synthetic" | "hybrid";
  */
 export type DatasetType = "test-scenario" | "xpath-selector";
 /**
- * Every automation action-type identifier (29 web + 18 desktop + 3 api + 4 integrations + 6 core = 60).
+ * Every automation action-type identifier (29 web + 18 desktop + 15 mobile + 3 api + 4 integrations + 6 core = 75).
  */
 export type ActionType =
   | "click"
@@ -69,6 +69,21 @@ export type ActionType =
   | "desktopSwitchDesktop"
   | "desktopListProcesses"
   | "desktopOpenPath"
+  | "mobileLaunchApp"
+  | "mobileTerminateApp"
+  | "mobileInstallApp"
+  | "mobileTapElement"
+  | "mobileTypeText"
+  | "mobileLongPress"
+  | "mobileSwipe"
+  | "mobileScrollToElement"
+  | "mobileWaitForElement"
+  | "mobileVerifyElement"
+  | "mobileGetElementProperties"
+  | "mobileCaptureScreen"
+  | "mobilePressKey"
+  | "mobileSetOrientation"
+  | "mobileHideKeyboard"
   | "gmail"
   | "slack"
   | "discord"
@@ -114,6 +129,25 @@ export type DesktopActionType =
   | "desktopSwitchDesktop"
   | "desktopListProcesses"
   | "desktopOpenPath";
+/**
+ * The 15 native mobile (iOS/Android) automation action types, run via Appium (subset of ActionType). Deliberately platform-neutral — no per-platform action types — the config/handler branches on the live Appium session's platform instead.
+ */
+export type MobileActionType =
+  | "mobileLaunchApp"
+  | "mobileTerminateApp"
+  | "mobileInstallApp"
+  | "mobileTapElement"
+  | "mobileTypeText"
+  | "mobileLongPress"
+  | "mobileSwipe"
+  | "mobileScrollToElement"
+  | "mobileWaitForElement"
+  | "mobileVerifyElement"
+  | "mobileGetElementProperties"
+  | "mobileCaptureScreen"
+  | "mobilePressKey"
+  | "mobileSetOrientation"
+  | "mobileHideKeyboard";
 /**
  * Actions that call an external application's API.
  */
@@ -210,6 +244,7 @@ export interface DataLabSchema {
   VibeVerifyResponse?: VibeVerifyResponse;
   ActionType?: ActionType;
   DesktopActionType?: DesktopActionType;
+  MobileActionType?: MobileActionType;
   IntegrationActionType?: IntegrationActionType;
   WebActionType?: WebActionType;
   ApiActionType?: ApiActionType;

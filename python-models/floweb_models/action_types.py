@@ -10,7 +10,7 @@ from pydantic import BaseModel, ConfigDict
 
 class ActionType(StrEnum):
     """
-    Every automation action-type identifier (29 web + 18 desktop + 3 api + 4 integrations + 6 core = 60).
+    Every automation action-type identifier (29 web + 18 desktop + 15 mobile + 3 api + 4 integrations + 6 core = 75).
     """
 
     click = 'click'
@@ -69,6 +69,21 @@ class ActionType(StrEnum):
     desktopSwitchDesktop = 'desktopSwitchDesktop'
     desktopListProcesses = 'desktopListProcesses'
     desktopOpenPath = 'desktopOpenPath'
+    mobileLaunchApp = 'mobileLaunchApp'
+    mobileTerminateApp = 'mobileTerminateApp'
+    mobileInstallApp = 'mobileInstallApp'
+    mobileTapElement = 'mobileTapElement'
+    mobileTypeText = 'mobileTypeText'
+    mobileLongPress = 'mobileLongPress'
+    mobileSwipe = 'mobileSwipe'
+    mobileScrollToElement = 'mobileScrollToElement'
+    mobileWaitForElement = 'mobileWaitForElement'
+    mobileVerifyElement = 'mobileVerifyElement'
+    mobileGetElementProperties = 'mobileGetElementProperties'
+    mobileCaptureScreen = 'mobileCaptureScreen'
+    mobilePressKey = 'mobilePressKey'
+    mobileSetOrientation = 'mobileSetOrientation'
+    mobileHideKeyboard = 'mobileHideKeyboard'
     gmail = 'gmail'
     slack = 'slack'
     discord = 'discord'
@@ -98,6 +113,28 @@ class DesktopActionType(StrEnum):
     desktopSwitchDesktop = 'desktopSwitchDesktop'
     desktopListProcesses = 'desktopListProcesses'
     desktopOpenPath = 'desktopOpenPath'
+
+
+class MobileActionType(StrEnum):
+    """
+    The 15 native mobile (iOS/Android) automation action types, run via Appium (subset of ActionType). Deliberately platform-neutral — no per-platform action types — the config/handler branches on the live Appium session's platform instead.
+    """
+
+    mobileLaunchApp = 'mobileLaunchApp'
+    mobileTerminateApp = 'mobileTerminateApp'
+    mobileInstallApp = 'mobileInstallApp'
+    mobileTapElement = 'mobileTapElement'
+    mobileTypeText = 'mobileTypeText'
+    mobileLongPress = 'mobileLongPress'
+    mobileSwipe = 'mobileSwipe'
+    mobileScrollToElement = 'mobileScrollToElement'
+    mobileWaitForElement = 'mobileWaitForElement'
+    mobileVerifyElement = 'mobileVerifyElement'
+    mobileGetElementProperties = 'mobileGetElementProperties'
+    mobileCaptureScreen = 'mobileCaptureScreen'
+    mobilePressKey = 'mobilePressKey'
+    mobileSetOrientation = 'mobileSetOrientation'
+    mobileHideKeyboard = 'mobileHideKeyboard'
 
 
 class IntegrationActionType(StrEnum):

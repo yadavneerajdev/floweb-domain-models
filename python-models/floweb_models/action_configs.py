@@ -524,6 +524,141 @@ class VerifyMode(StrEnum):
     waitDisappear = 'waitDisappear'
 
 
+class LocatorStrategy(StrEnum):
+    accessibilityId = 'accessibilityId'
+    id = 'id'
+    xpath = 'xpath'
+    className = 'className'
+    androidUiautomator = 'androidUiautomator'
+    androidViewtag = 'androidViewtag'
+    androidDataMatcher = 'androidDataMatcher'
+    iosPredicateString = 'iosPredicateString'
+    iosClassChain = 'iosClassChain'
+
+
+class MobileLocatorOverride(BaseModel):
+    """
+    A platform-specific locator override, used only when the flow's shared locatorStrategy/locatorValue doesn't apply to that platform's session (e.g. the app's Android resource-id and iOS accessibilityIdentifier genuinely differ).
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    locatorStrategy: LocatorStrategy | None = None
+    locatorValue: str | None = ''
+
+
+class LocatorStrategy1(StrEnum):
+    """
+    Appium locator strategy used to find the element. accessibilityId/id/xpath/className work on both platforms; the android*/ios* strategies only apply to a session running that platform — set androidLocator/iosLocator instead when this app's identifiers genuinely differ per platform.
+    """
+
+    accessibilityId = 'accessibilityId'
+    id = 'id'
+    xpath = 'xpath'
+    className = 'className'
+    androidUiautomator = 'androidUiautomator'
+    androidViewtag = 'androidViewtag'
+    androidDataMatcher = 'androidDataMatcher'
+    iosPredicateString = 'iosPredicateString'
+    iosClassChain = 'iosClassChain'
+
+
+class Mode(StrEnum):
+    """
+    Whether to swipe by named direction+percent, or by explicit start/end coordinates
+    """
+
+    direction = 'direction'
+    coordinates = 'coordinates'
+
+
+class Direction1(StrEnum):
+    up = 'up'
+    down = 'down'
+    left = 'left'
+    right = 'right'
+
+
+class LocatorStrategy2(StrEnum):
+    """
+    Optional: scope the swipe to within this element instead of the whole screen
+    """
+
+    accessibilityId = 'accessibilityId'
+    id = 'id'
+    xpath = 'xpath'
+    className = 'className'
+    androidUiautomator = 'androidUiautomator'
+    androidViewtag = 'androidViewtag'
+    androidDataMatcher = 'androidDataMatcher'
+    iosPredicateString = 'iosPredicateString'
+    iosClassChain = 'iosClassChain'
+
+
+class Direction2(StrEnum):
+    down = 'down'
+    up = 'up'
+
+
+class WaitMode(StrEnum):
+    present = 'present'
+    visible = 'visible'
+    gone = 'gone'
+
+
+class VerifyMode1(StrEnum):
+    visible = 'visible'
+    notVisible = 'notVisible'
+    text = 'text'
+    attribute = 'attribute'
+
+
+class MatchMode(StrEnum):
+    exact = 'exact'
+    contains = 'contains'
+    regex = 'regex'
+
+
+class Property1(StrEnum):
+    text = 'text'
+    enabled = 'enabled'
+    displayed = 'displayed'
+    selected = 'selected'
+    attribute = 'attribute'
+    rect = 'rect'
+
+
+class AppSource(StrEnum):
+    """
+    Where the app comes from: already installed by package/bundle id, an uploaded binary, a cloud device-farm's own app id, or whatever app is currently in the foreground
+    """
+
+    installed = 'installed'
+    upload = 'upload'
+    providerAppId = 'providerAppId'
+    runningApp = 'runningApp'
+
+
+class Key(StrEnum):
+    """
+    Platform-neutral key name. 'back' and 'recentApps' are Android-only and are a no-op (with a warning) on an iOS session.
+    """
+
+    back = 'back'
+    home = 'home'
+    recentApps = 'recentApps'
+    enter = 'enter'
+    volumeUp = 'volumeUp'
+    volumeDown = 'volumeDown'
+    power = 'power'
+
+
+class Orientation(StrEnum):
+    portrait = 'portrait'
+    landscape = 'landscape'
+
+
 class BaseActionConfig(FlowebActionBaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
@@ -2891,6 +3026,350 @@ class DesktopVerifyImageConfig(DesktopVisualBaseConfig):
     failOnMismatch: bool | None = True
 
 
+class MobileElementBaseConfig(BaseActionConfig):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    locatorStrategy: LocatorStrategy1 | None = 'accessibilityId'
+    """
+    Appium locator strategy used to find the element. accessibilityId/id/xpath/className work on both platforms; the android*/ios* strategies only apply to a session running that platform — set androidLocator/iosLocator instead when this app's identifiers genuinely differ per platform.
+    """
+    locatorValue: str | None = ''
+    """
+    Value interpreted according to locatorStrategy
+    """
+    androidLocator: MobileLocatorOverride | None = None
+    """
+    Overrides locatorStrategy/locatorValue when the live session is Android
+    """
+    iosLocator: MobileLocatorOverride | None = None
+    """
+    Overrides locatorStrategy/locatorValue when the live session is iOS
+    """
+    elementIndex: Annotated[int | None, Field(ge=0)] = 0
+    """
+    Which match to act on when the locator resolves to more than one element
+    """
+    requireVisible: bool | None = True
+    """
+    Require the element to be visible on screen, not just present in the hierarchy
+    """
+    scrollIntoView: bool | None = False
+    """
+    Scroll the nearest scrollable container until the element is visible before acting on it
+    """
+    timeout: Annotated[int | None, Field(ge=0)] = 10000
+    """
+    Maximum wait time in milliseconds for the element to appear
+    """
+    pollIntervalMs: Annotated[int | None, Field(ge=50)] = 400
+    """
+    Polling interval while waiting for the element
+    """
+    postActionWaitMs: Annotated[int | None, Field(ge=0)] = 300
+    """
+    Delay after the action completes
+    """
+
+
+class MobileTapElementConfig(MobileElementBaseConfig):
+    """
+    Tap a located element on the connected device.
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    tapCount: Annotated[int | None, Field(ge=1)] = 1
+    """
+    Number of taps (2 for double-tap)
+    """
+    offsetX: int | None = 0
+    """
+    Horizontal tap offset from the element's center
+    """
+    offsetY: int | None = 0
+    """
+    Vertical tap offset from the element's center
+    """
+    failIfNotFound: bool | None = True
+    """
+    Fail the action if the element can't be located
+    """
+    outputVariable: str | None = 'mobileTapResult'
+
+
+class MobileTypeTextConfig(MobileElementBaseConfig):
+    """
+    Type text into a located element on the connected device.
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    text: str | None = ''
+    """
+    Text to type into the element
+    """
+    clearBeforeType: bool | None = True
+    """
+    Clear the element's existing value before typing
+    """
+    hideKeyboardAfter: bool | None = False
+    """
+    Dismiss the soft keyboard after typing
+    """
+    submitWithEnter: bool | None = False
+    """
+    Press Enter/Return after typing
+    """
+
+
+class MobileLongPressConfig(MobileElementBaseConfig):
+    """
+    Press and hold a located element on the connected device.
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    durationMs: Annotated[int | None, Field(ge=0)] = 800
+    """
+    How long to hold the press, in milliseconds
+    """
+    offsetX: int | None = 0
+    offsetY: int | None = 0
+
+
+class MobileSwipeConfig(BaseActionConfig):
+    """
+    Swipe on the device screen, either by named direction/percent or explicit start/end coordinates, optionally scoped to a located element.
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    mode: Mode | None = 'direction'
+    """
+    Whether to swipe by named direction+percent, or by explicit start/end coordinates
+    """
+    direction: Direction1 | None = 'up'
+    percent: Annotated[float | None, Field(ge=0.0, le=1.0)] = 0.75
+    """
+    Fraction of the swipeable area (or scoped element) to traverse
+    """
+    startX: int | None = 0
+    startY: int | None = 0
+    endX: int | None = 0
+    endY: int | None = 0
+    locatorStrategy: LocatorStrategy2 | None = None
+    """
+    Optional: scope the swipe to within this element instead of the whole screen
+    """
+    locatorValue: str | None = ''
+    androidLocator: MobileLocatorOverride | None = None
+    iosLocator: MobileLocatorOverride | None = None
+    durationMs: Annotated[int | None, Field(ge=0)] = 400
+    postActionWaitMs: Annotated[int | None, Field(ge=0)] = 300
+
+
+class MobileScrollToElementConfig(MobileElementBaseConfig):
+    """
+    Scroll the nearest scrollable container until the target element is visible.
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    maxSwipes: Annotated[int | None, Field(ge=1)] = 10
+    """
+    Maximum number of scroll gestures to attempt before failing
+    """
+    direction: Direction2 | None = 'down'
+
+
+class MobileWaitForElementConfig(MobileElementBaseConfig):
+    """
+    Wait for an element to appear, become visible, or disappear.
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    waitMode: WaitMode | None = 'visible'
+    outputVariable: str | None = 'mobileWaitResult'
+
+
+class MobileVerifyElementConfig(MobileElementBaseConfig):
+    """
+    Assert a located element's visibility, text, or attribute value.
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    verifyMode: VerifyMode1 | None = 'visible'
+    expectedText: str | None = ''
+    matchMode: MatchMode | None = 'contains'
+    attributeName: str | None = ''
+    expectedValue: str | None = ''
+    failOnMismatch: bool | None = True
+    outputVariable: str | None = 'mobileVerification'
+
+
+class MobileGetElementPropertiesConfig(MobileElementBaseConfig):
+    """
+    Read a property (text, attribute, visibility, or bounding rect) off a located element into a variable.
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    property: Property1 | None = 'text'
+    attributeName: str | None = ''
+    outputVariable: str | None = 'mobileElementProperties'
+
+
+class MobileLaunchAppConfig(BaseActionConfig):
+    """
+    Activate the target app on the connected device, installing it first when requested.
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    appSource: AppSource | None = 'installed'
+    """
+    Where the app comes from: already installed by package/bundle id, an uploaded binary, a cloud device-farm's own app id, or whatever app is currently in the foreground
+    """
+    appBinaryId: str | None = ''
+    """
+    appBinaryId:<uuid> reference to an uploaded .apk/.ipa, used when appSource is 'upload'
+    """
+    providerAppId: str | None = ''
+    """
+    A cloud device-farm's own app identifier (e.g. bs://<hash>), used when appSource is 'providerAppId'
+    """
+    appPackage: str | None = ''
+    """
+    Android package name, used when appSource is 'installed' on an Android session
+    """
+    appActivity: str | None = ''
+    """
+    Android launch activity, optional
+    """
+    bundleId: str | None = ''
+    """
+    iOS bundle identifier, used when appSource is 'installed' on an iOS session
+    """
+    installIfMissing: bool | None = True
+    """
+    Install the app first if it isn't already installed (appSource 'upload' only)
+    """
+    waitForReadyMs: Annotated[int | None, Field(ge=0)] = 0
+    """
+    Extra delay after activation before the next action runs
+    """
+    outputVariable: str | None = 'mobileLaunchResult'
+
+
+class MobileTerminateAppConfig(BaseActionConfig):
+    """
+    Force-stop the target app.
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    appPackage: str | None = ''
+    bundleId: str | None = ''
+    postActionWaitMs: Annotated[int | None, Field(ge=0)] = 300
+
+
+class MobileInstallAppConfig(BaseActionConfig):
+    """
+    Install an app binary onto the connected device without launching it.
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    appBinaryId: str
+    """
+    appBinaryId:<uuid> reference to the uploaded .apk/.ipa to install
+    """
+    replaceExisting: bool | None = True
+    """
+    Reinstall over an existing install of the same app
+    """
+    postActionWaitMs: Annotated[int | None, Field(ge=0)] = 300
+
+
+class MobileCaptureScreenConfig(BaseActionConfig):
+    """
+    Capture the connected device's screen.
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    savePath: str | None = ''
+    """
+    Optional local file path to save the screenshot to
+    """
+    includeBase64: bool | None = True
+    """
+    Include the base64-encoded screenshot in the output variable
+    """
+    attachToReport: bool | None = True
+    """
+    Attach the screenshot to the run report
+    """
+    outputVariable: str | None = 'mobileScreenshot'
+
+
+class MobilePressKeyConfig(BaseActionConfig):
+    """
+    Press a hardware/system key (Android keycode, or an iOS system button).
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    key: Key | None = 'back'
+    """
+    Platform-neutral key name. 'back' and 'recentApps' are Android-only and are a no-op (with a warning) on an iOS session.
+    """
+    postActionWaitMs: Annotated[int | None, Field(ge=0)] = 200
+
+
+class MobileSetOrientationConfig(BaseActionConfig):
+    """
+    Set the device's screen orientation.
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    orientation: Orientation | None = 'portrait'
+    postActionWaitMs: Annotated[int | None, Field(ge=0)] = 300
+
+
+class MobileHideKeyboardConfig(BaseActionConfig):
+    """
+    Dismiss the on-screen soft keyboard, if shown.
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    failIfNotShown: bool | None = False
+    """
+    Fail the action if the keyboard wasn't visible to begin with
+    """
+    postActionWaitMs: Annotated[int | None, Field(ge=0)] = 150
+
+
 class ActionConfigurations(BaseModel):
     """
     Configuration schemas for all automation actions
@@ -2951,6 +3430,21 @@ class ActionConfigurations(BaseModel):
             | DesktopHotkeyConfig
             | DesktopRunCommandConfig
             | DesktopCaptureScreenConfig
+            | MobileLaunchAppConfig
+            | MobileTerminateAppConfig
+            | MobileInstallAppConfig
+            | MobileTapElementConfig
+            | MobileTypeTextConfig
+            | MobileLongPressConfig
+            | MobileSwipeConfig
+            | MobileScrollToElementConfig
+            | MobileWaitForElementConfig
+            | MobileVerifyElementConfig
+            | MobileGetElementPropertiesConfig
+            | MobileCaptureScreenConfig
+            | MobilePressKeyConfig
+            | MobileSetOrientationConfig
+            | MobileHideKeyboardConfig
             | GmailConfig
             | SlackConfig
             | DiscordConfig

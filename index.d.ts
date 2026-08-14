@@ -2138,8 +2138,285 @@ export type DesktopVerifyImageConfig = DesktopVisualBaseConfig & {
   outputVariable?: string;
   failOnMismatch?: boolean;
 };
+export type MobileElementBaseConfig = BaseActionConfig & {
+  /**
+   * Appium locator strategy used to find the element. accessibilityId/id/xpath/className work on both platforms; the android* /ios* strategies only apply to a session running that platform — set androidLocator/iosLocator instead when this app's identifiers genuinely differ per platform.
+   */
+  locatorStrategy?:
+    | "accessibilityId"
+    | "id"
+    | "xpath"
+    | "className"
+    | "androidUiautomator"
+    | "androidViewtag"
+    | "androidDataMatcher"
+    | "iosPredicateString"
+    | "iosClassChain";
+  /**
+   * Value interpreted according to locatorStrategy
+   */
+  locatorValue?: string;
+  androidLocator?: MobileLocatorOverride;
+  iosLocator?: MobileLocatorOverride;
+  /**
+   * Which match to act on when the locator resolves to more than one element
+   */
+  elementIndex?: number;
+  /**
+   * Require the element to be visible on screen, not just present in the hierarchy
+   */
+  requireVisible?: boolean;
+  /**
+   * Scroll the nearest scrollable container until the element is visible before acting on it
+   */
+  scrollIntoView?: boolean;
+  /**
+   * Maximum wait time in milliseconds for the element to appear
+   */
+  timeout?: number;
+  /**
+   * Polling interval while waiting for the element
+   */
+  pollIntervalMs?: number;
+  /**
+   * Delay after the action completes
+   */
+  postActionWaitMs?: number;
+};
 /**
- * Every automation action-type identifier (29 web + 18 desktop + 3 api + 4 integrations + 6 core = 60).
+ * Tap a located element on the connected device.
+ */
+export type MobileTapElementConfig = MobileElementBaseConfig & {
+  /**
+   * Number of taps (2 for double-tap)
+   */
+  tapCount?: number;
+  /**
+   * Horizontal tap offset from the element's center
+   */
+  offsetX?: number;
+  /**
+   * Vertical tap offset from the element's center
+   */
+  offsetY?: number;
+  /**
+   * Fail the action if the element can't be located
+   */
+  failIfNotFound?: boolean;
+  outputVariable?: string;
+};
+/**
+ * Type text into a located element on the connected device.
+ */
+export type MobileTypeTextConfig = MobileElementBaseConfig & {
+  /**
+   * Text to type into the element
+   */
+  text?: string;
+  /**
+   * Clear the element's existing value before typing
+   */
+  clearBeforeType?: boolean;
+  /**
+   * Dismiss the soft keyboard after typing
+   */
+  hideKeyboardAfter?: boolean;
+  /**
+   * Press Enter/Return after typing
+   */
+  submitWithEnter?: boolean;
+};
+/**
+ * Press and hold a located element on the connected device.
+ */
+export type MobileLongPressConfig = MobileElementBaseConfig & {
+  /**
+   * How long to hold the press, in milliseconds
+   */
+  durationMs?: number;
+  offsetX?: number;
+  offsetY?: number;
+};
+/**
+ * Swipe on the device screen, either by named direction/percent or explicit start/end coordinates, optionally scoped to a located element.
+ */
+export type MobileSwipeConfig = BaseActionConfig & {
+  /**
+   * Whether to swipe by named direction+percent, or by explicit start/end coordinates
+   */
+  mode?: "direction" | "coordinates";
+  direction?: "up" | "down" | "left" | "right";
+  /**
+   * Fraction of the swipeable area (or scoped element) to traverse
+   */
+  percent?: number;
+  startX?: number;
+  startY?: number;
+  endX?: number;
+  endY?: number;
+  /**
+   * Optional: scope the swipe to within this element instead of the whole screen
+   */
+  locatorStrategy?:
+    | "accessibilityId"
+    | "id"
+    | "xpath"
+    | "className"
+    | "androidUiautomator"
+    | "androidViewtag"
+    | "androidDataMatcher"
+    | "iosPredicateString"
+    | "iosClassChain";
+  locatorValue?: string;
+  androidLocator?: MobileLocatorOverride;
+  iosLocator?: MobileLocatorOverride;
+  durationMs?: number;
+  postActionWaitMs?: number;
+};
+/**
+ * Scroll the nearest scrollable container until the target element is visible.
+ */
+export type MobileScrollToElementConfig = MobileElementBaseConfig & {
+  /**
+   * Maximum number of scroll gestures to attempt before failing
+   */
+  maxSwipes?: number;
+  direction?: "down" | "up";
+};
+/**
+ * Wait for an element to appear, become visible, or disappear.
+ */
+export type MobileWaitForElementConfig = MobileElementBaseConfig & {
+  waitMode?: "present" | "visible" | "gone";
+  outputVariable?: string;
+};
+/**
+ * Assert a located element's visibility, text, or attribute value.
+ */
+export type MobileVerifyElementConfig = MobileElementBaseConfig & {
+  verifyMode?: "visible" | "notVisible" | "text" | "attribute";
+  expectedText?: string;
+  matchMode?: "exact" | "contains" | "regex";
+  attributeName?: string;
+  expectedValue?: string;
+  failOnMismatch?: boolean;
+  outputVariable?: string;
+};
+/**
+ * Read a property (text, attribute, visibility, or bounding rect) off a located element into a variable.
+ */
+export type MobileGetElementPropertiesConfig = MobileElementBaseConfig & {
+  property?: "text" | "enabled" | "displayed" | "selected" | "attribute" | "rect";
+  attributeName?: string;
+  outputVariable?: string;
+};
+/**
+ * Activate the target app on the connected device, installing it first when requested.
+ */
+export type MobileLaunchAppConfig = BaseActionConfig & {
+  /**
+   * Where the app comes from: already installed by package/bundle id, an uploaded binary, a cloud device-farm's own app id, or whatever app is currently in the foreground
+   */
+  appSource?: "installed" | "upload" | "providerAppId" | "runningApp";
+  /**
+   * appBinaryId:<uuid> reference to an uploaded .apk/.ipa, used when appSource is 'upload'
+   */
+  appBinaryId?: string;
+  /**
+   * A cloud device-farm's own app identifier (e.g. bs://<hash>), used when appSource is 'providerAppId'
+   */
+  providerAppId?: string;
+  /**
+   * Android package name, used when appSource is 'installed' on an Android session
+   */
+  appPackage?: string;
+  /**
+   * Android launch activity, optional
+   */
+  appActivity?: string;
+  /**
+   * iOS bundle identifier, used when appSource is 'installed' on an iOS session
+   */
+  bundleId?: string;
+  /**
+   * Install the app first if it isn't already installed (appSource 'upload' only)
+   */
+  installIfMissing?: boolean;
+  /**
+   * Extra delay after activation before the next action runs
+   */
+  waitForReadyMs?: number;
+  outputVariable?: string;
+};
+/**
+ * Force-stop the target app.
+ */
+export type MobileTerminateAppConfig = BaseActionConfig & {
+  appPackage?: string;
+  bundleId?: string;
+  postActionWaitMs?: number;
+};
+/**
+ * Install an app binary onto the connected device without launching it.
+ */
+export type MobileInstallAppConfig = BaseActionConfig & {
+  /**
+   * appBinaryId:<uuid> reference to the uploaded .apk/.ipa to install
+   */
+  appBinaryId: string;
+  /**
+   * Reinstall over an existing install of the same app
+   */
+  replaceExisting?: boolean;
+  postActionWaitMs?: number;
+};
+/**
+ * Capture the connected device's screen.
+ */
+export type MobileCaptureScreenConfig = BaseActionConfig & {
+  /**
+   * Optional local file path to save the screenshot to
+   */
+  savePath?: string;
+  /**
+   * Include the base64-encoded screenshot in the output variable
+   */
+  includeBase64?: boolean;
+  /**
+   * Attach the screenshot to the run report
+   */
+  attachToReport?: boolean;
+  outputVariable?: string;
+};
+/**
+ * Press a hardware/system key (Android keycode, or an iOS system button).
+ */
+export type MobilePressKeyConfig = BaseActionConfig & {
+  /**
+   * Platform-neutral key name. 'back' and 'recentApps' are Android-only and are a no-op (with a warning) on an iOS session.
+   */
+  key?: "back" | "home" | "recentApps" | "enter" | "volumeUp" | "volumeDown" | "power";
+  postActionWaitMs?: number;
+};
+/**
+ * Set the device's screen orientation.
+ */
+export type MobileSetOrientationConfig = BaseActionConfig & {
+  orientation?: "portrait" | "landscape";
+  postActionWaitMs?: number;
+};
+/**
+ * Dismiss the on-screen soft keyboard, if shown.
+ */
+export type MobileHideKeyboardConfig = BaseActionConfig & {
+  /**
+   * Fail the action if the keyboard wasn't visible to begin with
+   */
+  failIfNotShown?: boolean;
+  postActionWaitMs?: number;
+};
+/**
+ * Every automation action-type identifier (29 web + 18 desktop + 15 mobile + 3 api + 4 integrations + 6 core = 75).
  */
 export type ActionType =
   | "click"
@@ -2198,6 +2475,21 @@ export type ActionType =
   | "desktopSwitchDesktop"
   | "desktopListProcesses"
   | "desktopOpenPath"
+  | "mobileLaunchApp"
+  | "mobileTerminateApp"
+  | "mobileInstallApp"
+  | "mobileTapElement"
+  | "mobileTypeText"
+  | "mobileLongPress"
+  | "mobileSwipe"
+  | "mobileScrollToElement"
+  | "mobileWaitForElement"
+  | "mobileVerifyElement"
+  | "mobileGetElementProperties"
+  | "mobileCaptureScreen"
+  | "mobilePressKey"
+  | "mobileSetOrientation"
+  | "mobileHideKeyboard"
   | "gmail"
   | "slack"
   | "discord"
@@ -2224,6 +2516,25 @@ export type DesktopActionType =
   | "desktopSwitchDesktop"
   | "desktopListProcesses"
   | "desktopOpenPath";
+/**
+ * The 15 native mobile (iOS/Android) automation action types, run via Appium (subset of ActionType). Deliberately platform-neutral — no per-platform action types — the config/handler branches on the live Appium session's platform instead.
+ */
+export type MobileActionType =
+  | "mobileLaunchApp"
+  | "mobileTerminateApp"
+  | "mobileInstallApp"
+  | "mobileTapElement"
+  | "mobileTypeText"
+  | "mobileLongPress"
+  | "mobileSwipe"
+  | "mobileScrollToElement"
+  | "mobileWaitForElement"
+  | "mobileVerifyElement"
+  | "mobileGetElementProperties"
+  | "mobileCaptureScreen"
+  | "mobilePressKey"
+  | "mobileSetOrientation"
+  | "mobileHideKeyboard";
 /**
  * Actions that call an external application's API.
  */
@@ -2369,46 +2680,6 @@ export type DateFormatPreset =
  * Severity level of the warning
  */
 export type WarningSeverity = "minor" | "medium" | "critical";
-/**
- * Account role
- */
-export type UserRole = "owner" | "admin" | "member" | "viewer";
-/**
- * Backing store for a media item
- */
-export type MediaStorageDriver = "local" | "s3" | "r2";
-/**
- * Kind of execution report
- */
-export type ReportType = "flow" | "performance" | "parallel" | "suite";
-/**
- * Execution report status (full 6-value set; note test.recentRuns persists only passed/failed/pending/running)
- */
-export type ReportStatus = "passed" | "failed" | "error" | "running" | "pending" | "cancelled";
-/**
- * Stored test kind
- */
-export type FlowKind = "flow" | "test" | "performance";
-/**
- * Last execution result of a stored test
- */
-export type FlowLastResult = "passed" | "failed" | "pending" | "running";
-/**
- * Lifecycle status of a suite execution
- */
-export type SuiteExecutionStatus = "pending" | "queued" | "running" | "completed" | "failed" | "cancelled" | "not_run";
-/**
- * Status of a single test within a suite execution
- */
-export type SuiteExecutionTestStatus = "pending" | "running" | "passed" | "failed" | "cancelled" | "not_run";
-/**
- * Status of a scheduled suite run
- */
-export type SuiteScheduleStatus = "scheduled" | "queued" | "running" | "completed" | "failed" | "cancelled" | "not_run";
-/**
- * What triggered a suite execution
- */
-export type SuiteTriggerType = "manual" | "scheduled";
 export type RunCommand = WebSocketMessage & {
   command: "run";
   /**
@@ -2422,6 +2693,7 @@ export type RunCommand = WebSocketMessage & {
   };
   mode?: "full" | "partial";
   recording?: AnyObject;
+  mobile?: MobileRunConfig;
 };
 export type RecordCommand = WebSocketMessage & {
   command: "record";
@@ -2830,6 +3102,46 @@ export type ProcessEventResponse = WebSocketResponse & {
   message?: string | null;
   actions?: ProcessActionStatuses;
 };
+/**
+ * Account role
+ */
+export type UserRole = "owner" | "admin" | "member" | "viewer";
+/**
+ * Backing store for a media item
+ */
+export type MediaStorageDriver = "local" | "s3" | "r2";
+/**
+ * Kind of execution report
+ */
+export type ReportType = "flow" | "performance" | "parallel" | "suite";
+/**
+ * Execution report status (full 6-value set; note test.recentRuns persists only passed/failed/pending/running)
+ */
+export type ReportStatus = "passed" | "failed" | "error" | "running" | "pending" | "cancelled";
+/**
+ * Stored test kind
+ */
+export type FlowKind = "flow" | "test" | "performance";
+/**
+ * Last execution result of a stored test
+ */
+export type FlowLastResult = "passed" | "failed" | "pending" | "running";
+/**
+ * Lifecycle status of a suite execution
+ */
+export type SuiteExecutionStatus = "pending" | "queued" | "running" | "completed" | "failed" | "cancelled" | "not_run";
+/**
+ * Status of a single test within a suite execution
+ */
+export type SuiteExecutionTestStatus = "pending" | "running" | "passed" | "failed" | "cancelled" | "not_run";
+/**
+ * Status of a scheduled suite run
+ */
+export type SuiteScheduleStatus = "scheduled" | "queued" | "running" | "completed" | "failed" | "cancelled" | "not_run";
+/**
+ * What triggered a suite execution
+ */
+export type SuiteTriggerType = "manual" | "scheduled";
 
 export interface BaseActionConfig {
   /**
@@ -3033,6 +3345,28 @@ export interface DesktopFormField {
    */
   clearBeforeType?: boolean;
 }
+/**
+ * A platform-specific locator override, used only when the flow's shared locatorStrategy/locatorValue doesn't apply to that platform's session (e.g. the app's Android resource-id and iOS accessibilityIdentifier genuinely differ).
+ */
+export interface MobileLocatorOverride {
+  locatorStrategy?:
+    | "accessibilityId"
+    | "id"
+    | "xpath"
+    | "className"
+    | "androidUiautomator"
+    | "androidViewtag"
+    | "androidDataMatcher"
+    | "iosPredicateString"
+    | "iosClassChain";
+  locatorValue?: string;
+}
+/**
+ * A platform-specific locator override, used only when the flow's shared locatorStrategy/locatorValue doesn't apply to that platform's session (e.g. the app's Android resource-id and iOS accessibilityIdentifier genuinely differ).
+ */
+/**
+ * A platform-specific locator override, used only when the flow's shared locatorStrategy/locatorValue doesn't apply to that platform's session (e.g. the app's Android resource-id and iOS accessibilityIdentifier genuinely differ).
+ */
 /**
  * Provider/model selection for an AI request
  */
@@ -4789,6 +5123,154 @@ export interface FlowParameters {
   variableBefore?: Variable[];
 }
 /**
+ * Base WebSocket message structure
+ */
+export interface WebSocketMessage {
+  /**
+   * Command type
+   */
+  command: string;
+  /**
+   * Flow ID for the command
+   */
+  flow_id?: string;
+}
+/**
+ * Information about an active session
+ */
+export interface SessionInfo {
+  /**
+   * Flow ID
+   */
+  flowId: string;
+  /**
+   * Session status
+   */
+  status: string;
+  /**
+   * Browser type
+   */
+  browser: string;
+  /**
+   * Flow name
+   */
+  flowName?: string;
+  /**
+   * Start timestamp
+   */
+  startedAt: number;
+}
+/**
+ * Appium session target for this run; required if the flow contains mobile* actions. NOTE: this schema's RunCommand is a documentation model only — the real wire contract is the hand-maintained RunCommand in backend/engine/types/websocket_models.py, which must be edited to match.
+ */
+export interface MobileRunConfig {
+  platform: "android" | "ios";
+  /**
+   * Appium driver name; defaults to UiAutomator2 on Android and XCUITest on iOS
+   */
+  automationName?: string;
+  deviceName?: string;
+  /**
+   * Exact device/simulator id; takes precedence over deviceName
+   */
+  udid?: string;
+  platformVersion?: string;
+  /**
+   * Local path to an installed .apk/.ipa/.app, resolved by the engine from an appBinaryId: reference
+   */
+  app?: string;
+  appPackage?: string;
+  appActivity?: string;
+  bundleId?: string;
+  /**
+   * Relative to the engine process, not the browser — matters when the engine runs remotely or in Docker
+   */
+  appiumServerUrl?: string;
+  noReset?: boolean;
+  fullReset?: boolean;
+  autoGrantPermissions?: boolean;
+  newCommandTimeout?: number;
+  /**
+   * Raw Appium capabilities merged last, for cloud device farms or anything not modeled above
+   */
+  extraCapabilities?: AnyObject;
+}
+/**
+ * Appium capabilities for a run's mobile device session. Nested (rather than flat fields on RunCommand) so a single 'mobile is None' check means 'no mobile target configured for this run'. extraCapabilities is merged last over every derived capability, which is what makes a cloud device farm (BrowserStack/Sauce/etc.) reachable without any provider-specific schema.
+ */
+/**
+ * Base WebSocket response structure
+ */
+export interface WebSocketResponse {
+  /**
+   * Command that was executed
+   */
+  command: string;
+  /**
+   * Whether the command succeeded
+   */
+  success: boolean;
+  /**
+   * Response message
+   */
+  message?: string;
+}
+/**
+ * run_suite nested run_config. Interior is camelCase (exception to the snake_case wire); the engine also accepts snake_case aliases for the parallel flags.
+ */
+export interface SuiteRunConfigWire {
+  browser?: string;
+  headless?: boolean;
+  incognito?: boolean;
+  recordExecution?: boolean;
+  environmentId?: string | null;
+  randomBrowserPool?: string[];
+  [k: string]: unknown;
+}
+/**
+ * Per-test result entry in run_suite responses/progress (snake_case)
+ */
+export interface SuiteTestResultWire {
+  test_id: string;
+  flow_name: string;
+  status: string;
+  report_id?: string | null;
+  message?: string;
+}
+/**
+ * engine->frontend diagnostic emitted when a smart wait is inserted during recording. Top-level is snake_case; the data sub-object is camelCase (exception to the wire convention).
+ */
+export interface RecordingSmartWaitDecision {
+  event: "recording_smart_wait_decision";
+  command: "recording_smart_wait_decision";
+  action_type: "smart_wait_decision";
+  /**
+   * epoch ms
+   */
+  timestamp: number;
+  session_id: string;
+  flow_id: string;
+  data: {
+    waitActionId: string;
+    triggerActionId: string;
+    dependentActionId: string;
+    dependentActionType: string;
+    reason: string;
+    confidence: number | null;
+    waitType: string;
+    duration: number;
+    effectiveWaitMs: number;
+    selector: string;
+    selectors: string[];
+  };
+}
+/**
+ * Per-action progress within a process, keyed by node id. Events carry only the actions that changed, so receivers merge rather than replace.
+ */
+export interface ProcessActionStatuses {
+  [k: string]: "running" | "success" | "error";
+}
+/**
  * Request to execute a single test/flow
  */
 export interface FlowExecutionRequest {
@@ -4854,6 +5336,7 @@ export interface Flow {
   variables?: FlowVariables;
   parameters?: FlowParameters;
   environment?: Environment;
+  mobileSession?: MobileRunConfig;
   /**
    * Global variables available to the flow
    */
@@ -4886,6 +5369,9 @@ export interface Flow {
  */
 /**
  * An environment configuration with its variables. Unifies the standalone-entity and embedded-in-flow forms: only id+name are required so embedded partial environments validate; the server always sets the remaining fields on stored environments.
+ */
+/**
+ * Appium capabilities for a run's mobile device session. Nested (rather than flat fields on RunCommand) so a single 'mobile is None' check means 'no mobile target configured for this run'. extraCapabilities is merged last over every derived capability, which is what makes a cloud device farm (BrowserStack/Sauce/etc.) reachable without any provider-specific schema.
  */
 /**
  * Result of a single test execution
@@ -5921,116 +6407,6 @@ export interface SuiteSchedule {
   updatedAt: string;
 }
 /**
- * Base WebSocket message structure
- */
-export interface WebSocketMessage {
-  /**
-   * Command type
-   */
-  command: string;
-  /**
-   * Flow ID for the command
-   */
-  flow_id?: string;
-}
-/**
- * Information about an active session
- */
-export interface SessionInfo {
-  /**
-   * Flow ID
-   */
-  flowId: string;
-  /**
-   * Session status
-   */
-  status: string;
-  /**
-   * Browser type
-   */
-  browser: string;
-  /**
-   * Flow name
-   */
-  flowName?: string;
-  /**
-   * Start timestamp
-   */
-  startedAt: number;
-}
-/**
- * Base WebSocket response structure
- */
-export interface WebSocketResponse {
-  /**
-   * Command that was executed
-   */
-  command: string;
-  /**
-   * Whether the command succeeded
-   */
-  success: boolean;
-  /**
-   * Response message
-   */
-  message?: string;
-}
-/**
- * run_suite nested run_config. Interior is camelCase (exception to the snake_case wire); the engine also accepts snake_case aliases for the parallel flags.
- */
-export interface SuiteRunConfigWire {
-  browser?: string;
-  headless?: boolean;
-  incognito?: boolean;
-  recordExecution?: boolean;
-  environmentId?: string | null;
-  randomBrowserPool?: string[];
-  [k: string]: unknown;
-}
-/**
- * Per-test result entry in run_suite responses/progress (snake_case)
- */
-export interface SuiteTestResultWire {
-  test_id: string;
-  flow_name: string;
-  status: string;
-  report_id?: string | null;
-  message?: string;
-}
-/**
- * engine->frontend diagnostic emitted when a smart wait is inserted during recording. Top-level is snake_case; the data sub-object is camelCase (exception to the wire convention).
- */
-export interface RecordingSmartWaitDecision {
-  event: "recording_smart_wait_decision";
-  command: "recording_smart_wait_decision";
-  action_type: "smart_wait_decision";
-  /**
-   * epoch ms
-   */
-  timestamp: number;
-  session_id: string;
-  flow_id: string;
-  data: {
-    waitActionId: string;
-    triggerActionId: string;
-    dependentActionId: string;
-    dependentActionType: string;
-    reason: string;
-    confidence: number | null;
-    waitType: string;
-    duration: number;
-    effectiveWaitMs: number;
-    selector: string;
-    selectors: string[];
-  };
-}
-/**
- * Per-action progress within a process, keyed by node id. Events carry only the actions that changed, so receivers merge rather than replace.
- */
-export interface ProcessActionStatuses {
-  [k: string]: "running" | "success" | "error";
-}
-/**
  * Schema for environment configurations and global variables used in Floweb automation flows
  */
 export interface EnvironmentAndGlobalVariablesConfiguration {
@@ -6065,6 +6441,9 @@ export interface EnvironmentAndGlobalVariablesConfiguration {
  */
 /**
  * An environment configuration with its variables. Unifies the standalone-entity and embedded-in-flow forms: only id+name are required so embedded partial environments validate; the server always sets the remaining fields on stored environments.
+ */
+/**
+ * Appium capabilities for a run's mobile device session. Nested (rather than flat fields on RunCommand) so a single 'mobile is None' check means 'no mobile target configured for this run'. extraCapabilities is merged last over every derived capability, which is what makes a cloud device farm (BrowserStack/Sauce/etc.) reachable without any provider-specific schema.
  */
 /**
  * Performance test definition for load testing and API monitoring
