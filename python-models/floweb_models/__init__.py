@@ -140,8 +140,11 @@ from .action_configs import (
 from .action_types import (
     ActionType,
     ActionTypes,
+    ApiActionType,
+    CoreActionType,
     DesktopActionType,
     IntegrationActionType,
+    WebActionType,
 )
 
 from .execution_results import (
@@ -462,6 +465,7 @@ __all__ = [
     "AggregateMetrics",
     "AnalyzeFailureRequest",
     "AnalyzeFailureResponse",
+    "ApiActionType",
     "ApiCallConfig",
     "ApiKey",
     "ApiKeyScope",
@@ -531,6 +535,7 @@ __all__ = [
     "ConfigValidation",
     "ConnectedResponse",
     "ConvertRecordingToFlowCommand",
+    "CoreActionType",
     "CreateApiKeyRequest",
     "CreateApiKeyResponse",
     "Credential",
@@ -814,6 +819,7 @@ __all__ = [
     "WaitType",
     "WarningSeverity",
     "WarningsBySeverity",
+    "WebActionType",
     "WebSocketCommunicationModels",
     "WebSocketMessage",
     "WebSocketResponse",

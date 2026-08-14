@@ -10,7 +10,7 @@ from pydantic import BaseModel, ConfigDict
 
 class ActionType(StrEnum):
     """
-    Every automation action-type identifier (33 web + 17 desktop = 50).
+    Every automation action-type identifier (29 web + 18 desktop + 3 api + 4 integrations + 6 core = 60).
     """
 
     click = 'click'
@@ -57,6 +57,7 @@ class ActionType(StrEnum):
     desktopClickImage = 'desktopClickImage'
     desktopClickPoint = 'desktopClickPoint'
     desktopTypeText = 'desktopTypeText'
+    desktopFillForm = 'desktopFillForm'
     desktopMoveMouse = 'desktopMoveMouse'
     desktopDragAndDrop = 'desktopDragAndDrop'
     desktopHotkey = 'desktopHotkey'
@@ -76,7 +77,7 @@ class ActionType(StrEnum):
 
 class DesktopActionType(StrEnum):
     """
-    The 17 desktop automation action types (subset of ActionType).
+    The 18 desktop automation action types (subset of ActionType).
     """
 
     desktopWaitForImage = 'desktopWaitForImage'
@@ -85,6 +86,7 @@ class DesktopActionType(StrEnum):
     desktopClickImage = 'desktopClickImage'
     desktopClickPoint = 'desktopClickPoint'
     desktopTypeText = 'desktopTypeText'
+    desktopFillForm = 'desktopFillForm'
     desktopMoveMouse = 'desktopMoveMouse'
     desktopDragAndDrop = 'desktopDragAndDrop'
     desktopHotkey = 'desktopHotkey'
@@ -107,6 +109,65 @@ class IntegrationActionType(StrEnum):
     slack = 'slack'
     discord = 'discord'
     jira = 'jira'
+
+
+class WebActionType(StrEnum):
+    """
+    The 29 browser/DOM action types that require a live page context (subset of ActionType).
+    """
+
+    click = 'click'
+    input = 'input'
+    sendKeys = 'sendKeys'
+    scroll = 'scroll'
+    dragAndDrop = 'dragAndDrop'
+    fillForm = 'fillForm'
+    clearInput = 'clearInput'
+    assertion = 'assertion'
+    assertVisible = 'assertVisible'
+    getElementProperties = 'getElementProperties'
+    switchToFrame = 'switchToFrame'
+    exitFrame = 'exitFrame'
+    handlePopup = 'handlePopup'
+    fileUpload = 'fileUpload'
+    fileDownload = 'fileDownload'
+    navigate = 'navigate'
+    goForward = 'goForward'
+    goBack = 'goBack'
+    refresh = 'refresh'
+    openNewTab = 'openNewTab'
+    switchTab = 'switchTab'
+    getPageInfo = 'getPageInfo'
+    setViewport = 'setViewport'
+    screenshot = 'screenshot'
+    custom = 'custom'
+    networkControl = 'networkControl'
+    accessibilityAudit = 'accessibilityAudit'
+    captureWebVitals = 'captureWebVitals'
+    visualRegression = 'visualRegression'
+
+
+class ApiActionType(StrEnum):
+    """
+    The 3 direct service-call action types: generic HTTP calls and database queries (subset of ActionType).
+    """
+
+    apiCall = 'apiCall'
+    dbQuery = 'dbQuery'
+    dbInsert = 'dbInsert'
+
+
+class CoreActionType(StrEnum):
+    """
+    The 6 platform-agnostic control-flow and generic utility action types that need neither a browser nor OS automation (subset of ActionType).
+    """
+
+    conditional = 'conditional'
+    loop = 'loop'
+    junction = 'junction'
+    callToFlow = 'callToFlow'
+    wait = 'wait'
+    loadDataset = 'loadDataset'
 
 
 class ActionTypes(BaseModel):

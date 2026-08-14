@@ -2,7 +2,7 @@
 // GENERATED from schemas/ by scripts/generate-ts.cjs — do not edit by hand.
 
 /**
- * Every automation action-type identifier (33 web + 17 desktop = 50).
+ * Every automation action-type identifier (29 web + 18 desktop + 3 api + 4 integrations + 6 core = 60).
  */
 export type ActionType =
   | "click"
@@ -49,6 +49,7 @@ export type ActionType =
   | "desktopClickImage"
   | "desktopClickPoint"
   | "desktopTypeText"
+  | "desktopFillForm"
   | "desktopMoveMouse"
   | "desktopDragAndDrop"
   | "desktopHotkey"
@@ -65,7 +66,7 @@ export type ActionType =
   | "discord"
   | "jira";
 /**
- * The 17 desktop automation action types (subset of ActionType).
+ * The 18 desktop automation action types (subset of ActionType).
  */
 export type DesktopActionType =
   | "desktopWaitForImage"
@@ -74,6 +75,7 @@ export type DesktopActionType =
   | "desktopClickImage"
   | "desktopClickPoint"
   | "desktopTypeText"
+  | "desktopFillForm"
   | "desktopMoveMouse"
   | "desktopDragAndDrop"
   | "desktopHotkey"
@@ -89,10 +91,54 @@ export type DesktopActionType =
  * Actions that call an external application's API.
  */
 export type IntegrationActionType = "gmail" | "slack" | "discord" | "jira";
+/**
+ * The 29 browser/DOM action types that require a live page context (subset of ActionType).
+ */
+export type WebActionType =
+  | "click"
+  | "input"
+  | "sendKeys"
+  | "scroll"
+  | "dragAndDrop"
+  | "fillForm"
+  | "clearInput"
+  | "assertion"
+  | "assertVisible"
+  | "getElementProperties"
+  | "switchToFrame"
+  | "exitFrame"
+  | "handlePopup"
+  | "fileUpload"
+  | "fileDownload"
+  | "navigate"
+  | "goForward"
+  | "goBack"
+  | "refresh"
+  | "openNewTab"
+  | "switchTab"
+  | "getPageInfo"
+  | "setViewport"
+  | "screenshot"
+  | "custom"
+  | "networkControl"
+  | "accessibilityAudit"
+  | "captureWebVitals"
+  | "visualRegression";
+/**
+ * The 3 direct service-call action types: generic HTTP calls and database queries (subset of ActionType).
+ */
+export type ApiActionType = "apiCall" | "dbQuery" | "dbInsert";
+/**
+ * The 6 platform-agnostic control-flow and generic utility action types that need neither a browser nor OS automation (subset of ActionType).
+ */
+export type CoreActionType = "conditional" | "loop" | "junction" | "callToFlow" | "wait" | "loadDataset";
 
 export interface ActionTypesSchema {
   actionType?: ActionType;
   ActionType?: ActionType;
   DesktopActionType?: DesktopActionType;
   IntegrationActionType?: IntegrationActionType;
+  WebActionType?: WebActionType;
+  ApiActionType?: ApiActionType;
+  CoreActionType?: CoreActionType;
 }
