@@ -483,11 +483,9 @@ class VibeNextActionRequest(BaseModel):
     screenHeight: int | None = 0
     step: int | None = 1
     maxSteps: int | None = 25
-    history: Annotated[list[VibeStepRecord] | None, Field(validate_default=True)] = []
-    messages: Annotated[list[VibeMessage] | None, Field(validate_default=True)] = []
-    existingSteps: Annotated[
-        list[VibeExistingStep] | None, Field(validate_default=True)
-    ] = []
+    history: Annotated[list[VibeStepRecord] | None, Field(default_factory=list)]
+    messages: Annotated[list[VibeMessage] | None, Field(default_factory=list)]
+    existingSteps: Annotated[list[VibeExistingStep] | None, Field(default_factory=list)]
     provider: AIProviderConfig | None = None
     metadata: AIRequestMetadata | None = None
 
@@ -586,12 +584,10 @@ class AssistantActionResponse(BaseModel):
         populate_by_name=True,
     )
     message: str
-    operations: Annotated[
-        list[AssistantOperation] | None, Field(validate_default=True)
-    ] = []
+    operations: Annotated[list[AssistantOperation] | None, Field(default_factory=list)]
     plan: list[str] | None = None
     suggestions: list[str] | None = None
-    steps: Annotated[list[AssistantStep] | None, Field(validate_default=True)] = []
+    steps: Annotated[list[AssistantStep] | None, Field(default_factory=list)]
     continuation: AssistantContinuation | None = None
     runRequest: AssistantRunRequest | None = None
     metadata: AIResponseMetadata
