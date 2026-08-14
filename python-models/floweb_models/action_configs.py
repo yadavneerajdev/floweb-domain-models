@@ -6,7 +6,7 @@ from __future__ import annotations
 from enum import StrEnum
 from typing import Annotated, Any
 
-from pydantic import BaseModel, ConfigDict, Field, constr
+from pydantic import BaseModel, ConfigDict, Field
 
 from ._base import FlowebActionBaseModel
 
@@ -322,7 +322,7 @@ class LoopType(StrEnum):
     Type of loop
     """
 
-    count = 'count'
+    count_ = 'count'
     condition = 'condition'
     foreach = 'foreach'
 
@@ -407,6 +407,61 @@ class Button(StrEnum):
     left = 'left'
     right = 'right'
     middle = 'middle'
+
+
+class Type1(StrEnum):
+    """
+    text/password type the value; checkbox/radio just click the target once; select/file type the value then press Enter to confirm (dropdown type-ahead or a native file dialog's path field)
+    """
+
+    text = 'text'
+    password = 'password'
+    checkbox = 'checkbox'
+    radio = 'radio'
+    select = 'select'
+    file = 'file'
+
+
+class DesktopFormField(BaseModel):
+    """
+    One field in a desktop form-fill sequence.
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    image: str | None = ''
+    """
+    Target image to click into this field. If empty and x/y are both 0, the engine Tabs from the previous field instead of clicking.
+    """
+    x: int | None = 0
+    """
+    Explicit X coordinate to click into this field, used when image is empty
+    """
+    y: int | None = 0
+    """
+    Explicit Y coordinate to click into this field, used when image is empty
+    """
+    offsetX: int | None = 0
+    """
+    X offset from the matched image's center before clicking
+    """
+    offsetY: int | None = 0
+    """
+    Y offset from the matched image's center before clicking
+    """
+    value: str
+    """
+    Text to type into this field
+    """
+    type: Type1 | None = 'text'
+    """
+    text/password type the value; checkbox/radio just click the target once; select/file type the value then press Enter to confirm (dropdown type-ahead or a native file dialog's path field)
+    """
+    clearBeforeType: bool | None = True
+    """
+    Select-all and clear the field before typing (text/password/select/file only)
+    """
 
 
 class Format2(StrEnum):
@@ -2284,6 +2339,60 @@ class DesktopTypeTextConfig(DesktopVisualBaseConfig):
     """
 
 
+class DesktopFillFormConfig(DesktopVisualBaseConfig):
+    """
+    Fill a sequence of desktop form fields located by image, explicit coordinates, or Tab order.
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    fields: list[DesktopFormField] | None = None
+    """
+    Ordered list of fields to fill
+    """
+    intervalMs: Annotated[int | None, Field(ge=0)] = 25
+    """
+    Delay between key presses within a field, in milliseconds
+    """
+    interFieldWaitMs: Annotated[int | None, Field(ge=0)] = 150
+    """
+    Delay after finishing one field before moving to the next
+    """
+    moveDurationMs: Annotated[int | None, Field(ge=0)] = 120
+    """
+    Mouse move duration before each field click
+    """
+    waitForImage: bool | None = True
+    """
+    Wait for each field's target image before clicking
+    """
+    submitAfterFill: bool | None = False
+    """
+    Submit the form after all fields are filled
+    """
+    submitImage: str | None = ''
+    """
+    Target image for the submit button. If empty and submitX/submitY are both 0, Enter is pressed instead.
+    """
+    submitX: int | None = 0
+    """
+    Explicit X coordinate for the submit button, used when submitImage is empty
+    """
+    submitY: int | None = 0
+    """
+    Explicit Y coordinate for the submit button, used when submitImage is empty
+    """
+    postActionWaitMs: Annotated[int | None, Field(ge=0)] = 300
+    """
+    Delay after the whole form-fill sequence completes
+    """
+    outputVariable: str | None = 'desktopFormFillResult'
+    """
+    Variable to store per-field fill results
+    """
+
+
 class DesktopMoveMouseConfig(BaseActionConfig):
     """
     Move desktop cursor to absolute or relative coordinates.
@@ -2792,7 +2901,7 @@ class ActionConfigurations(BaseModel):
     )
     actionConfigs: (
         dict[
-            constr(pattern=r'.*'),
+            str,
             ClickConfig
             | InputConfig
             | SendKeysConfig
@@ -2837,6 +2946,7 @@ class ActionConfigurations(BaseModel):
             | DesktopClickImageConfig
             | DesktopClickPointConfig
             | DesktopTypeTextConfig
+            | DesktopFillFormConfig
             | DesktopMoveMouseConfig
             | DesktopHotkeyConfig
             | DesktopRunCommandConfig
