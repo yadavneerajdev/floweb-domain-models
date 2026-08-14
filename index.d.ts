@@ -4221,6 +4221,34 @@ export interface HealedSelectorRecord {
   semantic_reason?: string;
   suggestions?: HealedSelectorSuggestion[];
 }
+/**
+ * The coordinate analog of HealedSelectorRecord: a desktop action's image-resolved (x, y) differing from what's currently stored in its config. Image targeting always wins over a stored coordinate when both are configured, so the stored value is a fallback/reference that can go stale as the screen layout changes.
+ */
+export interface HealedCoordinateRecord {
+  node_id: string;
+  action_type: string;
+  /**
+   * Config field name to update for the X coordinate, e.g. startX
+   */
+  x_key: string;
+  /**
+   * Config field name to update for the Y coordinate, e.g. startY
+   */
+  y_key: string;
+  /**
+   * Index into config.fields[] for multi-field actions like desktopFillForm; null for single-target actions like desktopDragAndDrop
+   */
+  field_index?: number | null;
+  original_x?: number;
+  original_y?: number;
+  healed_x: number;
+  healed_y: number;
+  /**
+   * How the healed coordinate was resolved, e.g. image-match
+   */
+  source?: string;
+  confidence?: number | null;
+}
 export interface SelectorCandidateSuggestion {
   selector: string;
   source?: string;
@@ -4365,6 +4393,7 @@ export interface FlowReport {
   };
   healed_selectors?: HealedSelectorRecord[];
   candidate_selectors?: SelectorCandidateRecord[];
+  coordinate_heals?: HealedCoordinateRecord[];
 }
 /**
  * Flow validation warning or error

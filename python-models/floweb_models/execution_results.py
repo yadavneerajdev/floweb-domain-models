@@ -177,6 +177,39 @@ class HealedSelectorRecord(BaseModel):
     suggestions: list[HealedSelectorSuggestion] | None = None
 
 
+class HealedCoordinateRecord(BaseModel):
+    """
+    The coordinate analog of HealedSelectorRecord: a desktop action's image-resolved (x, y) differing from what's currently stored in its config. Image targeting always wins over a stored coordinate when both are configured, so the stored value is a fallback/reference that can go stale as the screen layout changes.
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    node_id: str
+    action_type: str
+    x_key: str
+    """
+    Config field name to update for the X coordinate, e.g. startX
+    """
+    y_key: str
+    """
+    Config field name to update for the Y coordinate, e.g. startY
+    """
+    field_index: int | None = None
+    """
+    Index into config.fields[] for multi-field actions like desktopFillForm; null for single-target actions like desktopDragAndDrop
+    """
+    original_x: int | None = None
+    original_y: int | None = None
+    healed_x: int
+    healed_y: int
+    source: str | None = None
+    """
+    How the healed coordinate was resolved, e.g. image-match
+    """
+    confidence: Annotated[float | None, Field(ge=0.0, le=1.0)] = None
+
+
 class SelectorCandidateSuggestion(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
@@ -385,6 +418,7 @@ class FlowReport(BaseModel):
     """
     healed_selectors: list[HealedSelectorRecord] | None = None
     candidate_selectors: list[SelectorCandidateRecord] | None = None
+    coordinate_heals: list[HealedCoordinateRecord] | None = None
 
 
 class ExecutionResults(BaseModel):
