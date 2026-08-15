@@ -75,6 +75,30 @@ class FlowLastResult(StrEnum):
     running = 'running'
 
 
+class QuarantineReason(StrEnum):
+    """
+    Why a test was excluded from suite runs
+    """
+
+    flaky = 'flaky'
+    manual = 'manual'
+
+
+class TestQuarantine(BaseModel):
+    """
+    Set on a test while it's excluded from suite runs (storage keeps quarantinedAt as a real Date; this is the wire shape with it as an ISO string)
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    reason: QuarantineReason
+    note: Annotated[str | None, Field(max_length=2000)] = ''
+    flakinessScore: Annotated[float | None, Field(ge=0.0, le=1.0)] = None
+    quarantinedAt: AwareDatetime
+    quarantinedBy: str
+
+
 class User(BaseModel):
     """
     A user account member (wire shape; auth secrets stripped by toJSON)
@@ -288,6 +312,7 @@ class TestCatalogItem(BaseModel):
     status: str | None = None
     lastResult: FlowLastResult | None = None
     recentRuns: list[TestRecentRun] | None = None
+    quarantine: TestQuarantine | None = None
     createdAt: AwareDatetime | None = None
     updatedAt: AwareDatetime | None = None
 

@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://floweb.com/schemas/server-entities.json",
-  "$version": "1.1.0",
+  "$version": "1.2.0",
   "title": "Server Entities",
   "description": "Persisted server-side domain entities (wire shape after Mongoose toJSON: _id->id, server-only auth/storage fields stripped). Field-level source of truth is floweb-server *.model.ts. Dates are ISO strings on the wire.",
   "type": "object",
@@ -84,6 +84,49 @@
         "failed",
         "pending",
         "running"
+      ]
+    },
+    "QuarantineReason": {
+      "type": "string",
+      "description": "Why a test was excluded from suite runs",
+      "enum": [
+        "flaky",
+        "manual"
+      ]
+    },
+    "TestQuarantine": {
+      "type": "object",
+      "description": "Set on a test while it's excluded from suite runs (storage keeps quarantinedAt as a real Date; this is the wire shape with it as an ISO string)",
+      "properties": {
+        "reason": {
+          "$ref": "#/$defs/QuarantineReason"
+        },
+        "note": {
+          "type": "string",
+          "maxLength": 2000,
+          "default": ""
+        },
+        "flakinessScore": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1,
+          "default": null
+        },
+        "quarantinedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "quarantinedBy": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "reason",
+        "quarantinedAt",
+        "quarantinedBy"
       ]
     },
     "User": {
@@ -584,6 +627,13 @@
           "items": {
             "$ref": "#/$defs/TestRecentRun"
           }
+        },
+        "quarantine": {
+          "oneOf": [
+            { "$ref": "#/$defs/TestQuarantine" },
+            { "type": "null" }
+          ],
+          "default": null
         },
         "createdAt": {
           "type": "string",

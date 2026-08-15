@@ -1,14 +1,15 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://floweb.com/schemas/ai-contracts.json",
-  "$version": "1.1.0",
+  "$version": "1.2.0",
   "title": "AI Contracts",
   "description": "Request/response contracts for the AI service routes. Authored in canonical camelCase (the aliases the Pydantic models already accept via populate_by_name). NOTE: the ai-service currently emits snake_case for a few aliased response fields (testData, optimizedActions, removedActions) unless dumped by_alias; aligning that is ai-service Phase 3. The floweb-server proxy defines requests only and passes responses through opaquely. There is NO generate-tests route; the two extra routes are vibe-next-action and vibe-verify.",
   "type": "object",
   "properties": {
     "generateFlowRequest": { "$ref": "#/$defs/GenerateFlowRequest" },
     "generateFlowResponse": { "$ref": "#/$defs/GenerateFlowResponse" },
-    "providerConfig": { "$ref": "#/$defs/AIProviderConfig" }
+    "providerConfig": { "$ref": "#/$defs/AIProviderConfig" },
+    "autonomousTestsRequest": { "$ref": "#/$defs/AutonomousTestsRequest" }
   },
   "$defs": {
     "AIProviderType": {
@@ -381,6 +382,17 @@
         "metadata": { "$ref": "#/$defs/AIRequestMetadata" }
       },
       "required": ["instruction", "screenshot", "expectation"]
+    },
+    "AutonomousTestsRequest": {
+      "type": "object",
+      "description": "POST /ai/generate-tests request. Crawls the URL server-side, so the body carries a target rather than a description; bounds mirror the ai-service's GenerateTestsRequest.",
+      "properties": {
+        "url": { "type": "string", "minLength": 5, "maxLength": 2048 },
+        "goal": { "type": "string", "maxLength": 2000 },
+        "maxSuites": { "type": "integer", "minimum": 1, "maximum": 10 },
+        "provider": { "$ref": "#/$defs/AIProviderConfig" }
+      },
+      "required": ["url"]
     },
     "VibeVerifyResponse": {
       "type": "object",

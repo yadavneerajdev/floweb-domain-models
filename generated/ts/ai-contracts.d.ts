@@ -25,6 +25,7 @@ export interface AIContractsSchema {
   generateFlowRequest?: GenerateFlowRequest;
   generateFlowResponse?: GenerateFlowResponse;
   providerConfig?: AIProviderConfig;
+  autonomousTestsRequest?: AutonomousTestsRequest;
   AIProviderType?: AIProviderType;
   AIProviderConfig?: AIProviderConfig;
   AIRequestMetadata?: AIRequestMetadata;
@@ -56,6 +57,7 @@ export interface AIContractsSchema {
   VibeNextActionRequest?: VibeNextActionRequest;
   VibeNextActionResponse?: VibeNextActionResponse;
   VibeVerifyRequest?: VibeVerifyRequest;
+  AutonomousTestsRequest?: AutonomousTestsRequest;
   VibeVerifyResponse?: VibeVerifyResponse;
 }
 /**
@@ -140,6 +142,15 @@ export interface AIResponseMetadata {
   raw?: {
     [k: string]: unknown;
   } | null;
+}
+/**
+ * POST /ai/generate-tests request. Crawls the URL server-side, so the body carries a target rather than a description; bounds mirror the ai-service's GenerateTestsRequest.
+ */
+export interface AutonomousTestsRequest {
+  url: string;
+  goal?: string;
+  maxSuites?: number;
+  provider?: AIProviderConfig;
 }
 /**
  * One tool operation proposed/performed by the assistant

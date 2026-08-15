@@ -241,6 +241,7 @@ export interface DataLabSchema {
   VibeNextActionRequest?: VibeNextActionRequest;
   VibeNextActionResponse?: VibeNextActionResponse;
   VibeVerifyRequest?: VibeVerifyRequest;
+  AutonomousTestsRequest?: AutonomousTestsRequest;
   VibeVerifyResponse?: VibeVerifyResponse;
   ActionType?: ActionType;
   DesktopActionType?: DesktopActionType;
@@ -777,6 +778,15 @@ export interface VibeVerifyRequest {
   step?: number;
   provider?: AIProviderConfig;
   metadata?: AIRequestMetadata;
+}
+/**
+ * POST /ai/generate-tests request. Crawls the URL server-side, so the body carries a target rather than a description; bounds mirror the ai-service's GenerateTestsRequest.
+ */
+export interface AutonomousTestsRequest {
+  url: string;
+  goal?: string;
+  maxSuites?: number;
+  provider?: AIProviderConfig;
 }
 /**
  * POST /ai/vibe-verify response

@@ -1,0 +1,142 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://floweb.com/schemas/openapi-import.json",
+  "$version": "1.0.0",
+  "title": "OpenAPI Import",
+  "description": "Contracts for turning an OpenAPI/Swagger document into runnable apiCall flows (floweb-server's openapi module). Field-level source of truth is floweb-server's openapi.controller.ts/service.ts/parser.ts/generator.ts.",
+  "type": "object",
+  "properties": {
+    "importRequest": { "$ref": "#/$defs/OpenApiImportRequest" },
+    "importResponse": { "$ref": "#/$defs/OpenApiImportResponse" }
+  },
+  "$defs": {
+    "OpenApiVariableTarget": {
+      "type": "string",
+      "description": "Where generated variables (auth token, base URL, response outputs) are stored",
+      "enum": ["variable", "parameter", "environment", "global"]
+    },
+    "OpenApiAuthKind": {
+      "type": "string",
+      "description": "Auth scheme inferred from the spec's security requirements",
+      "enum": ["bearer", "basic", "apiKeyQuery", "apiKeyHeader", "none"]
+    },
+    "OpenApiImportRequest": {
+      "type": "object",
+      "description": "POST /api/openapi/:accountId/import request",
+      "properties": {
+        "spec": { "type": "string", "description": "The OpenAPI/Swagger document as JSON or YAML text" },
+        "baseUrl": { "type": "string", "default": "" },
+        "includeTags": { "type": "array", "items": { "type": "string" }, "default": [] },
+        "includeMethods": { "type": "array", "items": { "type": "string" }, "default": [] },
+        "groupBy": { "type": "string", "enum": ["tag", "operation"], "default": "tag" },
+        "variableTarget": { "$ref": "#/$defs/OpenApiVariableTarget", "default": "variable" },
+        "generateAssertions": { "type": "boolean", "default": true },
+        "folderId": { "type": ["string", "null"], "default": null },
+        "persist": { "type": "boolean", "default": false },
+        "commitAccountVariables": {
+          "type": "boolean",
+          "description": "Create environment/global variables now even on a preview (persist=false) append. Gated separately from persist because an append still needs its referenced variables to exist.",
+          "default": false
+        }
+      },
+      "required": ["spec"]
+    },
+    "OpenApiGeneratedVariable": {
+      "type": "object",
+      "description": "A variable placeholder generated for an auth token, base URL, or operation output",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "type": { "type": "string" },
+        "description": { "type": "string" },
+        "defaultValue": { "type": "string" },
+        "value": { "type": "string" }
+      },
+      "required": ["id", "name", "type", "description", "defaultValue", "value"],
+      "additionalProperties": true
+    },
+    "OpenApiSkippedOperation": {
+      "type": "object",
+      "description": "An operation the parser could not express as a step",
+      "properties": {
+        "method": { "type": "string" },
+        "path": { "type": "string" },
+        "reason": { "type": "string" }
+      },
+      "required": ["method", "path", "reason"]
+    },
+    "OpenApiGeneratedFlow": {
+      "type": "object",
+      "description": "One generated test, ready to persist or preview",
+      "properties": {
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "operationCount": { "type": "integer", "minimum": 0 },
+        "flow": {
+          "type": "object",
+          "description": "A Flow payload, keyed `actions` (not `nodes`) to match the persisted Flow contract",
+          "properties": {
+            "actions": { "type": "array", "items": { "$ref": "flow.json#/$defs/Action" } },
+            "edges": { "type": "array", "items": { "$ref": "flow.json#/$defs/Edge" } },
+            "variables": {
+              "type": "object",
+              "properties": {
+                "input": { "type": "array", "items": { "$ref": "#/$defs/OpenApiGeneratedVariable" } },
+                "output": { "type": "array", "items": { "$ref": "#/$defs/OpenApiGeneratedVariable" } }
+              },
+              "required": ["input", "output"]
+            },
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "input": { "type": "array", "items": { "$ref": "#/$defs/OpenApiGeneratedVariable" } },
+                "output": { "type": "array", "items": { "$ref": "#/$defs/OpenApiGeneratedVariable" } }
+              },
+              "required": ["input", "output"]
+            },
+            "zoom": {
+              "type": "object",
+              "properties": {
+                "x": { "type": "number" },
+                "y": { "type": "number" },
+                "zoom": { "type": "number" }
+              },
+              "required": ["x", "y", "zoom"]
+            }
+          },
+          "required": ["actions", "edges", "variables", "parameters", "zoom"]
+        },
+        "testId": { "type": ["string", "null"], "default": null }
+      },
+      "required": ["name", "description", "operationCount", "flow", "testId"]
+    },
+    "OpenApiImportResponse": {
+      "type": "object",
+      "description": "POST /api/openapi/:accountId/import response",
+      "properties": {
+        "title": { "type": "string" },
+        "specVersion": { "type": "string" },
+        "baseUrl": { "type": "string" },
+        "authKind": { "$ref": "#/$defs/OpenApiAuthKind" },
+        "variableTarget": { "$ref": "#/$defs/OpenApiVariableTarget" },
+        "operationCount": { "type": "integer", "minimum": 0 },
+        "flows": { "type": "array", "items": { "$ref": "#/$defs/OpenApiGeneratedFlow" } },
+        "variables": { "type": "array", "items": { "$ref": "#/$defs/OpenApiGeneratedVariable" } },
+        "skipped": { "type": "array", "items": { "$ref": "#/$defs/OpenApiSkippedOperation" } },
+        "warnings": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": [
+        "title",
+        "specVersion",
+        "baseUrl",
+        "authKind",
+        "variableTarget",
+        "operationCount",
+        "flows",
+        "variables",
+        "skipped",
+        "warnings"
+      ]
+    }
+  }
+}

@@ -163,6 +163,22 @@ class Action(BaseModel):
     """
     position: Position
     data: ActionData
+    draggable: bool | None = True
+    """
+    React Flow canvas node option
+    """
+    selectable: bool | None = True
+    """
+    React Flow canvas node option
+    """
+    deletable: bool | None = True
+    """
+    React Flow canvas node option
+    """
+    selected: bool | None = False
+    """
+    React Flow canvas node option
+    """
 
 
 class Edge(BaseModel):

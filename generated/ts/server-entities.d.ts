@@ -25,6 +25,10 @@ export type FlowKind = "flow" | "test" | "performance";
  * Last execution result of a stored test
  */
 export type FlowLastResult = "passed" | "failed" | "pending" | "running";
+/**
+ * Why a test was excluded from suite runs
+ */
+export type QuarantineReason = "flaky" | "manual";
 
 export interface ServerEntitiesSchema {
   user?: User;
@@ -39,6 +43,8 @@ export interface ServerEntitiesSchema {
   ReportStatus?: ReportStatus;
   FlowKind?: FlowKind;
   FlowLastResult?: FlowLastResult;
+  QuarantineReason?: QuarantineReason;
+  TestQuarantine?: TestQuarantine;
   User?: User;
   AccountSettings?: AccountSettings;
   Account?: Account;
@@ -170,6 +176,16 @@ export interface StoredTestRecord {
   updatedAt?: string;
 }
 /**
+ * Set on a test while it's excluded from suite runs (storage keeps quarantinedAt as a real Date; this is the wire shape with it as an ISO string)
+ */
+export interface TestQuarantine {
+  reason: QuarantineReason;
+  note?: string;
+  flakinessScore?: number | null;
+  quarantinedAt: string;
+  quarantinedBy: string;
+}
+/**
  * Decrypted per-account environments and global variables (persisted encrypted; plaintext arrays are the wire/domain shape). Elements follow environment.json Environment/GlobalVariable.
  */
 export interface AccountDataStore {
@@ -216,6 +232,7 @@ export interface TestCatalogItem {
   status?: string;
   lastResult?: FlowLastResult;
   recentRuns?: TestRecentRun[];
+  quarantine?: TestQuarantine | null;
   createdAt?: string;
   updatedAt?: string;
 }

@@ -692,6 +692,22 @@ export interface Action {
   type: string;
   position: Position;
   data: ActionData;
+  /**
+   * React Flow canvas node option
+   */
+  draggable?: boolean;
+  /**
+   * React Flow canvas node option
+   */
+  selectable?: boolean;
+  /**
+   * React Flow canvas node option
+   */
+  deletable?: boolean;
+  /**
+   * React Flow canvas node option
+   */
+  selected?: boolean;
 }
 export interface Position {
   /**

@@ -526,6 +526,20 @@ class VibeVerifyRequest(BaseModel):
     metadata: AIRequestMetadata | None = None
 
 
+class AutonomousTestsRequest(BaseModel):
+    """
+    POST /ai/generate-tests request. Crawls the URL server-side, so the body carries a target rather than a description; bounds mirror the ai-service's GenerateTestsRequest.
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    url: Annotated[str, Field(max_length=2048, min_length=5)]
+    goal: Annotated[str | None, Field(max_length=2000)] = None
+    maxSuites: Annotated[int | None, Field(ge=1, le=10)] = None
+    provider: AIProviderConfig | None = None
+
+
 class VibeVerifyResponse(BaseModel):
     """
     POST /ai/vibe-verify response
@@ -550,6 +564,7 @@ class AIContracts(BaseModel):
     generateFlowRequest: GenerateFlowRequest | None = None
     generateFlowResponse: GenerateFlowResponse | None = None
     providerConfig: AIProviderConfig | None = None
+    autonomousTestsRequest: AutonomousTestsRequest | None = None
 
 
 class AssistantActionRequest(BaseModel):

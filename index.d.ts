@@ -3103,6 +3103,14 @@ export type ProcessEventResponse = WebSocketResponse & {
   actions?: ProcessActionStatuses;
 };
 /**
+ * Where generated variables (auth token, base URL, response outputs) are stored
+ */
+export type OpenApiVariableTarget = "variable" | "parameter" | "environment" | "global";
+/**
+ * Auth scheme inferred from the spec's security requirements
+ */
+export type OpenApiAuthKind = "bearer" | "basic" | "apiKeyQuery" | "apiKeyHeader" | "none";
+/**
  * Account role
  */
 export type UserRole = "owner" | "admin" | "member" | "viewer";
@@ -3126,6 +3134,10 @@ export type FlowKind = "flow" | "test" | "performance";
  * Last execution result of a stored test
  */
 export type FlowLastResult = "passed" | "failed" | "pending" | "running";
+/**
+ * Why a test was excluded from suite runs
+ */
+export type QuarantineReason = "flaky" | "manual";
 /**
  * Lifecycle status of a suite execution
  */
@@ -3724,6 +3736,15 @@ export interface VibeVerifyRequest {
   step?: number;
   provider?: AIProviderConfig;
   metadata?: AIRequestMetadata;
+}
+/**
+ * POST /ai/generate-tests request. Crawls the URL server-side, so the body carries a target rather than a description; bounds mirror the ai-service's GenerateTestsRequest.
+ */
+export interface AutonomousTestsRequest {
+  url: string;
+  goal?: string;
+  maxSuites?: number;
+  provider?: AIProviderConfig;
 }
 /**
  * POST /ai/vibe-verify response
@@ -5049,6 +5070,22 @@ export interface Action {
   type: string;
   position: Position;
   data: ActionData;
+  /**
+   * React Flow canvas node option
+   */
+  draggable?: boolean;
+  /**
+   * React Flow canvas node option
+   */
+  selectable?: boolean;
+  /**
+   * React Flow canvas node option
+   */
+  deletable?: boolean;
+  /**
+   * React Flow canvas node option
+   */
+  selected?: boolean;
 }
 export interface Edge {
   /**
@@ -5269,6 +5306,94 @@ export interface RecordingSmartWaitDecision {
  */
 export interface ProcessActionStatuses {
   [k: string]: "running" | "success" | "error";
+}
+/**
+ * POST /api/openapi/:accountId/import request
+ */
+export interface OpenApiImportRequest {
+  /**
+   * The OpenAPI/Swagger document as JSON or YAML text
+   */
+  spec: string;
+  baseUrl?: string;
+  includeTags?: string[];
+  includeMethods?: string[];
+  groupBy?: "tag" | "operation";
+  /**
+   * Where generated variables (auth token, base URL, response outputs) are stored
+   */
+  variableTarget?: "variable" | "parameter" | "environment" | "global";
+  generateAssertions?: boolean;
+  folderId?: string | null;
+  persist?: boolean;
+  /**
+   * Create environment/global variables now even on a preview (persist=false) append. Gated separately from persist because an append still needs its referenced variables to exist.
+   */
+  commitAccountVariables?: boolean;
+}
+/**
+ * A variable placeholder generated for an auth token, base URL, or operation output
+ */
+export interface OpenApiGeneratedVariable {
+  id: string;
+  name: string;
+  type: string;
+  description: string;
+  defaultValue: string;
+  value: string;
+  [k: string]: unknown;
+}
+/**
+ * An operation the parser could not express as a step
+ */
+export interface OpenApiSkippedOperation {
+  method: string;
+  path: string;
+  reason: string;
+}
+/**
+ * One generated test, ready to persist or preview
+ */
+export interface OpenApiGeneratedFlow {
+  name: string;
+  description: string;
+  operationCount: number;
+  /**
+   * A Flow payload, keyed `actions` (not `nodes`) to match the persisted Flow contract
+   */
+  flow: {
+    actions: Action[];
+    edges: Edge[];
+    variables: {
+      input: OpenApiGeneratedVariable[];
+      output: OpenApiGeneratedVariable[];
+    };
+    parameters: {
+      input: OpenApiGeneratedVariable[];
+      output: OpenApiGeneratedVariable[];
+    };
+    zoom: {
+      x: number;
+      y: number;
+      zoom: number;
+    };
+  };
+  testId: string | null;
+}
+/**
+ * POST /api/openapi/:accountId/import response
+ */
+export interface OpenApiImportResponse {
+  title: string;
+  specVersion: string;
+  baseUrl: string;
+  authKind: OpenApiAuthKind;
+  variableTarget: OpenApiVariableTarget;
+  operationCount: number;
+  flows: OpenApiGeneratedFlow[];
+  variables: OpenApiGeneratedVariable[];
+  skipped: OpenApiSkippedOperation[];
+  warnings: string[];
 }
 /**
  * Request to execute a single test/flow
@@ -5942,6 +6067,16 @@ export interface TimelineDataPoint {
   errorRate: number;
 }
 /**
+ * Set on a test while it's excluded from suite runs (storage keeps quarantinedAt as a real Date; this is the wire shape with it as an ISO string)
+ */
+export interface TestQuarantine {
+  reason: QuarantineReason;
+  note?: string;
+  flakinessScore?: number | null;
+  quarantinedAt: string;
+  quarantinedBy: string;
+}
+/**
  * A user account member (wire shape; auth secrets stripped by toJSON)
  */
 export interface User {
@@ -6091,6 +6226,7 @@ export interface TestCatalogItem {
   status?: string;
   lastResult?: FlowLastResult;
   recentRuns?: TestRecentRun[];
+  quarantine?: TestQuarantine | null;
   createdAt?: string;
   updatedAt?: string;
 }
