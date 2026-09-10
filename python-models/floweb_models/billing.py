@@ -7,6 +7,7 @@ from enum import StrEnum
 from typing import Annotated
 
 from pydantic import AwareDatetime, BaseModel, ConfigDict, Field
+from typing_extensions import TypeAliasType
 
 
 class PlanId(StrEnum):
@@ -41,7 +42,7 @@ class FeatureId(StrEnum):
 
 class SubscriptionStatus(StrEnum):
     """
-    Lifecycle state of an account subscription. Only 'active' and 'trialing' grant entitlements.
+    Lifecycle state of an account subscription. Only 'active' and 'trialing' grant entitlements. 'past_due' means the period ended unpaid: the catalogue stays applied but chargeable activity is blocked until the invoice is settled.
     """
 
     active = 'active'
@@ -156,6 +157,11 @@ class UsageSnapshot(BaseModel):
     """
     Admin-granted credits left after this execution; spent only once the plan allowance is exhausted
     """
+
+
+MetricCreditsAdditionalProperty = TypeAliasType(
+    "MetricCreditsAdditionalProperty", Annotated[int, Field(ge=0)]
+)
 
 
 class FeatureDeniedReason(StrEnum):
@@ -351,6 +357,10 @@ class MetricUsage(BaseModel):
     limitPerMonth: Annotated[int | None, Field(ge=0)] = None
     remainingToday: Annotated[int | None, Field(ge=0)] = None
     remainingThisMonth: Annotated[int | None, Field(ge=0)] = None
+    credits: Annotated[int | None, Field(ge=0)] = None
+    """
+    Credits held for this metric
+    """
 
 
 class SpendState(BaseModel):
@@ -385,7 +395,7 @@ class InvoiceStatus(StrEnum):
 
 class InvoiceLineKind(StrEnum):
     """
-    What an invoice line represents.
+    What an invoice line represents. 'base' and 'seat' are prepaid for the period the invoice opens; 'metric' lines are charged in arrears for the period that just elapsed.
     """
 
     base = 'base'
@@ -413,7 +423,7 @@ class InvoiceLine(BaseModel):
 
 class Invoice(BaseModel):
     """
-    A billing statement for one period, generated on the account's anniversary. Lines are frozen at issue time.
+    A billing statement. Combines the prepaid charge for the period it opens with any metered usage from the period that just elapsed, so a rolling catalogue bills correctly without giving service before payment. Lines are frozen at issue time.
     """
 
     model_config = ConfigDict(
@@ -441,6 +451,11 @@ class Invoice(BaseModel):
     paymentReference: str | None = None
     createdAt: AwareDatetime | None = None
     updatedAt: AwareDatetime | None = None
+    coversPeriodStart: AwareDatetime | None = None
+    """
+    Start of the prepaid period this invoice opens once settled
+    """
+    coversPeriodEnd: AwareDatetime | None = None
 
 
 class CreditRequestStatus(StrEnum):
@@ -469,7 +484,7 @@ class CreditRequest(BaseModel):
     requestedByEmail: str | None = None
     metric: MeteredMetric | None = None
     """
-    Metric the credits are for; null means general-purpose credits
+    Metric the credits are for; null means general-purpose credits usable for executions
     """
     quantity: Annotated[int, Field(ge=1)]
     reason: Annotated[str, Field(max_length=1000)]
@@ -564,7 +579,15 @@ class AccountSubscription(BaseModel):
     baseMonthlyPrice: Annotated[float | None, Field(ge=0.0)] = None
     anniversaryDayOfMonth: Annotated[int | None, Field(ge=1, le=31)] = None
     """
-    Day the billing period rolls over and an invoice is generated
+    Deprecated: periods are anchored to payment, not to a fixed calendar day
+    """
+    periodStartsOnPayment: bool | None = True
+    """
+    A negotiated catalogue rolls over indefinitely and each period begins when its invoice is settled, so an account that pays late simply starts late on the same terms
+    """
+    serviceSuspendedAt: AwareDatetime | None = None
+    """
+    When activity was blocked for an unsettled period; cleared on payment
     """
 
 
@@ -606,6 +629,10 @@ class AccountEntitlements(BaseModel):
     True when a reached cap or an unpaid invoice suspends chargeable activity account-wide
     """
     blockedReason: str | None = None
+    metricCredits: dict[str, MetricCreditsAdditionalProperty] | None = None
+    """
+    Credits held per metric, spent once that metric's allowance is exhausted
+    """
 
 
 class FeatureDenied(BaseModel):

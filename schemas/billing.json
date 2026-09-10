@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://floweb.com/schemas/billing.json",
-  "$version": "1.2.0",
+  "$version": "1.4.0",
   "title": "Billing",
   "description": "Per-account plans, feature entitlements, metered usage and pricing. Entitlements are the authority for whether a feature may run; plans and catalogues are only ways to assemble them. FeatureId gates a capability, MeteredMetric counts it. Field-level source of truth is floweb-server subscription.model.ts.",
   "type": "object",
@@ -59,7 +59,7 @@
     },
     "SubscriptionStatus": {
       "type": "string",
-      "description": "Lifecycle state of an account subscription. Only 'active' and 'trialing' grant entitlements.",
+      "description": "Lifecycle state of an account subscription. Only 'active' and 'trialing' grant entitlements. 'past_due' means the period ended unpaid: the catalogue stays applied but chargeable activity is blocked until the invoice is settled.",
       "enum": [
         "active",
         "trialing",
@@ -333,7 +333,20 @@
           ],
           "minimum": 1,
           "maximum": 31,
-          "description": "Day the billing period rolls over and an invoice is generated"
+          "description": "Deprecated: periods are anchored to payment, not to a fixed calendar day"
+        },
+        "periodStartsOnPayment": {
+          "type": "boolean",
+          "default": true,
+          "description": "A negotiated catalogue rolls over indefinitely and each period begins when its invoice is settled, so an account that pays late simply starts late on the same terms"
+        },
+        "serviceSuspendedAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time",
+          "description": "When activity was blocked for an unsettled period; cleared on payment"
         }
       },
       "required": [
@@ -475,6 +488,14 @@
             "string",
             "null"
           ]
+        },
+        "metricCredits": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "description": "Credits held per metric, spent once that metric's allowance is exhausted"
         }
       },
       "required": [
@@ -874,6 +895,14 @@
             "null"
           ],
           "minimum": 0
+        },
+        "credits": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "description": "Credits held for this metric"
         }
       },
       "required": [
@@ -948,7 +977,7 @@
     },
     "InvoiceLineKind": {
       "type": "string",
-      "description": "What an invoice line represents.",
+      "description": "What an invoice line represents. 'base' and 'seat' are prepaid for the period the invoice opens; 'metric' lines are charged in arrears for the period that just elapsed.",
       "enum": [
         "base",
         "seat",
@@ -1000,7 +1029,7 @@
     },
     "Invoice": {
       "type": "object",
-      "description": "A billing statement for one period, generated on the account's anniversary. Lines are frozen at issue time.",
+      "description": "A billing statement. Combines the prepaid charge for the period it opens with any metered usage from the period that just elapsed, so a rolling catalogue bills correctly without giving service before payment. Lines are frozen at issue time.",
       "properties": {
         "id": {
           "type": "string"
@@ -1083,6 +1112,21 @@
         "updatedAt": {
           "type": "string",
           "format": "date-time"
+        },
+        "coversPeriodStart": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time",
+          "description": "Start of the prepaid period this invoice opens once settled"
+        },
+        "coversPeriodEnd": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
         }
       },
       "required": [
@@ -1136,7 +1180,7 @@
               "type": "null"
             }
           ],
-          "description": "Metric the credits are for; null means general-purpose credits"
+          "description": "Metric the credits are for; null means general-purpose credits usable for executions"
         },
         "quantity": {
           "type": "integer",

@@ -6,7 +6,7 @@
  */
 export type PlanId = "basic" | "premium" | "max" | "custom";
 /**
- * Lifecycle state of an account subscription. Only 'active' and 'trialing' grant entitlements.
+ * Lifecycle state of an account subscription. Only 'active' and 'trialing' grant entitlements. 'past_due' means the period ended unpaid: the catalogue stays applied but chargeable activity is blocked until the invoice is settled.
  */
 export type SubscriptionStatus = "active" | "trialing" | "past_due" | "cancelled";
 /**
@@ -71,7 +71,7 @@ export type CatalogueStatus =
   | "superseded"
   | "expired";
 /**
- * What an invoice line represents.
+ * What an invoice line represents. 'base' and 'seat' are prepaid for the period the invoice opens; 'metric' lines are charged in arrears for the period that just elapsed.
  */
 export type InvoiceLineKind = "base" | "seat" | "metric" | "credit_grant" | "adjustment";
 /**
@@ -185,9 +185,17 @@ export interface AccountSubscription {
   seatPriceMonthly?: number | null;
   baseMonthlyPrice?: number | null;
   /**
-   * Day the billing period rolls over and an invoice is generated
+   * Deprecated: periods are anchored to payment, not to a fixed calendar day
    */
   anniversaryDayOfMonth?: number | null;
+  /**
+   * A negotiated catalogue rolls over indefinitely and each period begins when its invoice is settled, so an account that pays late simply starts late on the same terms
+   */
+  periodStartsOnPayment?: boolean;
+  /**
+   * When activity was blocked for an unsettled period; cleared on payment
+   */
+  serviceSuspendedAt?: string | null;
 }
 /**
  * An administrator-set grant or revocation of a single feature, applied on top of the plan's feature list
@@ -287,6 +295,12 @@ export interface AccountEntitlements {
    */
   blocked?: boolean;
   blockedReason?: string | null;
+  /**
+   * Credits held per metric, spent once that metric's allowance is exhausted
+   */
+  metricCredits?: {
+    [k: string]: number;
+  };
 }
 /**
  * Consumption for the current UTC day, used to enforce executionsPerDay
@@ -315,6 +329,10 @@ export interface MetricUsage {
   limitPerMonth?: number | null;
   remainingToday?: number | null;
   remainingThisMonth?: number | null;
+  /**
+   * Credits held for this metric
+   */
+  credits?: number | null;
 }
 /**
  * Where an account or member stands against its spend caps right now. blocked is true once a cap is reached, which refuses further chargeable actions until the cap is raised.
@@ -405,7 +423,7 @@ export interface PricingCatalogue {
   clientResponseNote?: string | null;
 }
 /**
- * A billing statement for one period, generated on the account's anniversary. Lines are frozen at issue time.
+ * A billing statement. Combines the prepaid charge for the period it opens with any metered usage from the period that just elapsed, so a rolling catalogue bills correctly without giving service before payment. Lines are frozen at issue time.
  */
 export interface Invoice {
   id?: string;
@@ -430,6 +448,11 @@ export interface Invoice {
   paymentReference?: string | null;
   createdAt?: string;
   updatedAt?: string;
+  /**
+   * Start of the prepaid period this invoice opens once settled
+   */
+  coversPeriodStart?: string | null;
+  coversPeriodEnd?: string | null;
 }
 /**
  * One charge on an invoice. amount is quantity times unitPrice, stored rather than derived so a later price change cannot alter an issued invoice.
@@ -451,7 +474,7 @@ export interface CreditRequest {
   requestedByUserId: string;
   requestedByEmail?: string | null;
   /**
-   * Metric the credits are for; null means general-purpose credits
+   * Metric the credits are for; null means general-purpose credits usable for executions
    */
   metric?: MeteredMetric | null;
   quantity: number;
