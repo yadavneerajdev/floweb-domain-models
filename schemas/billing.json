@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://floweb.com/schemas/billing.json",
-  "$version": "1.1.0",
+  "$version": "1.2.0",
   "title": "Billing",
   "description": "Per-account plans, feature entitlements, metered usage and pricing. Entitlements are the authority for whether a feature may run; plans and catalogues are only ways to assemble them. FeatureId gates a capability, MeteredMetric counts it. Field-level source of truth is floweb-server subscription.model.ts.",
   "type": "object",
@@ -23,6 +23,9 @@
     },
     "creditRequest": {
       "$ref": "#/$defs/CreditRequest"
+    },
+    "ticketPayload": {
+      "$ref": "#/$defs/TicketCommentPayload"
     }
   },
   "$defs": {
@@ -653,9 +656,12 @@
     },
     "CatalogueStatus": {
       "type": "string",
-      "description": "Lifecycle of an administrator-authored pricing proposal. Only an 'accepted' catalogue grants entitlements.",
+      "description": "Lifecycle of an administrator-authored pricing proposal. A catalogue is negotiated in a support thread first and only becomes payable once the account has approved it there and an administrator has released it to billing. Only an 'accepted' catalogue grants entitlements.",
       "enum": [
         "draft",
+        "in_negotiation",
+        "client_approved",
+        "revision_requested",
         "sent",
         "accepted",
         "declined",
@@ -665,13 +671,17 @@
     },
     "PricingCatalogue": {
       "type": "object",
-      "description": "A per-account pricing proposal authored by a Floweb administrator. Immutable once sent: a revision creates a new catalogue pointing at the previous one via revisionOf, so the negotiation history stays auditable. Terms are copied onto the subscription when accepted, so later catalogue edits never retroactively change what an account agreed to.",
+      "description": "A per-account pricing proposal authored by a Floweb administrator. Negotiated in a support thread, then released to the account's billing page for payment. Immutable once proposed: a revision creates a new catalogue pointing at the previous one via revisionOf, so the negotiation history stays auditable. Terms are copied onto the subscription when accepted, so later catalogue edits never retroactively change what an account agreed to.",
       "properties": {
         "id": {
           "type": "string"
         },
         "accountId": {
-          "type": "string"
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Account the catalogue is for; null for one quoted offline before an account exists"
         },
         "billingModel": {
           "$ref": "#/$defs/BillingModel"
@@ -788,10 +798,32 @@
         "updatedAt": {
           "type": "string",
           "format": "date-time"
+        },
+        "proposedAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time",
+          "description": "When it was posted into the support thread for the account to review"
+        },
+        "clientRespondedAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "clientResponseNote": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 1000,
+          "description": "What the account said when approving or asking for a revision"
         }
       },
       "required": [
-        "accountId",
         "billingModel",
         "name",
         "status",
@@ -1170,6 +1202,62 @@
         "quantity",
         "reason",
         "status"
+      ]
+    },
+    "TicketPayloadKind": {
+      "type": "string",
+      "description": "What a structured support-thread message carries, beyond its text.",
+      "enum": [
+        "catalogue_proposal",
+        "catalogue_approval",
+        "catalogue_revision_request",
+        "credit_quote",
+        "credit_acceptance"
+      ]
+    },
+    "TicketCommentPayload": {
+      "type": "object",
+      "description": "A structured attachment on a support comment. The comment's own text stays the human message; this carries what the UI needs to render an actionable card and to link the thread to the billing document it is about.",
+      "properties": {
+        "kind": {
+          "$ref": "#/$defs/TicketPayloadKind"
+        },
+        "catalogueId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "creditRequestId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "summary": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 300,
+          "description": "One-line description shown on the card"
+        },
+        "amount": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "currency": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "kind"
       ]
     }
   }

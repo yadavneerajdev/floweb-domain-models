@@ -472,6 +472,8 @@ from .billing import (
     SpendCapScope,
     SpendState,
     SubscriptionStatus,
+    TicketCommentPayload,
+    TicketPayloadKind,
     UsageSnapshot,
 )
 
@@ -859,6 +861,8 @@ __all__ = [
     "TestQuarantine",
     "TestRecentRun",
     "Throttle",
+    "TicketCommentPayload",
+    "TicketPayloadKind",
     "TimelineDataPoint",
     "TokenRefreshConfig",
     "Totals",

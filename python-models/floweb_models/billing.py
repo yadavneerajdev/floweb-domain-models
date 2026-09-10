@@ -257,10 +257,13 @@ class SpendCap(BaseModel):
 
 class CatalogueStatus(StrEnum):
     """
-    Lifecycle of an administrator-authored pricing proposal. Only an 'accepted' catalogue grants entitlements.
+    Lifecycle of an administrator-authored pricing proposal. A catalogue is negotiated in a support thread first and only becomes payable once the account has approved it there and an administrator has released it to billing. Only an 'accepted' catalogue grants entitlements.
     """
 
     draft = 'draft'
+    in_negotiation = 'in_negotiation'
+    client_approved = 'client_approved'
+    revision_requested = 'revision_requested'
     sent = 'sent'
     accepted = 'accepted'
     declined = 'declined'
@@ -270,14 +273,17 @@ class CatalogueStatus(StrEnum):
 
 class PricingCatalogue(BaseModel):
     """
-    A per-account pricing proposal authored by a Floweb administrator. Immutable once sent: a revision creates a new catalogue pointing at the previous one via revisionOf, so the negotiation history stays auditable. Terms are copied onto the subscription when accepted, so later catalogue edits never retroactively change what an account agreed to.
+    A per-account pricing proposal authored by a Floweb administrator. Negotiated in a support thread, then released to the account's billing page for payment. Immutable once proposed: a revision creates a new catalogue pointing at the previous one via revisionOf, so the negotiation history stays auditable. Terms are copied onto the subscription when accepted, so later catalogue edits never retroactively change what an account agreed to.
     """
 
     model_config = ConfigDict(
         populate_by_name=True,
     )
     id: str | None = None
-    accountId: str
+    accountId: str | None = None
+    """
+    Account the catalogue is for; null for one quoted offline before an account exists
+    """
     billingModel: BillingModel
     name: Annotated[str, Field(max_length=80)]
     summary: Annotated[str | None, Field(max_length=500)] = None
@@ -319,6 +325,15 @@ class PricingCatalogue(BaseModel):
     acceptedByUserId: str | None = None
     createdAt: AwareDatetime | None = None
     updatedAt: AwareDatetime | None = None
+    proposedAt: AwareDatetime | None = None
+    """
+    When it was posted into the support thread for the account to review
+    """
+    clientRespondedAt: AwareDatetime | None = None
+    clientResponseNote: Annotated[str | None, Field(max_length=1000)] = None
+    """
+    What the account said when approving or asking for a revision
+    """
 
 
 class MetricUsage(BaseModel):
@@ -472,6 +487,37 @@ class CreditRequest(BaseModel):
     updatedAt: AwareDatetime | None = None
 
 
+class TicketPayloadKind(StrEnum):
+    """
+    What a structured support-thread message carries, beyond its text.
+    """
+
+    catalogue_proposal = 'catalogue_proposal'
+    catalogue_approval = 'catalogue_approval'
+    catalogue_revision_request = 'catalogue_revision_request'
+    credit_quote = 'credit_quote'
+    credit_acceptance = 'credit_acceptance'
+
+
+class TicketCommentPayload(BaseModel):
+    """
+    A structured attachment on a support comment. The comment's own text stays the human message; this carries what the UI needs to render an actionable card and to link the thread to the billing document it is about.
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    kind: TicketPayloadKind
+    catalogueId: str | None = None
+    creditRequestId: str | None = None
+    summary: Annotated[str | None, Field(max_length=300)] = None
+    """
+    One-line description shown on the card
+    """
+    amount: Annotated[float | None, Field(ge=0.0)] = None
+    currency: str | None = None
+
+
 class AccountSubscription(BaseModel):
     """
     The billing state of one account. featureOverrides lets an administrator grant or revoke individual capabilities independently of the plan, which is how the 'custom' plan is fulfilled.
@@ -593,3 +639,4 @@ class Billing(BaseModel):
     catalogue: PricingCatalogue | None = None
     invoice: Invoice | None = None
     creditRequest: CreditRequest | None = None
+    ticketPayload: TicketCommentPayload | None = None

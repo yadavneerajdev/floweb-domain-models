@@ -58,9 +58,18 @@ export type MeteredMetric =
  */
 export type SpendCapScope = "account" | "user";
 /**
- * Lifecycle of an administrator-authored pricing proposal. Only an 'accepted' catalogue grants entitlements.
+ * Lifecycle of an administrator-authored pricing proposal. A catalogue is negotiated in a support thread first and only becomes payable once the account has approved it there and an administrator has released it to billing. Only an 'accepted' catalogue grants entitlements.
  */
-export type CatalogueStatus = "draft" | "sent" | "accepted" | "declined" | "superseded" | "expired";
+export type CatalogueStatus =
+  | "draft"
+  | "in_negotiation"
+  | "client_approved"
+  | "revision_requested"
+  | "sent"
+  | "accepted"
+  | "declined"
+  | "superseded"
+  | "expired";
 /**
  * What an invoice line represents.
  */
@@ -73,6 +82,15 @@ export type InvoiceStatus = "draft" | "open" | "paid" | "past_due" | "void";
  * Lifecycle of an account's request for additional credits.
  */
 export type CreditRequestStatus = "requested" | "quoted" | "accepted" | "granted" | "declined";
+/**
+ * What a structured support-thread message carries, beyond its text.
+ */
+export type TicketPayloadKind =
+  | "catalogue_proposal"
+  | "catalogue_approval"
+  | "catalogue_revision_request"
+  | "credit_quote"
+  | "credit_acceptance";
 /**
  * Why an entitlement check failed, so callers can render the right call to action
  */
@@ -92,6 +110,7 @@ export interface BillingSchema {
   catalogue?: PricingCatalogue;
   invoice?: Invoice;
   creditRequest?: CreditRequest;
+  ticketPayload?: TicketCommentPayload;
   PlanId?: PlanId;
   FeatureId?: FeatureId;
   SubscriptionStatus?: SubscriptionStatus;
@@ -122,6 +141,8 @@ export interface BillingSchema {
   Invoice?: Invoice;
   CreditRequestStatus?: CreditRequestStatus;
   CreditRequest?: CreditRequest;
+  TicketPayloadKind?: TicketPayloadKind;
+  TicketCommentPayload?: TicketCommentPayload;
 }
 /**
  * The billing state of one account. featureOverrides lets an administrator grant or revoke individual capabilities independently of the plan, which is how the 'custom' plan is fulfilled.
@@ -324,11 +345,14 @@ export interface PlanCatalogEntry {
   contactOnly?: boolean;
 }
 /**
- * A per-account pricing proposal authored by a Floweb administrator. Immutable once sent: a revision creates a new catalogue pointing at the previous one via revisionOf, so the negotiation history stays auditable. Terms are copied onto the subscription when accepted, so later catalogue edits never retroactively change what an account agreed to.
+ * A per-account pricing proposal authored by a Floweb administrator. Negotiated in a support thread, then released to the account's billing page for payment. Immutable once proposed: a revision creates a new catalogue pointing at the previous one via revisionOf, so the negotiation history stays auditable. Terms are copied onto the subscription when accepted, so later catalogue edits never retroactively change what an account agreed to.
  */
 export interface PricingCatalogue {
   id?: string;
-  accountId: string;
+  /**
+   * Account the catalogue is for; null for one quoted offline before an account exists
+   */
+  accountId?: string | null;
   billingModel: BillingModel;
   name: string;
   summary?: string;
@@ -370,6 +394,15 @@ export interface PricingCatalogue {
   acceptedByUserId?: string | null;
   createdAt?: string;
   updatedAt?: string;
+  /**
+   * When it was posted into the support thread for the account to review
+   */
+  proposedAt?: string | null;
+  clientRespondedAt?: string | null;
+  /**
+   * What the account said when approving or asking for a revision
+   */
+  clientResponseNote?: string | null;
 }
 /**
  * A billing statement for one period, generated on the account's anniversary. Lines are frozen at issue time.
@@ -435,6 +468,20 @@ export interface CreditRequest {
   invoiceId?: string | null;
   createdAt?: string;
   updatedAt?: string;
+}
+/**
+ * A structured attachment on a support comment. The comment's own text stays the human message; this carries what the UI needs to render an actionable card and to link the thread to the billing document it is about.
+ */
+export interface TicketCommentPayload {
+  kind: TicketPayloadKind;
+  catalogueId?: string | null;
+  creditRequestId?: string | null;
+  /**
+   * One-line description shown on the card
+   */
+  summary?: string | null;
+  amount?: number | null;
+  currency?: string | null;
 }
 /**
  * Error payload returned with HTTP 402 when a gated feature is refused
