@@ -1,161 +1,1176 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://floweb.com/schemas/billing.json",
-  "$version": "1.0.0",
+  "$version": "1.1.0",
   "title": "Billing",
-  "description": "Per-account plans, feature entitlements and usage quotas. Entitlements are the authority for whether a feature may run; plans are only a convenient way to assemble them. Field-level source of truth is floweb-server subscription.model.ts.",
+  "description": "Per-account plans, feature entitlements, metered usage and pricing. Entitlements are the authority for whether a feature may run; plans and catalogues are only ways to assemble them. FeatureId gates a capability, MeteredMetric counts it. Field-level source of truth is floweb-server subscription.model.ts.",
   "type": "object",
   "properties": {
-    "subscription": { "$ref": "#/$defs/AccountSubscription" },
-    "entitlements": { "$ref": "#/$defs/AccountEntitlements" },
-    "catalog": { "$ref": "#/$defs/PlanCatalogEntry" }
+    "subscription": {
+      "$ref": "#/$defs/AccountSubscription"
+    },
+    "entitlements": {
+      "$ref": "#/$defs/AccountEntitlements"
+    },
+    "catalog": {
+      "$ref": "#/$defs/PlanCatalogEntry"
+    },
+    "catalogue": {
+      "$ref": "#/$defs/PricingCatalogue"
+    },
+    "invoice": {
+      "$ref": "#/$defs/Invoice"
+    },
+    "creditRequest": {
+      "$ref": "#/$defs/CreditRequest"
+    }
   },
   "$defs": {
     "PlanId": {
       "type": "string",
       "description": "Billing plan identifier. 'custom' is assigned manually by a Floweb administrator.",
-      "enum": ["basic", "premium", "max", "custom"]
+      "enum": [
+        "basic",
+        "premium",
+        "max",
+        "custom"
+      ]
     },
     "FeatureId": {
       "type": "string",
       "description": "A gateable product capability. Every enforcement point in the server, engine and UI keys off one of these.",
-      "enum": ["test_creation", "test_execution", "reporting", "advanced_analytics", "recorder", "self_healing_basic", "self_healing_ai", "ai_assistant", "ai_test_generation", "ai_vibe_testing", "parallel_execution", "performance_testing"]
+      "enum": [
+        "test_creation",
+        "test_execution",
+        "reporting",
+        "advanced_analytics",
+        "recorder",
+        "self_healing_basic",
+        "self_healing_ai",
+        "ai_assistant",
+        "ai_test_generation",
+        "ai_vibe_testing",
+        "parallel_execution",
+        "performance_testing"
+      ]
     },
     "SubscriptionStatus": {
       "type": "string",
       "description": "Lifecycle state of an account subscription. Only 'active' and 'trialing' grant entitlements.",
-      "enum": ["active", "trialing", "past_due", "cancelled"]
+      "enum": [
+        "active",
+        "trialing",
+        "past_due",
+        "cancelled"
+      ]
     },
     "PaymentStatus": {
       "type": "string",
       "description": "Outcome of a simulated payment attempt",
-      "enum": ["succeeded", "failed", "refunded"]
+      "enum": [
+        "succeeded",
+        "failed",
+        "refunded"
+      ]
     },
     "BillingInterval": {
       "type": "string",
       "description": "Billing cadence for a plan price",
-      "enum": ["monthly", "yearly"]
+      "enum": [
+        "monthly",
+        "yearly"
+      ]
     },
     "PlanQuotas": {
       "type": "object",
       "description": "Numeric limits attached to a plan. A null value means unlimited.",
       "properties": {
-        "executionsPerDay": { "type": ["integer", "null"], "minimum": 0 },
-        "maxTests": { "type": ["integer", "null"], "minimum": 0 },
-        "maxMembers": { "type": ["integer", "null"], "minimum": 0 }
+        "executionsPerDay": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "maxTests": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "maxMembers": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        }
       },
-      "required": ["executionsPerDay"]
+      "required": [
+        "executionsPerDay"
+      ]
     },
     "PlanCatalogEntry": {
       "type": "object",
       "description": "A purchasable plan as advertised on the billing page",
       "properties": {
-        "id": { "$ref": "#/$defs/PlanId" },
-        "name": { "type": "string", "maxLength": 60 },
-        "description": { "type": "string", "maxLength": 300 },
-        "priceMonthly": { "type": ["number", "null"], "minimum": 0 },
-        "priceYearly": { "type": ["number", "null"], "minimum": 0 },
-        "currency": { "type": "string", "default": "USD" },
-        "features": { "type": "array", "items": { "$ref": "#/$defs/FeatureId" } },
-        "quotas": { "$ref": "#/$defs/PlanQuotas" },
-        "highlights": { "type": "array", "items": { "type": "string" } },
-        "contactOnly": { "type": "boolean", "default": false }
+        "id": {
+          "$ref": "#/$defs/PlanId"
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 60
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 300
+        },
+        "priceMonthly": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "priceYearly": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "currency": {
+          "type": "string",
+          "default": "USD"
+        },
+        "features": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FeatureId"
+          }
+        },
+        "quotas": {
+          "$ref": "#/$defs/PlanQuotas"
+        },
+        "highlights": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "contactOnly": {
+          "type": "boolean",
+          "default": false
+        }
       },
-      "required": ["id", "name", "description", "features", "quotas"]
+      "required": [
+        "id",
+        "name",
+        "description",
+        "features",
+        "quotas"
+      ]
     },
     "PaymentRecord": {
       "type": "object",
       "description": "A simulated payment attempt retained for the billing history table. No real gateway is involved and no card data is stored.",
       "properties": {
-        "id": { "type": "string" },
-        "planId": { "$ref": "#/$defs/PlanId" },
-        "amount": { "type": "number", "minimum": 0 },
-        "currency": { "type": "string", "default": "USD" },
-        "interval": { "$ref": "#/$defs/BillingInterval" },
-        "status": { "$ref": "#/$defs/PaymentStatus" },
-        "cardLast4": { "type": "string", "maxLength": 4 },
-        "reference": { "type": "string", "description": "Simulated gateway reference" },
-        "createdAt": { "type": "string", "format": "date-time" }
+        "id": {
+          "type": "string"
+        },
+        "planId": {
+          "$ref": "#/$defs/PlanId"
+        },
+        "amount": {
+          "type": "number",
+          "minimum": 0
+        },
+        "currency": {
+          "type": "string",
+          "default": "USD"
+        },
+        "interval": {
+          "$ref": "#/$defs/BillingInterval"
+        },
+        "status": {
+          "$ref": "#/$defs/PaymentStatus"
+        },
+        "cardLast4": {
+          "type": "string",
+          "maxLength": 4
+        },
+        "reference": {
+          "type": "string",
+          "description": "Simulated gateway reference"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
       },
-      "required": ["id", "planId", "amount", "status", "createdAt"]
+      "required": [
+        "id",
+        "planId",
+        "amount",
+        "status",
+        "createdAt"
+      ]
     },
     "AccountSubscription": {
       "type": "object",
       "description": "The billing state of one account. featureOverrides lets an administrator grant or revoke individual capabilities independently of the plan, which is how the 'custom' plan is fulfilled.",
       "properties": {
-        "id": { "type": "string" },
-        "accountId": { "type": "string" },
-        "planId": { "$ref": "#/$defs/PlanId" },
-        "status": { "$ref": "#/$defs/SubscriptionStatus" },
-        "interval": { "$ref": "#/$defs/BillingInterval" },
-        "features": { "type": "array", "items": { "$ref": "#/$defs/FeatureId" }, "description": "Resolved feature list persisted at purchase time so a catalog change never silently alters a paid account" },
-        "featureOverrides": { "type": "array", "items": { "$ref": "#/$defs/FeatureOverride" } },
-        "quotas": { "$ref": "#/$defs/PlanQuotas" },
-        "currentPeriodStart": { "type": "string", "format": "date-time" },
-        "currentPeriodEnd": { "type": "string", "format": "date-time" },
-        "cancelAtPeriodEnd": { "type": "boolean", "default": false },
-        "payments": { "type": "array", "items": { "$ref": "#/$defs/PaymentRecord" } },
-        "createdAt": { "type": "string", "format": "date-time" },
-        "updatedAt": { "type": "string", "format": "date-time" }
+        "id": {
+          "type": "string"
+        },
+        "accountId": {
+          "type": "string"
+        },
+        "planId": {
+          "$ref": "#/$defs/PlanId"
+        },
+        "status": {
+          "$ref": "#/$defs/SubscriptionStatus"
+        },
+        "interval": {
+          "$ref": "#/$defs/BillingInterval"
+        },
+        "features": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FeatureId"
+          },
+          "description": "Resolved feature list persisted at purchase time so a catalog change never silently alters a paid account"
+        },
+        "featureOverrides": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FeatureOverride"
+          }
+        },
+        "quotas": {
+          "$ref": "#/$defs/PlanQuotas"
+        },
+        "currentPeriodStart": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "currentPeriodEnd": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "cancelAtPeriodEnd": {
+          "type": "boolean",
+          "default": false
+        },
+        "payments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PaymentRecord"
+          }
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "billingModel": {
+          "$ref": "#/$defs/BillingModel"
+        },
+        "catalogueId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Accepted catalogue whose terms are in force"
+        },
+        "allowances": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/MetricAllowance"
+          },
+          "description": "Per-metric ceilings copied from the accepted catalogue"
+        },
+        "prices": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/MetricPrice"
+          },
+          "description": "Per-metric unit prices copied from the accepted catalogue"
+        },
+        "spendCaps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SpendCap"
+          },
+          "description": "Caps set by the account owner or admin, not by Floweb"
+        },
+        "seatPriceMonthly": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "baseMonthlyPrice": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "anniversaryDayOfMonth": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1,
+          "maximum": 31,
+          "description": "Day the billing period rolls over and an invoice is generated"
+        }
       },
-      "required": ["accountId", "planId", "status", "features", "quotas", "currentPeriodStart", "currentPeriodEnd"]
+      "required": [
+        "accountId",
+        "planId",
+        "status",
+        "features",
+        "quotas",
+        "currentPeriodStart",
+        "currentPeriodEnd"
+      ]
     },
     "FeatureOverride": {
       "type": "object",
       "description": "An administrator-set grant or revocation of a single feature, applied on top of the plan's feature list",
       "properties": {
-        "feature": { "$ref": "#/$defs/FeatureId" },
-        "enabled": { "type": "boolean" },
-        "note": { "type": "string", "maxLength": 200 }
+        "feature": {
+          "$ref": "#/$defs/FeatureId"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "note": {
+          "type": "string",
+          "maxLength": 200
+        }
       },
-      "required": ["feature", "enabled"]
+      "required": [
+        "feature",
+        "enabled"
+      ]
     },
     "UsageSnapshot": {
       "type": "object",
       "description": "Consumption for the current UTC day, used to enforce executionsPerDay",
       "properties": {
-        "date": { "type": "string", "description": "UTC day key, YYYY-MM-DD" },
-        "executions": { "type": "integer", "minimum": 0 },
-        "executionsLimit": { "type": ["integer", "null"], "minimum": 0 },
-        "executionsRemaining": { "type": ["integer", "null"], "minimum": 0 },
-        "creditsRemaining": { "type": ["integer", "null"], "minimum": 0, "description": "Admin-granted credits left after this execution; spent only once the plan allowance is exhausted" }
+        "date": {
+          "type": "string",
+          "description": "UTC day key, YYYY-MM-DD"
+        },
+        "executions": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "executionsLimit": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "executionsRemaining": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "creditsRemaining": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "description": "Admin-granted credits left after this execution; spent only once the plan allowance is exhausted"
+        }
       },
-      "required": ["date", "executions"]
+      "required": [
+        "date",
+        "executions"
+      ]
     },
     "AccountEntitlements": {
       "type": "object",
       "description": "The resolved answer to 'what may this account do right now'. Sent to the UI on load and to the engine in its runtime context; both treat it as read-only.",
       "properties": {
-        "accountId": { "type": "string" },
-        "planId": { "$ref": "#/$defs/PlanId" },
-        "planName": { "type": "string" },
-        "status": { "$ref": "#/$defs/SubscriptionStatus" },
-        "features": { "type": "array", "items": { "$ref": "#/$defs/FeatureId" } },
-        "quotas": { "$ref": "#/$defs/PlanQuotas" },
-        "usage": { "$ref": "#/$defs/UsageSnapshot" },
-        "credits": { "type": "integer", "minimum": 0, "description": "Admin-granted credits available once the daily plan allowance is spent" },
-        "aiEnabledByUser": { "type": "boolean", "default": true, "description": "Account preference gating AI at runtime; AI runs only when this is true AND the matching feature is entitled" },
-        "currentPeriodEnd": { "type": "string", "format": "date-time" }
+        "accountId": {
+          "type": "string"
+        },
+        "planId": {
+          "$ref": "#/$defs/PlanId"
+        },
+        "planName": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/SubscriptionStatus"
+        },
+        "features": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FeatureId"
+          }
+        },
+        "quotas": {
+          "$ref": "#/$defs/PlanQuotas"
+        },
+        "usage": {
+          "$ref": "#/$defs/UsageSnapshot"
+        },
+        "credits": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Admin-granted credits available once the daily plan allowance is spent"
+        },
+        "aiEnabledByUser": {
+          "type": "boolean",
+          "default": true,
+          "description": "Account preference gating AI at runtime; AI runs only when this is true AND the matching feature is entitled"
+        },
+        "currentPeriodEnd": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "billingModel": {
+          "$ref": "#/$defs/BillingModel"
+        },
+        "metrics": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/MetricUsage"
+          },
+          "description": "Per-metric consumption and remaining headroom for the caller"
+        },
+        "spend": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SpendState"
+          },
+          "description": "Cap state for the account and for the calling member"
+        },
+        "blocked": {
+          "type": "boolean",
+          "default": false,
+          "description": "True when a reached cap or an unpaid invoice suspends chargeable activity account-wide"
+        },
+        "blockedReason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
       },
-      "required": ["accountId", "planId", "status", "features", "quotas"]
+      "required": [
+        "accountId",
+        "planId",
+        "status",
+        "features",
+        "quotas"
+      ]
     },
     "FeatureDeniedReason": {
       "type": "string",
       "description": "Why an entitlement check failed, so callers can render the right call to action",
-      "enum": ["not_in_plan", "quota_exceeded", "subscription_inactive", "disabled_by_user"]
+      "enum": [
+        "not_in_plan",
+        "quota_exceeded",
+        "subscription_inactive",
+        "disabled_by_user",
+        "spend_cap_reached",
+        "allowance_exhausted",
+        "invoice_unpaid"
+      ]
     },
     "FeatureDenied": {
       "type": "object",
       "description": "Error payload returned with HTTP 402 when a gated feature is refused",
       "properties": {
-        "code": { "type": "string", "default": "FEATURE_NOT_ENTITLED" },
-        "feature": { "$ref": "#/$defs/FeatureId" },
-        "reason": { "$ref": "#/$defs/FeatureDeniedReason" },
-        "message": { "type": "string" },
-        "requiredPlan": { "$ref": "#/$defs/PlanId" },
-        "currentPlan": { "$ref": "#/$defs/PlanId" }
+        "code": {
+          "type": "string",
+          "default": "FEATURE_NOT_ENTITLED"
+        },
+        "feature": {
+          "$ref": "#/$defs/FeatureId"
+        },
+        "reason": {
+          "$ref": "#/$defs/FeatureDeniedReason"
+        },
+        "message": {
+          "type": "string"
+        },
+        "requiredPlan": {
+          "$ref": "#/$defs/PlanId"
+        },
+        "currentPlan": {
+          "$ref": "#/$defs/PlanId"
+        },
+        "metric": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/MeteredMetric"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
       },
-      "required": ["code", "feature", "reason", "message"]
+      "required": [
+        "code",
+        "feature",
+        "reason",
+        "message"
+      ]
+    },
+    "MeteredMetric": {
+      "type": "string",
+      "description": "A countable unit of consumption. Distinct from FeatureId: a feature is gateable, a metric is billable. Every metric that maps to a gated capability is enforced through that feature as well.",
+      "enum": [
+        "test_execution",
+        "suite_execution",
+        "api_test_execution",
+        "performance_test_run",
+        "test_creation",
+        "crawl_generation",
+        "recorder_session",
+        "ai_test_generation",
+        "ai_assistant_message",
+        "ai_vibe_testing",
+        "self_healing_ai",
+        "seat"
+      ]
+    },
+    "BillingModel": {
+      "type": "string",
+      "description": "How an account is charged. 'fixed' bills a recurring amount and caps each metric with an allowance; 'pay_as_you_go' bills per unit consumed plus an optional per-seat charge.",
+      "enum": [
+        "fixed",
+        "pay_as_you_go"
+      ]
+    },
+    "MetricAllowance": {
+      "type": "object",
+      "description": "A fixed plan's ceiling for one metric. A null limit means unlimited. Daily limits reset at 00:00 UTC; monthly limits reset on the account's anniversary.",
+      "properties": {
+        "metric": {
+          "$ref": "#/$defs/MeteredMetric"
+        },
+        "limitPerDay": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "limitPerMonth": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        }
+      },
+      "required": [
+        "metric"
+      ]
+    },
+    "MetricPrice": {
+      "type": "object",
+      "description": "Pay-as-you-go unit price for one metric, set by a Floweb administrator and agreed by the account before it takes effect.",
+      "properties": {
+        "metric": {
+          "$ref": "#/$defs/MeteredMetric"
+        },
+        "unitPrice": {
+          "type": "number",
+          "minimum": 0
+        },
+        "unit": {
+          "type": "string",
+          "maxLength": 40,
+          "description": "Human label for one billable unit, e.g. 'per execution'"
+        }
+      },
+      "required": [
+        "metric",
+        "unitPrice"
+      ]
+    },
+    "SpendCapScope": {
+      "type": "string",
+      "description": "Whether a cap applies to the whole account or to each individual member.",
+      "enum": [
+        "account",
+        "user"
+      ]
+    },
+    "SpendCap": {
+      "type": "object",
+      "description": "A ceiling set by the account owner or admin on pay-as-you-go spend. Enforcement triggers when the cap is reached, not exceeded, so the final chargeable action is the one that meets the limit. Account and user caps are both enforced and the stricter one wins.",
+      "properties": {
+        "scope": {
+          "$ref": "#/$defs/SpendCapScope"
+        },
+        "limitDaily": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "limitMonthly": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "userId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Set only for a per-member override of the account's user-scope default"
+        }
+      },
+      "required": [
+        "scope"
+      ]
+    },
+    "CatalogueStatus": {
+      "type": "string",
+      "description": "Lifecycle of an administrator-authored pricing proposal. Only an 'accepted' catalogue grants entitlements.",
+      "enum": [
+        "draft",
+        "sent",
+        "accepted",
+        "declined",
+        "superseded",
+        "expired"
+      ]
+    },
+    "PricingCatalogue": {
+      "type": "object",
+      "description": "A per-account pricing proposal authored by a Floweb administrator. Immutable once sent: a revision creates a new catalogue pointing at the previous one via revisionOf, so the negotiation history stays auditable. Terms are copied onto the subscription when accepted, so later catalogue edits never retroactively change what an account agreed to.",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "accountId": {
+          "type": "string"
+        },
+        "billingModel": {
+          "$ref": "#/$defs/BillingModel"
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "summary": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "currency": {
+          "type": "string",
+          "default": "USD"
+        },
+        "baseMonthlyPrice": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "description": "Recurring charge for a fixed catalogue; null for pure pay-as-you-go"
+        },
+        "seatPriceMonthly": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "description": "Per-member monthly charge, counted from active account members at invoice time"
+        },
+        "allowances": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/MetricAllowance"
+          },
+          "description": "Populated for a fixed catalogue"
+        },
+        "prices": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/MetricPrice"
+          },
+          "description": "Populated for a pay-as-you-go catalogue"
+        },
+        "features": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FeatureId"
+          },
+          "description": "Capabilities the catalogue unlocks"
+        },
+        "status": {
+          "$ref": "#/$defs/CatalogueStatus"
+        },
+        "ticketId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Support thread the catalogue was negotiated in"
+        },
+        "revisionOf": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Catalogue this one supersedes"
+        },
+        "validUntil": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "createdByAdminId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "createdByAdminEmail": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "sentAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "respondedAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "acceptedByUserId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "accountId",
+        "billingModel",
+        "name",
+        "status",
+        "allowances",
+        "prices",
+        "features"
+      ]
+    },
+    "MetricUsage": {
+      "type": "object",
+      "description": "Consumption of one metric over a window, with the money it accrued. Cost is zero on a fixed catalogue, where allowances rather than prices apply.",
+      "properties": {
+        "metric": {
+          "$ref": "#/$defs/MeteredMetric"
+        },
+        "count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "cost": {
+          "type": "number",
+          "minimum": 0
+        },
+        "limitPerDay": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "limitPerMonth": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "remainingToday": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "remainingThisMonth": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        }
+      },
+      "required": [
+        "metric",
+        "count",
+        "cost"
+      ]
+    },
+    "SpendState": {
+      "type": "object",
+      "description": "Where an account or member stands against its spend caps right now. blocked is true once a cap is reached, which refuses further chargeable actions until the cap is raised.",
+      "properties": {
+        "scope": {
+          "$ref": "#/$defs/SpendCapScope"
+        },
+        "userId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "spentToday": {
+          "type": "number",
+          "minimum": 0
+        },
+        "spentThisMonth": {
+          "type": "number",
+          "minimum": 0
+        },
+        "limitDaily": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "limitMonthly": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "blocked": {
+          "type": "boolean",
+          "default": false
+        },
+        "blockedReason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "scope",
+        "spentToday",
+        "spentThisMonth",
+        "blocked"
+      ]
+    },
+    "InvoiceStatus": {
+      "type": "string",
+      "description": "Lifecycle of a generated invoice. 'open' is billed and awaiting payment; 'void' was cancelled by an administrator.",
+      "enum": [
+        "draft",
+        "open",
+        "paid",
+        "past_due",
+        "void"
+      ]
+    },
+    "InvoiceLineKind": {
+      "type": "string",
+      "description": "What an invoice line represents.",
+      "enum": [
+        "base",
+        "seat",
+        "metric",
+        "credit_grant",
+        "adjustment"
+      ]
+    },
+    "InvoiceLine": {
+      "type": "object",
+      "description": "One charge on an invoice. amount is quantity times unitPrice, stored rather than derived so a later price change cannot alter an issued invoice.",
+      "properties": {
+        "kind": {
+          "$ref": "#/$defs/InvoiceLineKind"
+        },
+        "metric": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/MeteredMetric"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "quantity": {
+          "type": "number",
+          "minimum": 0
+        },
+        "unitPrice": {
+          "type": "number",
+          "minimum": 0
+        },
+        "amount": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "kind",
+        "description",
+        "quantity",
+        "unitPrice",
+        "amount"
+      ]
+    },
+    "Invoice": {
+      "type": "object",
+      "description": "A billing statement for one period, generated on the account's anniversary. Lines are frozen at issue time.",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "number": {
+          "type": "string",
+          "description": "Human-facing invoice number"
+        },
+        "accountId": {
+          "type": "string"
+        },
+        "accountName": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "billingModel": {
+          "$ref": "#/$defs/BillingModel"
+        },
+        "currency": {
+          "type": "string",
+          "default": "USD"
+        },
+        "periodStart": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "periodEnd": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/InvoiceLine"
+          }
+        },
+        "subtotal": {
+          "type": "number"
+        },
+        "creditsApplied": {
+          "type": "number",
+          "minimum": 0
+        },
+        "total": {
+          "type": "number"
+        },
+        "status": {
+          "$ref": "#/$defs/InvoiceStatus"
+        },
+        "issuedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "dueAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "paidAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "paymentReference": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "accountId",
+        "billingModel",
+        "periodStart",
+        "periodEnd",
+        "lines",
+        "subtotal",
+        "total",
+        "status",
+        "issuedAt"
+      ]
+    },
+    "CreditRequestStatus": {
+      "type": "string",
+      "description": "Lifecycle of an account's request for additional credits.",
+      "enum": [
+        "requested",
+        "quoted",
+        "accepted",
+        "granted",
+        "declined"
+      ]
+    },
+    "CreditRequest": {
+      "type": "object",
+      "description": "A structured request for additional credits, raised from the billing page and negotiated in a support thread. Once granted, the quoted amount is added to the account's next invoice.",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "accountId": {
+          "type": "string"
+        },
+        "requestedByUserId": {
+          "type": "string"
+        },
+        "requestedByEmail": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "metric": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/MeteredMetric"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Metric the credits are for; null means general-purpose credits"
+        },
+        "quantity": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "reason": {
+          "type": "string",
+          "maxLength": 1000
+        },
+        "status": {
+          "$ref": "#/$defs/CreditRequestStatus"
+        },
+        "quotedUnitPrice": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "quotedTotal": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "currency": {
+          "type": "string",
+          "default": "USD"
+        },
+        "ticketId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "grantedAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "invoiceId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Invoice the granted credits were charged on"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "accountId",
+        "requestedByUserId",
+        "quantity",
+        "reason",
+        "status"
+      ]
     }
   }
 }
