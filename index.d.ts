@@ -1686,6 +1686,55 @@ export type DesktopTypeTextConfig = DesktopVisualBaseConfig & {
   postActionWaitMs?: number;
 };
 /**
+ * Fill a sequence of desktop form fields located by image, explicit coordinates, or Tab order.
+ */
+export type DesktopFillFormConfig = DesktopVisualBaseConfig & {
+  /**
+   * Ordered list of fields to fill
+   */
+  fields?: DesktopFormField[];
+  /**
+   * Delay between key presses within a field, in milliseconds
+   */
+  intervalMs?: number;
+  /**
+   * Delay after finishing one field before moving to the next
+   */
+  interFieldWaitMs?: number;
+  /**
+   * Mouse move duration before each field click
+   */
+  moveDurationMs?: number;
+  /**
+   * Wait for each field's target image before clicking
+   */
+  waitForImage?: boolean;
+  /**
+   * Submit the form after all fields are filled
+   */
+  submitAfterFill?: boolean;
+  /**
+   * Target image for the submit button. If empty and submitX/submitY are both 0, Enter is pressed instead.
+   */
+  submitImage?: string;
+  /**
+   * Explicit X coordinate for the submit button, used when submitImage is empty
+   */
+  submitX?: number;
+  /**
+   * Explicit Y coordinate for the submit button, used when submitImage is empty
+   */
+  submitY?: number;
+  /**
+   * Delay after the whole form-fill sequence completes
+   */
+  postActionWaitMs?: number;
+  /**
+   * Variable to store per-field fill results
+   */
+  outputVariable?: string;
+};
+/**
  * Move desktop cursor to absolute or relative coordinates.
  */
 export type DesktopMoveMouseConfig = BaseActionConfig & {
@@ -2108,7 +2157,7 @@ export type DesktopVerifyImageConfig = DesktopVisualBaseConfig & {
   failOnMismatch?: boolean;
 };
 /**
- * Every automation action-type identifier (33 web + 17 desktop = 50).
+ * Every automation action-type identifier (29 web + 18 desktop + 3 api + 4 integrations + 6 core = 60).
  */
 export type ActionType =
   | "click"
@@ -2155,6 +2204,7 @@ export type ActionType =
   | "desktopClickImage"
   | "desktopClickPoint"
   | "desktopTypeText"
+  | "desktopFillForm"
   | "desktopMoveMouse"
   | "desktopDragAndDrop"
   | "desktopHotkey"
@@ -2171,7 +2221,7 @@ export type ActionType =
   | "discord"
   | "jira";
 /**
- * The 17 desktop automation action types (subset of ActionType).
+ * The 18 desktop automation action types (subset of ActionType).
  */
 export type DesktopActionType =
   | "desktopWaitForImage"
@@ -2180,6 +2230,7 @@ export type DesktopActionType =
   | "desktopClickImage"
   | "desktopClickPoint"
   | "desktopTypeText"
+  | "desktopFillForm"
   | "desktopMoveMouse"
   | "desktopDragAndDrop"
   | "desktopHotkey"
@@ -2195,6 +2246,47 @@ export type DesktopActionType =
  * Actions that call an external application's API.
  */
 export type IntegrationActionType = "gmail" | "slack" | "discord" | "jira";
+/**
+ * The 29 browser/DOM action types that require a live page context (subset of ActionType).
+ */
+export type WebActionType =
+  | "click"
+  | "input"
+  | "sendKeys"
+  | "scroll"
+  | "dragAndDrop"
+  | "fillForm"
+  | "clearInput"
+  | "assertion"
+  | "assertVisible"
+  | "getElementProperties"
+  | "switchToFrame"
+  | "exitFrame"
+  | "handlePopup"
+  | "fileUpload"
+  | "fileDownload"
+  | "navigate"
+  | "goForward"
+  | "goBack"
+  | "refresh"
+  | "openNewTab"
+  | "switchTab"
+  | "getPageInfo"
+  | "setViewport"
+  | "screenshot"
+  | "custom"
+  | "networkControl"
+  | "accessibilityAudit"
+  | "captureWebVitals"
+  | "visualRegression";
+/**
+ * The 3 direct service-call action types: generic HTTP calls and database queries (subset of ActionType).
+ */
+export type ApiActionType = "apiCall" | "dbQuery" | "dbInsert";
+/**
+ * The 6 platform-agnostic control-flow and generic utility action types that need neither a browser nor OS automation (subset of ActionType).
+ */
+export type CoreActionType = "conditional" | "loop" | "junction" | "callToFlow" | "wait" | "loadDataset";
 /**
  * AI provider selector
  */
@@ -2954,6 +3046,43 @@ export interface ApiFilePart {
    * MIME type of the part. Left to the server to infer when empty.
    */
   contentType?: string;
+}
+/**
+ * One field in a desktop form-fill sequence.
+ */
+export interface DesktopFormField {
+  /**
+   * Target image to click into this field. If empty and x/y are both 0, the engine Tabs from the previous field instead of clicking.
+   */
+  image?: string;
+  /**
+   * Explicit X coordinate to click into this field, used when image is empty
+   */
+  x?: number;
+  /**
+   * Explicit Y coordinate to click into this field, used when image is empty
+   */
+  y?: number;
+  /**
+   * X offset from the matched image's center before clicking
+   */
+  offsetX?: number;
+  /**
+   * Y offset from the matched image's center before clicking
+   */
+  offsetY?: number;
+  /**
+   * Text to type into this field
+   */
+  value: string;
+  /**
+   * text/password type the value; checkbox/radio just click the target once; select/file type the value then press Enter to confirm (dropdown type-ahead or a native file dialog's path field)
+   */
+  type?: "text" | "password" | "checkbox" | "radio" | "select" | "file";
+  /**
+   * Select-all and clear the field before typing (text/password/select/file only)
+   */
+  clearBeforeType?: boolean;
 }
 /**
  * Provider/model selection for an AI request
@@ -4201,6 +4330,34 @@ export interface HealedSelectorRecord {
   semantic_reason?: string;
   suggestions?: HealedSelectorSuggestion[];
 }
+/**
+ * The coordinate analog of HealedSelectorRecord: a desktop action's image-resolved (x, y) differing from what's currently stored in its config. Image targeting always wins over a stored coordinate when both are configured, so the stored value is a fallback/reference that can go stale as the screen layout changes.
+ */
+export interface HealedCoordinateRecord {
+  node_id: string;
+  action_type: string;
+  /**
+   * Config field name to update for the X coordinate, e.g. startX
+   */
+  x_key: string;
+  /**
+   * Config field name to update for the Y coordinate, e.g. startY
+   */
+  y_key: string;
+  /**
+   * Index into config.fields[] for multi-field actions like desktopFillForm; null for single-target actions like desktopDragAndDrop
+   */
+  field_index?: number | null;
+  original_x?: number;
+  original_y?: number;
+  healed_x: number;
+  healed_y: number;
+  /**
+   * How the healed coordinate was resolved, e.g. image-match
+   */
+  source?: string;
+  confidence?: number | null;
+}
 export interface SelectorCandidateSuggestion {
   selector: string;
   source?: string;
@@ -4345,6 +4502,7 @@ export interface FlowReport {
   };
   healed_selectors?: HealedSelectorRecord[];
   candidate_selectors?: SelectorCandidateRecord[];
+  coordinate_heals?: HealedCoordinateRecord[];
 }
 /**
  * Flow validation warning or error

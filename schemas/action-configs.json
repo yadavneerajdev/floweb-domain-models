@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://floweb.com/schemas/action-configs.json",
-  "$version": "1.7.0",
+  "$version": "1.8.0",
   "title": "Action Configurations",
   "description": "Configuration schemas for all automation actions",
   "type": "object",
@@ -142,6 +142,9 @@
             },
             {
               "$ref": "#/$defs/DesktopTypeTextConfig"
+            },
+            {
+              "$ref": "#/$defs/DesktopFillFormConfig"
             },
             {
               "$ref": "#/$defs/DesktopMoveMouseConfig"
@@ -3026,6 +3029,137 @@
         }
       ],
       "description": "Type text in desktop context with optional image focus."
+    },
+    "DesktopFormField": {
+      "type": "object",
+      "properties": {
+        "image": {
+          "type": "string",
+          "default": "",
+          "description": "Target image to click into this field. If empty and x/y are both 0, the engine Tabs from the previous field instead of clicking."
+        },
+        "x": {
+          "type": "integer",
+          "default": 0,
+          "description": "Explicit X coordinate to click into this field, used when image is empty"
+        },
+        "y": {
+          "type": "integer",
+          "default": 0,
+          "description": "Explicit Y coordinate to click into this field, used when image is empty"
+        },
+        "offsetX": {
+          "type": "integer",
+          "default": 0,
+          "description": "X offset from the matched image's center before clicking"
+        },
+        "offsetY": {
+          "type": "integer",
+          "default": 0,
+          "description": "Y offset from the matched image's center before clicking"
+        },
+        "value": {
+          "type": "string",
+          "default": "",
+          "description": "Text to type into this field"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "text",
+            "password",
+            "checkbox",
+            "radio",
+            "select",
+            "file"
+          ],
+          "default": "text",
+          "description": "text/password type the value; checkbox/radio just click the target once; select/file type the value then press Enter to confirm (dropdown type-ahead or a native file dialog's path field)"
+        },
+        "clearBeforeType": {
+          "type": "boolean",
+          "default": true,
+          "description": "Select-all and clear the field before typing (text/password/select/file only)"
+        }
+      },
+      "required": [
+        "value"
+      ],
+      "description": "One field in a desktop form-fill sequence."
+    },
+    "DesktopFillFormConfig": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/DesktopVisualBaseConfig"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "fields": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/DesktopFormField"
+              },
+              "description": "Ordered list of fields to fill"
+            },
+            "intervalMs": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 25,
+              "description": "Delay between key presses within a field, in milliseconds"
+            },
+            "interFieldWaitMs": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 150,
+              "description": "Delay after finishing one field before moving to the next"
+            },
+            "moveDurationMs": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 120,
+              "description": "Mouse move duration before each field click"
+            },
+            "waitForImage": {
+              "type": "boolean",
+              "default": true,
+              "description": "Wait for each field's target image before clicking"
+            },
+            "submitAfterFill": {
+              "type": "boolean",
+              "default": false,
+              "description": "Submit the form after all fields are filled"
+            },
+            "submitImage": {
+              "type": "string",
+              "default": "",
+              "description": "Target image for the submit button. If empty and submitX/submitY are both 0, Enter is pressed instead."
+            },
+            "submitX": {
+              "type": "integer",
+              "default": 0,
+              "description": "Explicit X coordinate for the submit button, used when submitImage is empty"
+            },
+            "submitY": {
+              "type": "integer",
+              "default": 0,
+              "description": "Explicit Y coordinate for the submit button, used when submitImage is empty"
+            },
+            "postActionWaitMs": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 300,
+              "description": "Delay after the whole form-fill sequence completes"
+            },
+            "outputVariable": {
+              "type": "string",
+              "default": "desktopFormFillResult",
+              "description": "Variable to store per-field fill results"
+            }
+          }
+        }
+      ],
+      "description": "Fill a sequence of desktop form fields located by image, explicit coordinates, or Tab order."
     },
     "DesktopMoveMouseConfig": {
       "allOf": [

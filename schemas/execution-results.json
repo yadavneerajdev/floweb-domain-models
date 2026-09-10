@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://floweb.com/schemas/execution-results.json",
-  "$version": "1.1.0",
+  "$version": "1.2.0",
   "title": "Execution Results Models",
   "description": "Schema for action execution results and flow reports",
   "type": "object",
@@ -357,6 +357,59 @@
         "healed_selector"
       ]
     },
+    "HealedCoordinateRecord": {
+      "type": "object",
+      "description": "The coordinate analog of HealedSelectorRecord: a desktop action's image-resolved (x, y) differing from what's currently stored in its config. Image targeting always wins over a stored coordinate when both are configured, so the stored value is a fallback/reference that can go stale as the screen layout changes.",
+      "properties": {
+        "node_id": {
+          "type": "string"
+        },
+        "action_type": {
+          "type": "string"
+        },
+        "x_key": {
+          "type": "string",
+          "description": "Config field name to update for the X coordinate, e.g. startX"
+        },
+        "y_key": {
+          "type": "string",
+          "description": "Config field name to update for the Y coordinate, e.g. startY"
+        },
+        "field_index": {
+          "type": ["integer", "null"],
+          "description": "Index into config.fields[] for multi-field actions like desktopFillForm; null for single-target actions like desktopDragAndDrop"
+        },
+        "original_x": {
+          "type": "integer"
+        },
+        "original_y": {
+          "type": "integer"
+        },
+        "healed_x": {
+          "type": "integer"
+        },
+        "healed_y": {
+          "type": "integer"
+        },
+        "source": {
+          "type": "string",
+          "description": "How the healed coordinate was resolved, e.g. image-match"
+        },
+        "confidence": {
+          "type": ["number", "null"],
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "required": [
+        "node_id",
+        "action_type",
+        "x_key",
+        "y_key",
+        "healed_x",
+        "healed_y"
+      ]
+    },
     "SelectorCandidateSuggestion": {
       "type": "object",
       "properties": {
@@ -672,6 +725,12 @@
           "type": "array",
           "items": {
             "$ref": "#/$defs/SelectorCandidateRecord"
+          }
+        },
+        "coordinate_heals": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/HealedCoordinateRecord"
           }
         }
       },

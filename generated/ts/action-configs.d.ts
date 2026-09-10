@@ -1609,6 +1609,55 @@ export type DesktopTypeTextConfig = DesktopVisualBaseConfig & {
   postActionWaitMs?: number;
 };
 /**
+ * Fill a sequence of desktop form fields located by image, explicit coordinates, or Tab order.
+ */
+export type DesktopFillFormConfig = DesktopVisualBaseConfig & {
+  /**
+   * Ordered list of fields to fill
+   */
+  fields?: DesktopFormField[];
+  /**
+   * Delay between key presses within a field, in milliseconds
+   */
+  intervalMs?: number;
+  /**
+   * Delay after finishing one field before moving to the next
+   */
+  interFieldWaitMs?: number;
+  /**
+   * Mouse move duration before each field click
+   */
+  moveDurationMs?: number;
+  /**
+   * Wait for each field's target image before clicking
+   */
+  waitForImage?: boolean;
+  /**
+   * Submit the form after all fields are filled
+   */
+  submitAfterFill?: boolean;
+  /**
+   * Target image for the submit button. If empty and submitX/submitY are both 0, Enter is pressed instead.
+   */
+  submitImage?: string;
+  /**
+   * Explicit X coordinate for the submit button, used when submitImage is empty
+   */
+  submitX?: number;
+  /**
+   * Explicit Y coordinate for the submit button, used when submitImage is empty
+   */
+  submitY?: number;
+  /**
+   * Delay after the whole form-fill sequence completes
+   */
+  postActionWaitMs?: number;
+  /**
+   * Variable to store per-field fill results
+   */
+  outputVariable?: string;
+};
+/**
  * Move desktop cursor to absolute or relative coordinates.
  */
 export type DesktopMoveMouseConfig = BaseActionConfig & {
@@ -2084,6 +2133,7 @@ export interface ActionConfigurationsSchema {
       | DesktopClickImageConfig
       | DesktopClickPointConfig
       | DesktopTypeTextConfig
+      | DesktopFillFormConfig
       | DesktopMoveMouseConfig
       | DesktopHotkeyConfig
       | DesktopRunCommandConfig
@@ -2148,6 +2198,8 @@ export interface ActionConfigurationsSchema {
   DesktopClickImageConfig?: DesktopClickImageConfig;
   DesktopClickPointConfig?: DesktopClickPointConfig;
   DesktopTypeTextConfig?: DesktopTypeTextConfig;
+  DesktopFormField?: DesktopFormField;
+  DesktopFillFormConfig?: DesktopFillFormConfig;
   DesktopMoveMouseConfig?: DesktopMoveMouseConfig;
   DesktopHotkeyConfig?: DesktopHotkeyConfig;
   DesktopRunCommandConfig?: DesktopRunCommandConfig;
@@ -2354,4 +2406,41 @@ export interface ApiFilePart {
    * MIME type of the part. Left to the server to infer when empty.
    */
   contentType?: string;
+}
+/**
+ * One field in a desktop form-fill sequence.
+ */
+export interface DesktopFormField {
+  /**
+   * Target image to click into this field. If empty and x/y are both 0, the engine Tabs from the previous field instead of clicking.
+   */
+  image?: string;
+  /**
+   * Explicit X coordinate to click into this field, used when image is empty
+   */
+  x?: number;
+  /**
+   * Explicit Y coordinate to click into this field, used when image is empty
+   */
+  y?: number;
+  /**
+   * X offset from the matched image's center before clicking
+   */
+  offsetX?: number;
+  /**
+   * Y offset from the matched image's center before clicking
+   */
+  offsetY?: number;
+  /**
+   * Text to type into this field
+   */
+  value: string;
+  /**
+   * text/password type the value; checkbox/radio just click the target once; select/file type the value then press Enter to confirm (dropdown type-ahead or a native file dialog's path field)
+   */
+  type?: "text" | "password" | "checkbox" | "radio" | "select" | "file";
+  /**
+   * Select-all and clear the field before typing (text/password/select/file only)
+   */
+  clearBeforeType?: boolean;
 }
