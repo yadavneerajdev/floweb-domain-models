@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-from enum import StrEnum
+from enum import Enum, StrEnum
 from typing import Annotated
 
 from pydantic import AwareDatetime, BaseModel, ConfigDict, Field
@@ -162,6 +162,16 @@ class UsageSnapshot(BaseModel):
 MetricCreditsAdditionalProperty = TypeAliasType(
     "MetricCreditsAdditionalProperty", Annotated[int, Field(ge=0)]
 )
+
+
+class BlockedBy(Enum):
+    """
+    Why chargeable activity is paused, so a denial can name the right remedy
+    """
+
+    spend_cap = 'spend_cap'
+    invoice_unpaid = 'invoice_unpaid'
+    NoneType_None = None
 
 
 class FeatureDeniedReason(StrEnum):
@@ -632,6 +642,10 @@ class AccountEntitlements(BaseModel):
     metricCredits: dict[str, MetricCreditsAdditionalProperty] | None = None
     """
     Credits held per metric, spent once that metric's allowance is exhausted
+    """
+    blockedBy: BlockedBy | None = None
+    """
+    Why chargeable activity is paused, so a denial can name the right remedy
     """
 
 

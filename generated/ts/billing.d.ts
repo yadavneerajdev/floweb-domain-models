@@ -301,6 +301,10 @@ export interface AccountEntitlements {
   metricCredits?: {
     [k: string]: number;
   };
+  /**
+   * Why chargeable activity is paused, so a denial can name the right remedy
+   */
+  blockedBy?: "spend_cap" | "invoice_unpaid" | null;
 }
 /**
  * Consumption for the current UTC day, used to enforce executionsPerDay

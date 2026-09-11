@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://floweb.com/schemas/billing.json",
-  "$version": "1.4.0",
+  "$version": "1.5.0",
   "title": "Billing",
   "description": "Per-account plans, feature entitlements, metered usage and pricing. Entitlements are the authority for whether a feature may run; plans and catalogues are only ways to assemble them. FeatureId gates a capability, MeteredMetric counts it. Field-level source of truth is floweb-server subscription.model.ts.",
   "type": "object",
@@ -496,6 +496,18 @@
             "minimum": 0
           },
           "description": "Credits held per metric, spent once that metric's allowance is exhausted"
+        },
+        "blockedBy": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "spend_cap",
+            "invoice_unpaid",
+            null
+          ],
+          "description": "Why chargeable activity is paused, so a denial can name the right remedy"
         }
       },
       "required": [

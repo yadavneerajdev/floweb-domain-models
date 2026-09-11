@@ -3813,6 +3813,10 @@ export interface AccountEntitlements {
   metricCredits?: {
     [k: string]: number;
   };
+  /**
+   * Why chargeable activity is paused, so a denial can name the right remedy
+   */
+  blockedBy?: "spend_cap" | "invoice_unpaid" | null;
 }
 /**
  * Consumption of one metric over a window, with the money it accrued. Cost is zero on a fixed catalogue, where allowances rather than prices apply.
