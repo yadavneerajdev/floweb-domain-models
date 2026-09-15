@@ -260,14 +260,14 @@ class FlowParameters(BaseModel):
     Output parameters
     """
     parameterBefore: Annotated[
-        list[environment_1.Variable] | None, Field(default_factory=list)
-    ]
+        list[environment_1.Variable] | None, Field(validate_default=True)
+    ] = []
     """
     Parameters to be set before execution
     """
     variableBefore: Annotated[
-        list[environment_1.Variable] | None, Field(default_factory=list)
-    ]
+        list[environment_1.Variable] | None, Field(validate_default=True)
+    ] = []
     """
     Variables to be set before execution
     """

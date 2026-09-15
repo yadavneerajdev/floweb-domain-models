@@ -243,6 +243,9 @@ export interface DataLabSchema {
   VibeVerifyRequest?: VibeVerifyRequest;
   AutonomousTestsRequest?: AutonomousTestsRequest;
   VibeVerifyResponse?: VibeVerifyResponse;
+  AutonomousCrawlInspection?: AutonomousCrawlInspection;
+  AutonomousGeneratedSuite?: AutonomousGeneratedSuite;
+  AutonomousTestsResponse?: AutonomousTestsResponse;
   ActionType?: ActionType;
   DesktopActionType?: DesktopActionType;
   MobileActionType?: MobileActionType;
@@ -780,13 +783,23 @@ export interface VibeVerifyRequest {
   metadata?: AIRequestMetadata;
 }
 /**
- * POST /ai/generate-tests request. Crawls the URL server-side, so the body carries a target rather than a description; bounds mirror the ai-service's GenerateTestsRequest.
+ * POST /ai/generate-tests request
  */
 export interface AutonomousTestsRequest {
+  /**
+   * Page to crawl and generate tests for
+   */
   url: string;
+  /**
+   * What the generated suite should verify
+   */
   goal?: string;
+  /**
+   * Upper bound on generated test suites
+   */
   maxSuites?: number;
   provider?: AIProviderConfig;
+  metadata?: AIRequestMetadata;
 }
 /**
  * POST /ai/vibe-verify response
@@ -795,4 +808,52 @@ export interface VibeVerifyResponse {
   verified?: boolean;
   reason?: string;
   metadata: AIResponseMetadata;
+}
+/**
+ * Summary of what the crawler found on the target page
+ */
+export interface AutonomousCrawlInspection {
+  url: string;
+  statusCode: number;
+  formCount: number;
+  buttonCount: number;
+  inputCount: number;
+  linkCount: number;
+}
+/**
+ * A single generated test suite with its runnable steps
+ */
+export interface AutonomousGeneratedSuite {
+  name: string;
+  description?: string;
+  steps: FlowStep[];
+}
+/**
+ * POST /ai/generate-tests response
+ */
+export interface AutonomousTestsResponse {
+  inspection: AutonomousCrawlInspection;
+  suite: AutonomousGeneratedSuite1;
+  /**
+   * All generated suites, ordered as planned
+   */
+  suites?: AutonomousGeneratedSuite[];
+  /**
+   * Typed placeholders referenced by the generated steps
+   */
+  variables?: {
+    [k: string]: unknown;
+  }[];
+  plan?: {
+    [k: string]: unknown;
+  };
+  metadata: AIResponseMetadata;
+}
+/**
+ * A single generated test suite with its runnable steps
+ */
+export interface AutonomousGeneratedSuite1 {
+  name: string;
+  description?: string;
+  steps: FlowStep[];
 }

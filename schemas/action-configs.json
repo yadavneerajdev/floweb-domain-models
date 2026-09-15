@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://floweb.com/schemas/action-configs.json",
-  "$version": "1.6.0",
+  "$version": "1.9.0",
   "title": "Action Configurations",
   "description": "Configuration schemas for all automation actions",
   "type": "object",
@@ -885,10 +885,13 @@
                 "POST",
                 "PUT",
                 "DELETE",
-                "PATCH"
+                "PATCH",
+                "HEAD",
+                "OPTIONS",
+                "TRACE"
               ],
               "default": "GET",
-              "description": "HTTP method"
+              "description": "HTTP method. The engine dispatches through requests.request, which supports all of these; only POST/PUT/PATCH send a body."
             },
             "url": {
               "type": "string",
@@ -970,11 +973,64 @@
                 "$ref": "#/$defs/ResponseAssertion"
               },
               "description": "Response assertions evaluated after the request. All must pass for the action to succeed."
+            },
+            "files": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/ApiFilePart"
+              },
+              "default": [],
+              "description": "Files to send as multipart/form-data. When set, the request is sent as multipart and the `body` field is ignored; use formFields for the non-file parts. Content-Type is set by the HTTP client so the multipart boundary is correct."
+            },
+            "formFields": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              },
+              "default": {},
+              "description": "Non-file form fields sent alongside `files` in a multipart request."
+            },
+            "failOnError": {
+              "type": "boolean",
+              "default": true,
+              "description": "Fail the step when the response is not acceptable — an unexpected status or a failed assertion. Turn off to record the response and continue: the output variable is still written and the reason is kept in the message, but the step is marked passed. Does not cover transport failures; see failOnRequestError."
+            },
+            "failOnRequestError": {
+              "type": "boolean",
+              "default": true,
+              "description": "Fail the step when the request never completes (DNS failure, connection refused, timeout). Separate from failOnError because there is no response to record in this case, so the output variable is left unwritten."
             }
           }
         }
       ],
-      "description": "Make an HTTP API request. Set responsePath to store only a path of the response (e.g. data.token) in the output variable; leave empty to store the full {status_code, headers, data, url} object. Use validateStatus/expectedStatus and assertions to turn the call into a network/response check."
+      "description": "Make an HTTP API request. Set responsePath to store only a path of the response (e.g. data.token) in the output variable; leave empty to store the full {status_code, headers, data, url} object. Use validateStatus/expectedStatus and assertions to turn the call into a network/response check. failOnError/failOnRequestError let a call be advisory when you only want its response."
+    },
+    "ApiFilePart": {
+      "type": "object",
+      "description": "One file sent as part of a multipart/form-data request.",
+      "properties": {
+        "field": {
+          "type": "string",
+          "description": "Form field name the file is sent under, e.g. 'avatar'",
+          "default": ""
+        },
+        "source": {
+          "type": "string",
+          "default": "",
+          "description": "Where the file comes from: 'mediaId:<id>' to use stored media (travels with the account, so it works on any engine), or an absolute path on the engine machine."
+        },
+        "fileName": {
+          "type": "string",
+          "default": "",
+          "description": "Name sent to the server. Defaults to the basename of a path, or the mediaId."
+        },
+        "contentType": {
+          "type": "string",
+          "default": "",
+          "description": "MIME type of the part. Left to the server to infer when empty."
+        }
+      },
+      "required": ["field", "source"]
     },
     "ResponseAssertion": {
       "type": "object",

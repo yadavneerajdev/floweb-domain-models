@@ -559,6 +559,18 @@
         "lastResult": {
           "$ref": "#/$defs/FlowLastResult"
         },
+        "quarantine": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/TestQuarantine"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Set when the test is quarantined; null when it runs normally"
+        },
         "createdBy": {
           "type": "string"
         },
@@ -586,6 +598,53 @@
         "flowData",
         "type",
         "tags"
+      ]
+    },
+    "QuarantineReason": {
+      "type": "string",
+      "description": "Why a test was quarantined",
+      "enum": [
+        "flaky",
+        "manual"
+      ]
+    },
+    "TestQuarantine": {
+      "type": "object",
+      "description": "Quarantine state for a test. A quarantined test is excluded from suite runs but stays runnable on its own so a fix can be verified.",
+      "properties": {
+        "reason": {
+          "$ref": "#/$defs/QuarantineReason",
+          "default": "flaky"
+        },
+        "note": {
+          "type": "string",
+          "maxLength": 2000,
+          "default": "",
+          "description": "Why this test was quarantined, for whoever picks it up"
+        },
+        "flakinessScore": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1,
+          "default": null,
+          "description": "Flakiness score at the time of quarantine, when quarantined from analytics"
+        },
+        "quarantinedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "quarantinedBy": {
+          "type": "string",
+          "description": "User ID that quarantined the test"
+        }
+      },
+      "required": [
+        "reason",
+        "quarantinedAt",
+        "quarantinedBy"
       ]
     },
     "TestCatalogItem": {
@@ -630,8 +689,12 @@
         },
         "quarantine": {
           "oneOf": [
-            { "$ref": "#/$defs/TestQuarantine" },
-            { "type": "null" }
+            {
+              "$ref": "#/$defs/TestQuarantine"
+            },
+            {
+              "type": "null"
+            }
           ],
           "default": null
         },

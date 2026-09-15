@@ -34,6 +34,7 @@ from .action_configs import (
     Action1,
     ActionConfigurations,
     ApiCallConfig,
+    ApiFilePart,
     AppSource,
     AssertType,
     AssertVisibleConfig,
@@ -411,7 +412,10 @@ from .ai_contracts import (
     AssistantStep,
     AssistantStepKind,
     AssistantToolDescriptor,
+    AutonomousCrawlInspection,
+    AutonomousGeneratedSuite,
     AutonomousTestsRequest,
+    AutonomousTestsResponse,
     FixLocatorRequest,
     FixLocatorResponse,
     FlowStep,
@@ -449,6 +453,19 @@ from .data_lab import (
     UniquenessEstimate,
 )
 
+from .openapi_import import (
+    GroupBy,
+    OpenAPIImport,
+    OpenApiAuthKind,
+    OpenApiGeneratedFlow,
+    OpenApiGeneratedVariable,
+    OpenApiImportRequest,
+    OpenApiImportResponse,
+    OpenApiSkippedOperation,
+    OpenApiVariableTarget,
+    Variables,
+)
+
 from .api_key import (
     APIKeyModels,
     ApiKey,
@@ -474,19 +491,6 @@ from .billing import (
     PlanQuotas,
     SubscriptionStatus,
     UsageSnapshot,
-)
-
-from .openapi_import import (
-    GroupBy,
-    OpenAPIImport,
-    OpenApiAuthKind,
-    OpenApiGeneratedFlow,
-    OpenApiGeneratedVariable,
-    OpenApiImportRequest,
-    OpenApiImportResponse,
-    OpenApiSkippedOperation,
-    OpenApiVariableTarget,
-    Variables,
 )
 
 __all__ = [
@@ -516,6 +520,7 @@ __all__ = [
     "AnalyzeFailureResponse",
     "ApiActionType",
     "ApiCallConfig",
+    "ApiFilePart",
     "ApiKey",
     "ApiKeyScope",
     "ApiKeyStatus",
@@ -539,7 +544,10 @@ __all__ = [
     "AuthConfig",
     "AuthenticateCommand",
     "AuthenticateResponse",
+    "AutonomousCrawlInspection",
+    "AutonomousGeneratedSuite",
     "AutonomousTestsRequest",
+    "AutonomousTestsResponse",
     "BandwidthMetrics",
     "BaseActionConfig",
     "Billing",

@@ -493,13 +493,13 @@ export type JunctionConfig = BaseActionConfig & {
   falsePath?: string;
 };
 /**
- * Make an HTTP API request. Set responsePath to store only a path of the response (e.g. data.token) in the output variable; leave empty to store the full {status_code, headers, data, url} object. Use validateStatus/expectedStatus and assertions to turn the call into a network/response check.
+ * Make an HTTP API request. Set responsePath to store only a path of the response (e.g. data.token) in the output variable; leave empty to store the full {status_code, headers, data, url} object. Use validateStatus/expectedStatus and assertions to turn the call into a network/response check. failOnError/failOnRequestError let a call be advisory when you only want its response.
  */
 export type ApiCallConfig = BaseActionConfig & {
   /**
-   * HTTP method
+   * HTTP method. The engine dispatches through requests.request, which supports all of these; only POST/PUT/PATCH send a body.
    */
-  method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
+  method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "HEAD" | "OPTIONS" | "TRACE";
   /**
    * API endpoint URL
    */
@@ -562,6 +562,24 @@ export type ApiCallConfig = BaseActionConfig & {
    * Response assertions evaluated after the request. All must pass for the action to succeed.
    */
   assertions?: ResponseAssertion[];
+  /**
+   * Files to send as multipart/form-data. When set, the request is sent as multipart and the `body` field is ignored; use formFields for the non-file parts. Content-Type is set by the HTTP client so the multipart boundary is correct.
+   */
+  files?: ApiFilePart[];
+  /**
+   * Non-file form fields sent alongside `files` in a multipart request.
+   */
+  formFields?: {
+    [k: string]: string;
+  };
+  /**
+   * Fail the step when the response is not acceptable — an unexpected status or a failed assertion. Turn off to record the response and continue: the output variable is still written and the reason is kept in the message, but the step is marked passed. Does not cover transport failures; see failOnRequestError.
+   */
+  failOnError?: boolean;
+  /**
+   * Fail the step when the request never completes (DNS failure, connection refused, timeout). Separate from failOnError because there is no response to record in this case, so the output variable is left unwritten.
+   */
+  failOnRequestError?: boolean;
 };
 /**
  * Control the browser's network layer via Chrome DevTools: block hosts, throttle bandwidth, inject headers/User-Agent, or capture the network log. Chromium only.
@@ -2433,6 +2451,7 @@ export interface ActionConfigurationsSchema {
   FormFieldOption?: FormFieldOption;
   FormFillConfig?: FormFillConfig;
   ApiCallConfig?: ApiCallConfig;
+  ApiFilePart?: ApiFilePart;
   ResponseAssertion?: ResponseAssertion;
   NetworkControlConfig?: NetworkControlConfig;
   AccessibilityAuditConfig?: AccessibilityAuditConfig;
@@ -2675,6 +2694,27 @@ export interface ResponseAssertion {
   value?: {
     [k: string]: unknown;
   };
+}
+/**
+ * One file sent as part of a multipart/form-data request.
+ */
+export interface ApiFilePart {
+  /**
+   * Form field name the file is sent under, e.g. 'avatar'
+   */
+  field: string;
+  /**
+   * Where the file comes from: 'mediaId:<id>' to use stored media (travels with the account, so it works on any engine), or an absolute path on the engine machine.
+   */
+  source: string;
+  /**
+   * Name sent to the server. Defaults to the basename of a path, or the mediaId.
+   */
+  fileName?: string;
+  /**
+   * MIME type of the part. Left to the server to infer when empty.
+   */
+  contentType?: string;
 }
 /**
  * One field in a desktop form-fill sequence.

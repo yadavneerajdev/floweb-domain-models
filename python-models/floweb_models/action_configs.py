@@ -6,7 +6,7 @@ from __future__ import annotations
 from enum import StrEnum
 from typing import Annotated, Any
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, constr
 
 from ._base import FlowebActionBaseModel
 
@@ -183,7 +183,7 @@ class FormFieldOption(BaseModel):
 
 class Method(StrEnum):
     """
-    HTTP method
+    HTTP method. The engine dispatches through requests.request, which supports all of these; only POST/PUT/PATCH send a body.
     """
 
     GET = 'GET'
@@ -191,6 +191,35 @@ class Method(StrEnum):
     PUT = 'PUT'
     DELETE = 'DELETE'
     PATCH = 'PATCH'
+    HEAD = 'HEAD'
+    OPTIONS = 'OPTIONS'
+    TRACE = 'TRACE'
+
+
+class ApiFilePart(BaseModel):
+    """
+    One file sent as part of a multipart/form-data request.
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    field: str
+    """
+    Form field name the file is sent under, e.g. 'avatar'
+    """
+    source: str
+    """
+    Where the file comes from: 'mediaId:<id>' to use stored media (travels with the account, so it works on any engine), or an absolute path on the engine machine.
+    """
+    fileName: str | None = ''
+    """
+    Name sent to the server. Defaults to the basename of a path, or the mediaId.
+    """
+    contentType: str | None = ''
+    """
+    MIME type of the part. Left to the server to infer when empty.
+    """
 
 
 class Target(StrEnum):
@@ -322,7 +351,7 @@ class LoopType(StrEnum):
     Type of loop
     """
 
-    count_ = 'count'
+    count = 'count'
     condition = 'condition'
     foreach = 'foreach'
 
@@ -1001,7 +1030,7 @@ class FormFillConfig(BaseActionConfig):
 
 class ApiCallConfig(BaseActionConfig):
     """
-    Make an HTTP API request. Set responsePath to store only a path of the response (e.g. data.token) in the output variable; leave empty to store the full {status_code, headers, data, url} object. Use validateStatus/expectedStatus and assertions to turn the call into a network/response check.
+    Make an HTTP API request. Set responsePath to store only a path of the response (e.g. data.token) in the output variable; leave empty to store the full {status_code, headers, data, url} object. Use validateStatus/expectedStatus and assertions to turn the call into a network/response check. failOnError/failOnRequestError let a call be advisory when you only want its response.
     """
 
     model_config = ConfigDict(
@@ -1009,7 +1038,7 @@ class ApiCallConfig(BaseActionConfig):
     )
     method: Method | None = 'GET'
     """
-    HTTP method
+    HTTP method. The engine dispatches through requests.request, which supports all of these; only POST/PUT/PATCH send a body.
     """
     url: str | None = ''
     """
@@ -1070,6 +1099,22 @@ class ApiCallConfig(BaseActionConfig):
     assertions: list[ResponseAssertion] | None = None
     """
     Response assertions evaluated after the request. All must pass for the action to succeed.
+    """
+    files: Annotated[list[ApiFilePart] | None, Field(validate_default=True)] = []
+    """
+    Files to send as multipart/form-data. When set, the request is sent as multipart and the `body` field is ignored; use formFields for the non-file parts. Content-Type is set by the HTTP client so the multipart boundary is correct.
+    """
+    formFields: dict[str, str] | None = {}
+    """
+    Non-file form fields sent alongside `files` in a multipart request.
+    """
+    failOnError: bool | None = True
+    """
+    Fail the step when the response is not acceptable — an unexpected status or a failed assertion. Turn off to record the response and continue: the output variable is still written and the reason is kept in the message, but the step is marked passed. Does not cover transport failures; see failOnRequestError.
+    """
+    failOnRequestError: bool | None = True
+    """
+    Fail the step when the request never completes (DNS failure, connection refused, timeout). Separate from failOnError because there is no response to record in this case, so the output variable is left unwritten.
     """
 
 
@@ -3380,7 +3425,7 @@ class ActionConfigurations(BaseModel):
     )
     actionConfigs: (
         dict[
-            str,
+            constr(pattern=r'.*'),
             ClickConfig
             | InputConfig
             | SendKeysConfig

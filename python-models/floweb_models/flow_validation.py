@@ -7,6 +7,7 @@ from enum import StrEnum
 from typing import Annotated, Any
 
 from pydantic import AwareDatetime, BaseModel, ConfigDict, Field
+from typing_extensions import TypeAliasType
 
 
 class Type(StrEnum):
@@ -83,6 +84,11 @@ class LoopInfo(BaseModel):
     """
 
 
+WarningsByTypeAdditionalProperty = TypeAliasType(
+    "WarningsByTypeAdditionalProperty", Annotated[int, Field(ge=0)]
+)
+
+
 class WarningsBySeverity(BaseModel):
     """
     Count of warnings by severity
@@ -125,7 +131,7 @@ class ValidationSummary(BaseModel):
     """
     Number of critical severity issues
     """
-    warningsByType: dict[str, int] | None = None
+    warningsByType: dict[str, WarningsByTypeAdditionalProperty] | None = None
     """
     Count of warnings by type
     """

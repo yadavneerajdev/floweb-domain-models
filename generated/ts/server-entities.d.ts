@@ -26,7 +26,7 @@ export type FlowKind = "flow" | "test" | "performance";
  */
 export type FlowLastResult = "passed" | "failed" | "pending" | "running";
 /**
- * Why a test was excluded from suite runs
+ * Why a test was quarantined
  */
 export type QuarantineReason = "flaky" | "manual";
 
@@ -169,6 +169,10 @@ export interface StoredTestRecord {
   type: FlowKind;
   tags: string[];
   lastResult?: FlowLastResult;
+  /**
+   * Set when the test is quarantined; null when it runs normally
+   */
+  quarantine?: TestQuarantine | null;
   createdBy?: string;
   updatedBy?: string;
   syncedAt?: string;
@@ -176,13 +180,25 @@ export interface StoredTestRecord {
   updatedAt?: string;
 }
 /**
- * Set on a test while it's excluded from suite runs (storage keeps quarantinedAt as a real Date; this is the wire shape with it as an ISO string)
+ * Quarantine state for a test. A quarantined test is excluded from suite runs but stays runnable on its own so a fix can be verified.
  */
 export interface TestQuarantine {
-  reason: QuarantineReason;
+  /**
+   * Why a test was quarantined
+   */
+  reason: "flaky" | "manual";
+  /**
+   * Why this test was quarantined, for whoever picks it up
+   */
   note?: string;
+  /**
+   * Flakiness score at the time of quarantine, when quarantined from analytics
+   */
   flakinessScore?: number | null;
   quarantinedAt: string;
+  /**
+   * User ID that quarantined the test
+   */
   quarantinedBy: string;
 }
 /**

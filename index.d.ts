@@ -326,13 +326,13 @@ export type FormFillConfig = BaseActionConfig & {
   smartFieldDetection?: boolean;
 };
 /**
- * Make an HTTP API request. Set responsePath to store only a path of the response (e.g. data.token) in the output variable; leave empty to store the full {status_code, headers, data, url} object. Use validateStatus/expectedStatus and assertions to turn the call into a network/response check.
+ * Make an HTTP API request. Set responsePath to store only a path of the response (e.g. data.token) in the output variable; leave empty to store the full {status_code, headers, data, url} object. Use validateStatus/expectedStatus and assertions to turn the call into a network/response check. failOnError/failOnRequestError let a call be advisory when you only want its response.
  */
 export type ApiCallConfig = BaseActionConfig & {
   /**
-   * HTTP method
+   * HTTP method. The engine dispatches through requests.request, which supports all of these; only POST/PUT/PATCH send a body.
    */
-  method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
+  method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "HEAD" | "OPTIONS" | "TRACE";
   /**
    * API endpoint URL
    */
@@ -395,6 +395,24 @@ export type ApiCallConfig = BaseActionConfig & {
    * Response assertions evaluated after the request. All must pass for the action to succeed.
    */
   assertions?: ResponseAssertion[];
+  /**
+   * Files to send as multipart/form-data. When set, the request is sent as multipart and the `body` field is ignored; use formFields for the non-file parts. Content-Type is set by the HTTP client so the multipart boundary is correct.
+   */
+  files?: ApiFilePart[];
+  /**
+   * Non-file form fields sent alongside `files` in a multipart request.
+   */
+  formFields?: {
+    [k: string]: string;
+  };
+  /**
+   * Fail the step when the response is not acceptable — an unexpected status or a failed assertion. Turn off to record the response and continue: the output variable is still written and the reason is kept in the message, but the step is marked passed. Does not cover transport failures; see failOnRequestError.
+   */
+  failOnError?: boolean;
+  /**
+   * Fail the step when the request never completes (DNS failure, connection refused, timeout). Separate from failOnError because there is no response to record in this case, so the output variable is left unwritten.
+   */
+  failOnRequestError?: boolean;
 };
 /**
  * Control the browser's network layer via Chrome DevTools: block hosts, throttle bandwidth, inject headers/User-Agent, or capture the network log. Chromium only.
@@ -3135,7 +3153,7 @@ export type FlowKind = "flow" | "test" | "performance";
  */
 export type FlowLastResult = "passed" | "failed" | "pending" | "running";
 /**
- * Why a test was excluded from suite runs
+ * Why a test was quarantined
  */
 export type QuarantineReason = "flaky" | "manual";
 /**
@@ -3319,6 +3337,27 @@ export interface ResponseAssertion {
    * Comparison value. Its type depends on the operator and target (string, number, or list).
    */
   value?: JsonValue;
+}
+/**
+ * One file sent as part of a multipart/form-data request.
+ */
+export interface ApiFilePart {
+  /**
+   * Form field name the file is sent under, e.g. 'avatar'
+   */
+  field: string;
+  /**
+   * Where the file comes from: 'mediaId:<id>' to use stored media (travels with the account, so it works on any engine), or an absolute path on the engine machine.
+   */
+  source: string;
+  /**
+   * Name sent to the server. Defaults to the basename of a path, or the mediaId.
+   */
+  fileName?: string;
+  /**
+   * MIME type of the part. Left to the server to infer when empty.
+   */
+  contentType?: string;
 }
 /**
  * One field in a desktop form-fill sequence.
@@ -3738,13 +3777,23 @@ export interface VibeVerifyRequest {
   metadata?: AIRequestMetadata;
 }
 /**
- * POST /ai/generate-tests request. Crawls the URL server-side, so the body carries a target rather than a description; bounds mirror the ai-service's GenerateTestsRequest.
+ * POST /ai/generate-tests request
  */
 export interface AutonomousTestsRequest {
+  /**
+   * Page to crawl and generate tests for
+   */
   url: string;
+  /**
+   * What the generated suite should verify
+   */
   goal?: string;
+  /**
+   * Upper bound on generated test suites
+   */
   maxSuites?: number;
   provider?: AIProviderConfig;
+  metadata?: AIRequestMetadata;
 }
 /**
  * POST /ai/vibe-verify response
@@ -3754,6 +3803,45 @@ export interface VibeVerifyResponse {
   reason?: string;
   metadata: AIResponseMetadata;
 }
+/**
+ * Summary of what the crawler found on the target page
+ */
+export interface AutonomousCrawlInspection {
+  url: string;
+  statusCode: number;
+  formCount: number;
+  buttonCount: number;
+  inputCount: number;
+  linkCount: number;
+}
+/**
+ * A single generated test suite with its runnable steps
+ */
+export interface AutonomousGeneratedSuite {
+  name: string;
+  description?: string;
+  steps: FlowStep[];
+}
+/**
+ * POST /ai/generate-tests response
+ */
+export interface AutonomousTestsResponse {
+  inspection: AutonomousCrawlInspection;
+  suite: AutonomousGeneratedSuite;
+  /**
+   * All generated suites, ordered as planned
+   */
+  suites?: AutonomousGeneratedSuite[];
+  /**
+   * Typed placeholders referenced by the generated steps
+   */
+  variables?: AnyObject[];
+  plan?: AnyObject;
+  metadata: AIResponseMetadata;
+}
+/**
+ * A single generated test suite with its runnable steps
+ */
 /**
  * An API key as returned by the API. Never carries the secret.
  */
@@ -6067,13 +6155,25 @@ export interface TimelineDataPoint {
   errorRate: number;
 }
 /**
- * Set on a test while it's excluded from suite runs (storage keeps quarantinedAt as a real Date; this is the wire shape with it as an ISO string)
+ * Quarantine state for a test. A quarantined test is excluded from suite runs but stays runnable on its own so a fix can be verified.
  */
 export interface TestQuarantine {
-  reason: QuarantineReason;
+  /**
+   * Why a test was quarantined
+   */
+  reason: "flaky" | "manual";
+  /**
+   * Why this test was quarantined, for whoever picks it up
+   */
   note?: string;
+  /**
+   * Flakiness score at the time of quarantine, when quarantined from analytics
+   */
   flakinessScore?: number | null;
   quarantinedAt: string;
+  /**
+   * User ID that quarantined the test
+   */
   quarantinedBy: string;
 }
 /**
@@ -6207,6 +6307,10 @@ export interface StoredTestRecord {
   type: FlowKind;
   tags: string[];
   lastResult?: FlowLastResult;
+  /**
+   * Set when the test is quarantined; null when it runs normally
+   */
+  quarantine?: TestQuarantine | null;
   createdBy?: string;
   updatedBy?: string;
   syncedAt?: string;
@@ -6434,6 +6538,10 @@ export interface SuiteExecution {
    * Per-test records
    */
   tests: SuiteExecutionTest[];
+  /**
+   * Tests excluded from this run because they were quarantined. Recorded so a short run is explainable rather than looking like tests silently vanished.
+   */
+  skippedTestIds?: string[];
   /**
    * Creator user id
    */

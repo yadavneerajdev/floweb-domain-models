@@ -1041,7 +1041,7 @@ class ProcessEventResponse(WebSocketResponse):
     """
     Command that was executed
     """
-    success: bool | None = None
+    success: bool
     """
     Whether the command succeeded
     """
@@ -1105,7 +1105,7 @@ class ProcessSnapshotResponse(WebSocketResponse):
     """
     Command that was executed
     """
-    success: bool | None = None
+    success: bool
     """
     Whether the command succeeded
     """

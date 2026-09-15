@@ -77,7 +77,7 @@ class FlowLastResult(StrEnum):
 
 class QuarantineReason(StrEnum):
     """
-    Why a test was excluded from suite runs
+    Why a test was quarantined
     """
 
     flaky = 'flaky'
@@ -86,7 +86,7 @@ class QuarantineReason(StrEnum):
 
 class TestQuarantine(BaseModel):
     """
-    Set on a test while it's excluded from suite runs (storage keeps quarantinedAt as a real Date; this is the wire shape with it as an ISO string)
+    Quarantine state for a test. A quarantined test is excluded from suite runs but stays runnable on its own so a fix can be verified.
     """
 
     model_config = ConfigDict(
@@ -94,9 +94,18 @@ class TestQuarantine(BaseModel):
     )
     reason: QuarantineReason
     note: Annotated[str | None, Field(max_length=2000)] = ''
+    """
+    Why this test was quarantined, for whoever picks it up
+    """
     flakinessScore: Annotated[float | None, Field(ge=0.0, le=1.0)] = None
+    """
+    Flakiness score at the time of quarantine, when quarantined from analytics
+    """
     quarantinedAt: AwareDatetime
     quarantinedBy: str
+    """
+    User ID that quarantined the test
+    """
 
 
 class User(BaseModel):
@@ -288,6 +297,10 @@ class StoredTestRecord(BaseModel):
     type: FlowKind
     tags: list[str]
     lastResult: FlowLastResult | None = None
+    quarantine: TestQuarantine | None = None
+    """
+    Set when the test is quarantined; null when it runs normally
+    """
     createdBy: str | None = None
     updatedBy: str | None = None
     syncedAt: AwareDatetime | None = None

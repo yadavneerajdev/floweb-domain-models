@@ -31,9 +31,39 @@ const MODULE_ORDER = [
   "server_entities",
   "ai_contracts",
   "data_lab",
+  "openapi_import",
 ];
 
+// Generated models are committed and CI fails on any diff, but datamodel-codegen
+// changes its output between releases (StrEnum vs Enum, list vs List,
+// default_factory vs bare defaults, constr patterns). CI installs this exact
+// version, so a local run on anything else regenerates unrelated models and the
+// diff looks like someone hand-edited generated output.
+const CODEGEN_VERSION = "0.72.2";
+
+function assertCodegenVersion() {
+  const install = `  pip install 'datamodel-code-generator==${CODEGEN_VERSION}'`;
+  let reported;
+  try {
+    reported = execFileSync("datamodel-codegen", ["--version"], { encoding: "utf-8" }).trim();
+  } catch {
+    throw new Error(`datamodel-codegen is not installed. Install it with:\n${install}`);
+  }
+
+  // --version prints "datamodel-codegen <semver>".
+  const actual = reported.split(/\s+/).pop();
+  if (actual !== CODEGEN_VERSION) {
+    throw new Error(
+      `datamodel-codegen ${actual} produces different output than CI (pinned ${CODEGEN_VERSION}).\n` +
+        `${install}\n` +
+        "If a bump is intentional, update this constant and .github/workflows/ci.yml " +
+        "together, then review the whole regenerated diff.",
+    );
+  }
+}
+
 function generateInto(tmp) {
+  assertCodegenVersion();
   execFileSync(
     "datamodel-codegen",
     [

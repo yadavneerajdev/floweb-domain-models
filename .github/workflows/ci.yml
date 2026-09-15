@@ -24,7 +24,7 @@ jobs:
         run: npm ci
 
       - name: Install Python deps
-        run: pip install "pydantic>=2" "datamodel-code-generator>=0.25" mypy pytest
+        run: pip install "pydantic>=2" "datamodel-code-generator==0.72.2" mypy pytest
 
       - name: Validate schemas + examples (ajv)
         run: npm run validate

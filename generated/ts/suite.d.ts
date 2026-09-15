@@ -185,6 +185,10 @@ export interface SuiteExecution {
    */
   tests: SuiteExecutionTest[];
   /**
+   * Tests excluded from this run because they were quarantined. Recorded so a short run is explainable rather than looking like tests silently vanished.
+   */
+  skippedTestIds?: string[];
+  /**
    * Creator user id
    */
   createdBy: string;
