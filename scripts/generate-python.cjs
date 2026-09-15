@@ -32,6 +32,7 @@ const MODULE_ORDER = [
   "ai_contracts",
   "data_lab",
   "openapi_import",
+  "catalogue",
 ];
 
 // Generated models are committed and CI fails on any diff, but datamodel-codegen
