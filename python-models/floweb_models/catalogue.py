@@ -283,6 +283,59 @@ class AccountPlan(BaseModel):
     createdAt: AwareDatetime
 
 
+class InvoiceStatus(StrEnum):
+    draft = 'draft'
+    issued = 'issued'
+    paid = 'paid'
+    void = 'void'
+
+
+class InvoiceLine(BaseModel):
+    """
+    One service's consumption over the invoiced period.
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    serviceId: str
+    name: str
+    unit: str
+    quantity: Annotated[int, Field(ge=0)]
+    unitPriceMinor: Annotated[int, Field(ge=0)]
+    subtotalMinor: Annotated[int, Field(ge=0)]
+
+
+class Invoice(BaseModel):
+    """
+    A closed billing period rendered as a bill. Generated from an archived plan_usage_periods record, never from live counters, so it stays stable once issued.
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    id: str
+    number: str
+    """
+    Human-facing reference, unique across the system
+    """
+    accountId: str
+    planId: str
+    periodKey: str
+    periodStart: AwareDatetime
+    periodEnd: AwareDatetime
+    lines: list[InvoiceLine]
+    subtotalMinor: int
+    discountMinor: int
+    totalMinor: int
+    currency: str
+    status: InvoiceStatus
+    issuedAt: AwareDatetime | None = None
+    dueAt: AwareDatetime | None = None
+    paidAt: AwareDatetime | None = None
+    createdAt: AwareDatetime
+
+
 class Coupon(BaseModel):
     """
     A discount applicable to a standard plan purchase or a negotiated catalogue. An empty appliesToServiceIds discounts the whole order.

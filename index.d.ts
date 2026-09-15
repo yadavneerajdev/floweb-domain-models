@@ -2696,6 +2696,7 @@ export type CouponDiscountType = "percent" | "fixed";
  * How a reserved unit of usage ended. Only 'completed' is charged; the other two release the hold.
  */
 export type UsageOutcome = "completed" | "failed" | "cancelled";
+export type InvoiceStatus = "draft" | "issued" | "paid" | "void";
 /**
  * Kind of generated dataset item
  */
@@ -4212,6 +4213,42 @@ export interface AccountPlan {
    */
   autoStart: boolean;
   queuedAfterPlanId?: string | null;
+  createdAt: string;
+}
+/**
+ * One service's consumption over the invoiced period.
+ */
+export interface InvoiceLine {
+  serviceId: string;
+  name: string;
+  unit: string;
+  quantity: number;
+  unitPriceMinor: number;
+  subtotalMinor: number;
+}
+/**
+ * A closed billing period rendered as a bill. Generated from an archived plan_usage_periods record, never from live counters, so it stays stable once issued.
+ */
+export interface Invoice {
+  id: string;
+  /**
+   * Human-facing reference, unique across the system
+   */
+  number: string;
+  accountId: string;
+  planId: string;
+  periodKey: string;
+  periodStart: string;
+  periodEnd: string;
+  lines: InvoiceLine[];
+  subtotalMinor: number;
+  discountMinor: number;
+  totalMinor: number;
+  currency: string;
+  status: InvoiceStatus;
+  issuedAt?: string | null;
+  dueAt?: string | null;
+  paidAt?: string | null;
   createdAt: string;
 }
 /**

@@ -190,6 +190,47 @@
       },
       "required": ["id", "accountId", "planType", "status", "services", "caps", "autoStart", "createdAt", "currency"]
     },
+    "InvoiceStatus": {
+      "type": "string",
+      "enum": ["draft", "issued", "paid", "void"]
+    },
+    "InvoiceLine": {
+      "type": "object",
+      "description": "One service's consumption over the invoiced period.",
+      "properties": {
+        "serviceId": { "type": "string" },
+        "name": { "type": "string" },
+        "unit": { "type": "string" },
+        "quantity": { "type": "integer", "minimum": 0 },
+        "unitPriceMinor": { "type": "integer", "minimum": 0 },
+        "subtotalMinor": { "type": "integer", "minimum": 0 }
+      },
+      "required": ["serviceId", "name", "unit", "quantity", "unitPriceMinor", "subtotalMinor"]
+    },
+    "Invoice": {
+      "type": "object",
+      "description": "A closed billing period rendered as a bill. Generated from an archived plan_usage_periods record, never from live counters, so it stays stable once issued.",
+      "properties": {
+        "id": { "type": "string" },
+        "number": { "type": "string", "description": "Human-facing reference, unique across the system" },
+        "accountId": { "type": "string" },
+        "planId": { "type": "string" },
+        "periodKey": { "type": "string" },
+        "periodStart": { "type": "string", "format": "date-time" },
+        "periodEnd": { "type": "string", "format": "date-time" },
+        "lines": { "type": "array", "items": { "$ref": "#/$defs/InvoiceLine" } },
+        "subtotalMinor": { "type": "integer" },
+        "discountMinor": { "type": "integer" },
+        "totalMinor": { "type": "integer" },
+        "currency": { "type": "string" },
+        "status": { "$ref": "#/$defs/InvoiceStatus" },
+        "issuedAt": { "type": ["string", "null"], "format": "date-time" },
+        "dueAt": { "type": ["string", "null"], "format": "date-time" },
+        "paidAt": { "type": ["string", "null"], "format": "date-time" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "number", "accountId", "planId", "periodKey", "periodStart", "periodEnd", "lines", "subtotalMinor", "discountMinor", "totalMinor", "currency", "status", "createdAt"]
+    },
     "Coupon": {
       "type": "object",
       "description": "A discount applicable to a standard plan purchase or a negotiated catalogue. An empty appliesToServiceIds discounts the whole order.",
