@@ -4196,6 +4196,11 @@ export interface AccountPlan {
   services: PlanServiceState[];
   caps: UsageCap[];
   activatedAt?: string | null;
+  exhaustedAt?: string | null;
+  /**
+   * ISO-4217 code every minor-unit amount on this plan is denominated in
+   */
+  currency: string;
   /**
    * Day of month taken from activatedAt; clamped to the last day in shorter months
    */

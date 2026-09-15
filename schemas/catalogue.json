@@ -171,6 +171,11 @@
         "services": { "type": "array", "items": { "$ref": "#/$defs/PlanServiceState" } },
         "caps": { "type": "array", "items": { "$ref": "#/$defs/UsageCap" } },
         "activatedAt": { "type": ["string", "null"], "format": "date-time" },
+        "exhaustedAt": { "type": ["string", "null"], "format": "date-time" },
+        "currency": {
+          "type": "string",
+          "description": "ISO-4217 code every minor-unit amount on this plan is denominated in"
+        },
         "billingAnchorDay": {
           "type": ["integer", "null"],
           "minimum": 1,
@@ -183,7 +188,7 @@
         "queuedAfterPlanId": { "type": ["string", "null"] },
         "createdAt": { "type": "string", "format": "date-time" }
       },
-      "required": ["id", "accountId", "planType", "status", "services", "caps", "autoStart", "createdAt"]
+      "required": ["id", "accountId", "planType", "status", "services", "caps", "autoStart", "createdAt", "currency"]
     },
     "Coupon": {
       "type": "object",

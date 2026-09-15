@@ -264,6 +264,11 @@ class AccountPlan(BaseModel):
     services: list[PlanServiceState]
     caps: list[UsageCap]
     activatedAt: AwareDatetime | None = None
+    exhaustedAt: AwareDatetime | None = None
+    currency: str
+    """
+    ISO-4217 code every minor-unit amount on this plan is denominated in
+    """
     billingAnchorDay: Annotated[int | None, Field(ge=1, le=31)] = None
     """
     Day of month taken from activatedAt; clamped to the last day in shorter months
