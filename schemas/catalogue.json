@@ -6,16 +6,27 @@
   "description": "Negotiated custom plans: the services Floweb sells, the immutable revision thread a price is agreed over, and the activated plan that meters usage against it. Standard off-the-shelf plans stay in billing.json; a catalogue plan is the bespoke alternative. Field-level source of truth is floweb-server catalogue.model.ts.",
   "type": "object",
   "properties": {
-    "service": { "$ref": "#/$defs/CatalogueService" },
-    "request": { "$ref": "#/$defs/CatalogueRequest" },
-    "plan": { "$ref": "#/$defs/AccountPlan" },
-    "coupon": { "$ref": "#/$defs/Coupon" }
+    "service": {
+      "$ref": "#/$defs/CatalogueService"
+    },
+    "request": {
+      "$ref": "#/$defs/CatalogueRequest"
+    },
+    "plan": {
+      "$ref": "#/$defs/AccountPlan"
+    },
+    "coupon": {
+      "$ref": "#/$defs/Coupon"
+    }
   },
   "$defs": {
     "PlanType": {
       "type": "string",
       "description": "How a catalogue plan meters. fixed_budget pre-buys units and counts down; payg accrues cost per unit consumed.",
-      "enum": ["fixed_budget", "payg"]
+      "enum": [
+        "fixed_budget",
+        "payg"
+      ]
     },
     "CatalogueRequestStatus": {
       "type": "string",
@@ -37,70 +48,195 @@
     "AccountPlanStatus": {
       "type": "string",
       "description": "Lifecycle of an activated plan. Only 'active' meters usage; 'scheduled' is queued behind the running plan and 'exhausted' means every fixed budget reached zero.",
-      "enum": ["scheduled", "active", "exhausted", "expired", "cancelled"]
+      "enum": [
+        "scheduled",
+        "active",
+        "exhausted",
+        "expired",
+        "cancelled"
+      ]
     },
     "RevisionAuthor": {
       "type": "string",
       "description": "Which side of the negotiation authored a revision",
-      "enum": ["client", "admin"]
+      "enum": [
+        "client",
+        "admin"
+      ]
     },
     "CouponDiscountType": {
       "type": "string",
       "description": "How a coupon's value is applied: a percentage of the order or an absolute amount in minor units",
-      "enum": ["percent", "fixed"]
+      "enum": [
+        "percent",
+        "fixed"
+      ]
     },
     "UsageOutcome": {
       "type": "string",
       "description": "How a reserved unit of usage ended. Only 'completed' is charged; the other two release the hold.",
-      "enum": ["completed", "failed", "cancelled"]
+      "enum": [
+        "completed",
+        "failed",
+        "cancelled"
+      ]
     },
     "CatalogueService": {
       "type": "object",
       "description": "A service Floweb sells, seeded from the standard catalogue and editable by an administrator. serviceId is the stable slug every plan, cap and usage reservation keys off.",
       "properties": {
-        "serviceId": { "type": "string", "minLength": 1, "maxLength": 60 },
-        "name": { "type": "string", "maxLength": 120 },
-        "description": { "type": "string", "maxLength": 500 },
-        "unit": { "type": "string", "maxLength": 40, "description": "What one unit is: 'execution', 'seat', 'GB'" },
-        "listPriceMinor": { "type": "integer", "minimum": 0, "description": "Floweb's list price per unit in minor currency units" },
-        "currency": { "type": "string", "default": "USD" },
-        "active": { "type": "boolean", "default": true }
+        "serviceId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "unit": {
+          "type": "string",
+          "maxLength": 40,
+          "description": "What one unit is: 'execution', 'seat', 'GB'"
+        },
+        "listPriceMinor": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Floweb's list price per unit in minor currency units"
+        },
+        "currency": {
+          "type": "string",
+          "default": "USD"
+        },
+        "active": {
+          "type": "boolean",
+          "default": true
+        },
+        "topUpPriceMinor": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "description": "Per-unit price when bought as an extra credit on top of a running plan. Null falls back to listPriceMinor."
+        }
       },
-      "required": ["serviceId", "name", "description", "unit", "listPriceMinor", "currency", "active"]
+      "required": [
+        "serviceId",
+        "name",
+        "description",
+        "unit",
+        "listPriceMinor",
+        "currency",
+        "active"
+      ]
     },
     "CatalogueLine": {
       "type": "object",
       "description": "One service on a revision. name is snapshotted so a later rename of the service does not rewrite an agreed quote.",
       "properties": {
-        "serviceId": { "type": "string", "minLength": 1, "maxLength": 60 },
-        "name": { "type": "string", "maxLength": 120 },
+        "serviceId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 120
+        },
         "quantity": {
           "type": "integer",
           "minimum": 0,
           "description": "fixed_budget: units pre-bought. payg: expected volume, used as a cap hint only."
         },
-        "unitPriceMinor": { "type": "integer", "minimum": 0, "description": "Negotiated price, may differ from the service's list price" },
-        "subtotalMinor": { "type": "integer", "minimum": 0, "description": "quantity * unitPriceMinor" }
+        "unitPriceMinor": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Negotiated price, may differ from the service's list price"
+        },
+        "subtotalMinor": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "quantity * unitPriceMinor"
+        }
       },
-      "required": ["serviceId", "name", "quantity", "unitPriceMinor", "subtotalMinor"]
+      "required": [
+        "serviceId",
+        "name",
+        "quantity",
+        "unitPriceMinor",
+        "subtotalMinor"
+      ]
     },
     "CatalogueRevision": {
       "type": "object",
       "description": "One immutable proposal in the negotiation thread. Revisions are appended, never edited; the highest revision number is the live offer.",
       "properties": {
-        "id": { "type": "string" },
-        "revision": { "type": "integer", "minimum": 1, "description": "1-based, monotonic, never reused" },
-        "authoredBy": { "$ref": "#/$defs/RevisionAuthor" },
-        "authorId": { "type": "string" },
-        "authorName": { "type": "string", "maxLength": 200 },
-        "lines": { "type": "array", "items": { "$ref": "#/$defs/CatalogueLine" } },
-        "couponCode": { "type": ["string", "null"], "maxLength": 40 },
-        "discountMinor": { "type": "integer", "minimum": 0, "description": "Absolute discount resolved for this revision" },
-        "subtotalMinor": { "type": "integer", "minimum": 0 },
-        "totalMinor": { "type": "integer", "minimum": 0, "description": "subtotalMinor - discountMinor" },
-        "currency": { "type": "string", "default": "USD" },
-        "note": { "type": ["string", "null"], "maxLength": 2000, "description": "Free-text rationale shown on the negotiation card" },
-        "createdAt": { "type": "string", "format": "date-time" }
+        "id": {
+          "type": "string"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "1-based, monotonic, never reused"
+        },
+        "authoredBy": {
+          "$ref": "#/$defs/RevisionAuthor"
+        },
+        "authorId": {
+          "type": "string"
+        },
+        "authorName": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CatalogueLine"
+          }
+        },
+        "couponCode": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 40
+        },
+        "discountMinor": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Absolute discount resolved for this revision"
+        },
+        "subtotalMinor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "totalMinor": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "subtotalMinor - discountMinor"
+        },
+        "currency": {
+          "type": "string",
+          "default": "USD"
+        },
+        "note": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 2000,
+          "description": "Free-text rationale shown on the negotiation card"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
       },
       "required": [
         "id",
@@ -120,232 +256,748 @@
       "type": "object",
       "description": "A custom plan being negotiated. The revision array is the full immutable thread from both sides; activatedAt is set once payment confirms and becomes the plan's billing anniversary.",
       "properties": {
-        "id": { "type": "string" },
-        "accountId": { "type": "string" },
-        "ticketId": { "type": ["string", "null"], "description": "Support ticket the negotiation is conducted in" },
-        "planType": { "$ref": "#/$defs/PlanType" },
-        "status": { "$ref": "#/$defs/CatalogueRequestStatus" },
-        "revisions": { "type": "array", "items": { "$ref": "#/$defs/CatalogueRevision" }, "description": "Append-only" },
-        "currentRevisionId": { "type": "string" },
-        "approvedByClientAt": { "type": ["string", "null"], "format": "date-time" },
-        "approvedByAdminAt": { "type": ["string", "null"], "format": "date-time" },
-        "bumpsPlanId": { "type": ["string", "null"], "description": "Set when this request increases the limits of an existing plan" },
-        "createdAt": { "type": "string", "format": "date-time" },
-        "activatedAt": { "type": ["string", "null"], "format": "date-time", "description": "Billing anchor once paid" }
+        "id": {
+          "type": "string"
+        },
+        "accountId": {
+          "type": "string"
+        },
+        "ticketId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Support ticket the negotiation is conducted in"
+        },
+        "planType": {
+          "$ref": "#/$defs/PlanType"
+        },
+        "status": {
+          "$ref": "#/$defs/CatalogueRequestStatus"
+        },
+        "revisions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CatalogueRevision"
+          },
+          "description": "Append-only"
+        },
+        "currentRevisionId": {
+          "type": "string"
+        },
+        "approvedByClientAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "approvedByAdminAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "bumpsPlanId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Set when this request increases the limits of an existing plan"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "activatedAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time",
+          "description": "Billing anchor once paid"
+        }
       },
-      "required": ["id", "accountId", "planType", "status", "revisions", "currentRevisionId", "createdAt"]
+      "required": [
+        "id",
+        "accountId",
+        "planType",
+        "status",
+        "revisions",
+        "currentRevisionId",
+        "createdAt"
+      ]
     },
     "PlanServiceState": {
       "type": "object",
       "description": "Per-service budget and consumption on an activated plan. budgetTotal and budgetRemaining are null on a payg plan, which is unbounded by design and constrained by caps instead.",
       "properties": {
-        "serviceId": { "type": "string", "minLength": 1, "maxLength": 60 },
-        "unitPriceMinor": { "type": "integer", "minimum": 0 },
-        "budgetTotal": { "type": ["integer", "null"], "minimum": 0, "description": "fixed_budget: units bought" },
-        "budgetRemaining": { "type": ["integer", "null"], "minimum": 0, "description": "fixed_budget: units left" },
-        "usageCount": { "type": "integer", "minimum": 0, "description": "Units consumed this period" },
-        "usageCostMinor": { "type": "integer", "minimum": 0, "description": "payg: cost accrued this period" }
+        "serviceId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "unitPriceMinor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "budgetTotal": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "description": "fixed_budget: units bought"
+        },
+        "budgetRemaining": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "description": "fixed_budget: units left"
+        },
+        "usageCount": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Units consumed this period"
+        },
+        "usageCostMinor": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "payg: cost accrued this period"
+        }
       },
-      "required": ["serviceId", "unitPriceMinor", "budgetTotal", "budgetRemaining", "usageCount", "usageCostMinor"]
+      "required": [
+        "serviceId",
+        "unitPriceMinor",
+        "budgetTotal",
+        "budgetRemaining",
+        "usageCount",
+        "usageCostMinor"
+      ]
     },
     "UsageCap": {
       "type": "object",
       "description": "A ceiling on units consumed within one billing period. A null serviceId caps every service together; scope 'user' caps one member, scope 'account' caps the whole account.",
       "properties": {
-        "scope": { "type": "string", "enum": ["account", "user"] },
-        "userId": { "type": ["string", "null"], "description": "Null when scope is 'account'" },
-        "serviceId": { "type": ["string", "null"], "description": "Null applies the cap across all services" },
-        "limit": { "type": "integer", "minimum": 0 }
+        "scope": {
+          "type": "string",
+          "enum": [
+            "account",
+            "user"
+          ]
+        },
+        "userId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Null when scope is 'account'"
+        },
+        "serviceId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Null applies the cap across all services"
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 0
+        }
       },
-      "required": ["scope", "userId", "serviceId", "limit"]
+      "required": [
+        "scope",
+        "userId",
+        "serviceId",
+        "limit"
+      ]
     },
     "AccountPlan": {
       "type": "object",
-      "description": "The activated plan that meters usage. activatedAt is the billing anniversary and the anchor every period rolls forward from — deliberately not createdAt, which is when the plan was queued.",
+      "description": "The activated plan that meters usage. activatedAt is the billing anniversary and the anchor every period rolls forward from \u2014 deliberately not createdAt, which is when the plan was queued.",
       "properties": {
-        "id": { "type": "string" },
-        "accountId": { "type": "string" },
-        "catalogueRequestId": { "type": ["string", "null"], "description": "Null for standard catalog plans" },
-        "planType": { "$ref": "#/$defs/PlanType" },
-        "status": { "$ref": "#/$defs/AccountPlanStatus" },
-        "services": { "type": "array", "items": { "$ref": "#/$defs/PlanServiceState" } },
-        "caps": { "type": "array", "items": { "$ref": "#/$defs/UsageCap" } },
-        "activatedAt": { "type": ["string", "null"], "format": "date-time" },
+        "id": {
+          "type": "string"
+        },
+        "accountId": {
+          "type": "string"
+        },
+        "catalogueRequestId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Null for standard catalog plans"
+        },
+        "planType": {
+          "$ref": "#/$defs/PlanType"
+        },
+        "status": {
+          "$ref": "#/$defs/AccountPlanStatus"
+        },
+        "services": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PlanServiceState"
+          }
+        },
+        "caps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/UsageCap"
+          }
+        },
+        "activatedAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
         "activationFailedAt": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "format": "date-time",
           "description": "Payment confirmed but no plan was created. Resolved by an admin by hand; nothing retries or refunds automatically."
         },
-        "activationError": { "type": ["string", "null"] },
-        "activationResolvedAt": { "type": ["string", "null"], "format": "date-time" },
-        "activationResolution": {
-          "type": ["string", "null"],
-          "enum": ["retried", "refunded", "written_off", null]
+        "activationError": {
+          "type": [
+            "string",
+            "null"
+          ]
         },
-        "activationResolvedByEmail": { "type": ["string", "null"] },
-        "activationResolutionNote": { "type": ["string", "null"] },
-        "exhaustedAt": { "type": ["string", "null"], "format": "date-time" },
+        "activationResolvedAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "activationResolution": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "retried",
+            "refunded",
+            "written_off",
+            null
+          ]
+        },
+        "activationResolvedByEmail": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "activationResolutionNote": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "exhaustedAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
         "cancelAtPeriodEnd": {
           "type": "boolean",
           "description": "Client asked to end this plan at the current period's end; it keeps metering until then"
         },
-        "endedAt": { "type": ["string", "null"], "format": "date-time", "description": "When the plan actually closed" },
+        "endedAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time",
+          "description": "When the plan actually closed"
+        },
         "appliedDiscount": {
-          "type": ["object", "null"],
+          "type": [
+            "object",
+            "null"
+          ],
           "description": "Promo terms snapshotted at activation. Scoped to this plan for its lifetime and never inherited by a later plan; snapshotted so editing or expiring the code cannot retroactively change what an active plan is billed.",
           "properties": {
-            "code": { "type": "string" },
-            "discountType": { "$ref": "#/$defs/CouponDiscountType" },
-            "value": { "type": "integer", "minimum": 0 },
+            "code": {
+              "type": "string"
+            },
+            "discountType": {
+              "$ref": "#/$defs/CouponDiscountType"
+            },
+            "value": {
+              "type": "integer",
+              "minimum": 0
+            },
             "appliesToServiceIds": {
               "type": "array",
-              "items": { "type": "string" },
+              "items": {
+                "type": "string"
+              },
               "description": "Services the discount is limited to; empty means the whole order"
             }
           },
-          "required": ["code", "discountType", "value", "appliesToServiceIds"]
+          "required": [
+            "code",
+            "discountType",
+            "value",
+            "appliesToServiceIds"
+          ]
         },
         "currency": {
           "type": "string",
           "description": "ISO-4217 code every minor-unit amount on this plan is denominated in"
         },
         "billingAnchorDay": {
-          "type": ["integer", "null"],
+          "type": [
+            "integer",
+            "null"
+          ],
           "minimum": 1,
           "maximum": 31,
           "description": "Day of month taken from activatedAt; clamped to the last day in shorter months"
         },
-        "currentPeriodStart": { "type": ["string", "null"], "format": "date-time" },
-        "currentPeriodEnd": { "type": ["string", "null"], "format": "date-time" },
-        "autoStart": { "type": "boolean", "default": false, "description": "Scheduled plan starts by itself when the running plan exhausts" },
-        "queuedAfterPlanId": { "type": ["string", "null"] },
-        "createdAt": { "type": "string", "format": "date-time" }
+        "currentPeriodStart": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "currentPeriodEnd": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "autoStart": {
+          "type": "boolean",
+          "default": false,
+          "description": "Scheduled plan starts by itself when the running plan exhausts"
+        },
+        "queuedAfterPlanId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
       },
-      "required": ["id", "accountId", "planType", "status", "services", "caps", "autoStart", "createdAt", "currency"]
+      "required": [
+        "id",
+        "accountId",
+        "planType",
+        "status",
+        "services",
+        "caps",
+        "autoStart",
+        "createdAt",
+        "currency"
+      ]
     },
     "InvoiceStatus": {
       "type": "string",
-      "enum": ["draft", "issued", "paid", "void"]
+      "enum": [
+        "draft",
+        "issued",
+        "paid",
+        "void"
+      ]
     },
     "InvoiceLine": {
       "type": "object",
       "description": "One service's consumption over the invoiced period.",
       "properties": {
-        "serviceId": { "type": "string" },
-        "name": { "type": "string" },
-        "unit": { "type": "string" },
-        "quantity": { "type": "integer", "minimum": 0 },
-        "unitPriceMinor": { "type": "integer", "minimum": 0 },
-        "subtotalMinor": { "type": "integer", "minimum": 0 }
+        "serviceId": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "unit": {
+          "type": "string"
+        },
+        "quantity": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unitPriceMinor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "subtotalMinor": {
+          "type": "integer",
+          "minimum": 0
+        }
       },
-      "required": ["serviceId", "name", "unit", "quantity", "unitPriceMinor", "subtotalMinor"]
+      "required": [
+        "serviceId",
+        "name",
+        "unit",
+        "quantity",
+        "unitPriceMinor",
+        "subtotalMinor"
+      ]
     },
     "Invoice": {
       "type": "object",
       "description": "A closed billing period rendered as a bill. Generated from an archived plan_usage_periods record, never from live counters, so it stays stable once issued.",
       "properties": {
-        "id": { "type": "string" },
-        "number": { "type": "string", "description": "Human-facing reference, unique across the system" },
-        "accountId": { "type": "string" },
-        "planId": { "type": "string" },
-        "periodKey": { "type": "string" },
-        "periodStart": { "type": "string", "format": "date-time" },
-        "periodEnd": { "type": "string", "format": "date-time" },
-        "lines": { "type": "array", "items": { "$ref": "#/$defs/InvoiceLine" } },
-        "subtotalMinor": { "type": "integer" },
-        "discountMinor": { "type": "integer" },
-        "totalMinor": { "type": "integer" },
-        "currency": { "type": "string" },
-        "status": { "$ref": "#/$defs/InvoiceStatus" },
-        "issuedAt": { "type": ["string", "null"], "format": "date-time" },
-        "dueAt": { "type": ["string", "null"], "format": "date-time" },
-        "paidAt": { "type": ["string", "null"], "format": "date-time" },
-        "createdAt": { "type": "string", "format": "date-time" }
+        "id": {
+          "type": "string"
+        },
+        "number": {
+          "type": "string",
+          "description": "Human-facing reference, unique across the system"
+        },
+        "accountId": {
+          "type": "string"
+        },
+        "planId": {
+          "type": "string"
+        },
+        "periodKey": {
+          "type": "string"
+        },
+        "periodStart": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "periodEnd": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/InvoiceLine"
+          }
+        },
+        "subtotalMinor": {
+          "type": "integer"
+        },
+        "discountMinor": {
+          "type": "integer"
+        },
+        "totalMinor": {
+          "type": "integer"
+        },
+        "currency": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/InvoiceStatus"
+        },
+        "issuedAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "dueAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "paidAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
       },
-      "required": ["id", "number", "accountId", "planId", "periodKey", "periodStart", "periodEnd", "lines", "subtotalMinor", "discountMinor", "totalMinor", "currency", "status", "createdAt"]
+      "required": [
+        "id",
+        "number",
+        "accountId",
+        "planId",
+        "periodKey",
+        "periodStart",
+        "periodEnd",
+        "lines",
+        "subtotalMinor",
+        "discountMinor",
+        "totalMinor",
+        "currency",
+        "status",
+        "createdAt"
+      ]
     },
     "PricingUpdateStatus": {
       "type": "string",
-      "enum": ["scheduled", "applied", "cancelled"]
+      "enum": [
+        "scheduled",
+        "applied",
+        "cancelled"
+      ]
     },
     "PricingUpdateLine": {
       "type": "object",
       "description": "One service's price move. deltaMinor is what the admin entered; the absolute prices are recorded so the change stays auditable after the catalogue moves again.",
       "properties": {
-        "serviceId": { "type": "string" },
-        "name": { "type": "string" },
-        "previousUnitPriceMinor": { "type": "integer", "minimum": 0 },
-        "newUnitPriceMinor": { "type": "integer", "minimum": 0 },
-        "deltaMinor": { "type": "integer" }
+        "serviceId": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "previousUnitPriceMinor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "newUnitPriceMinor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "deltaMinor": {
+          "type": "integer"
+        }
       },
-      "required": ["serviceId", "name", "previousUnitPriceMinor", "newUnitPriceMinor", "deltaMinor"]
+      "required": [
+        "serviceId",
+        "name",
+        "previousUnitPriceMinor",
+        "newUnitPriceMinor",
+        "deltaMinor"
+      ]
     },
     "PricingUpdate": {
       "type": "object",
       "description": "An admin-announced change to per-service catalogue pricing. Active PAYG plans adopt it at their first period roll on or after effectiveFrom, so usage already incurred is never repriced. Fixed-budget plans are pre-paid and never adopt it.",
       "properties": {
-        "id": { "type": "string" },
-        "status": { "$ref": "#/$defs/PricingUpdateStatus" },
-        "lines": { "type": "array", "items": { "$ref": "#/$defs/PricingUpdateLine" } },
-        "currency": { "type": "string" },
-        "note": { "type": ["string", "null"], "description": "Announcement shown to affected clients" },
+        "id": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/PricingUpdateStatus"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PricingUpdateLine"
+          }
+        },
+        "currency": {
+          "type": "string"
+        },
+        "note": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Announcement shown to affected clients"
+        },
         "targetAccountIds": {
-          "type": ["array", "null"],
-          "items": { "type": "string" },
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "string"
+          },
           "description": "Accounts this applies to; null means every account. Each target adopts it at its own next billing cycle, so adoption dates differ per account."
         },
-        "effectiveFrom": { "type": "string", "format": "date-time" },
-        "announcedAt": { "type": ["string", "null"], "format": "date-time" },
-        "createdByEmail": { "type": ["string", "null"] },
-        "createdAt": { "type": "string", "format": "date-time" }
+        "effectiveFrom": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "announcedAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "createdByEmail": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
       },
-      "required": ["id", "status", "lines", "currency", "effectiveFrom", "createdAt"]
+      "required": [
+        "id",
+        "status",
+        "lines",
+        "currency",
+        "effectiveFrom",
+        "createdAt"
+      ]
     },
     "Coupon": {
       "type": "object",
       "description": "A discount applicable to a standard plan purchase or a negotiated catalogue. An empty appliesToServiceIds discounts the whole order.",
       "properties": {
-        "code": { "type": "string", "minLength": 1, "maxLength": 40, "description": "Uppercase, unique" },
-        "discountType": { "$ref": "#/$defs/CouponDiscountType" },
-        "value": { "type": "integer", "minimum": 1, "description": "percent: 1-100. fixed: minor units" },
-        "currency": { "type": ["string", "null"], "description": "Set for a fixed discount only" },
-        "appliesToServiceIds": { "type": "array", "items": { "type": "string" } },
-        "maxRedemptions": { "type": ["integer", "null"], "minimum": 1 },
-        "redemptions": { "type": "integer", "minimum": 0 },
-        "expiresAt": { "type": ["string", "null"], "format": "date-time" },
-        "active": { "type": "boolean", "default": true }
+        "code": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40,
+          "description": "Uppercase, unique"
+        },
+        "discountType": {
+          "$ref": "#/$defs/CouponDiscountType"
+        },
+        "value": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "percent: 1-100. fixed: minor units"
+        },
+        "currency": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Set for a fixed discount only"
+        },
+        "appliesToServiceIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "maxRedemptions": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        },
+        "redemptions": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "expiresAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "active": {
+          "type": "boolean",
+          "default": true
+        }
       },
-      "required": ["code", "discountType", "value", "appliesToServiceIds", "redemptions", "active"]
+      "required": [
+        "code",
+        "discountType",
+        "value",
+        "appliesToServiceIds",
+        "redemptions",
+        "active"
+      ]
     },
     "CouponValidation": {
       "type": "object",
       "description": "Result of checking a coupon against an order. reason explains a refusal so the UI can say why rather than just greying the field.",
       "properties": {
-        "valid": { "type": "boolean" },
-        "code": { "type": "string" },
-        "discountMinor": { "type": "integer", "minimum": 0 },
+        "valid": {
+          "type": "boolean"
+        },
+        "code": {
+          "type": "string"
+        },
+        "discountMinor": {
+          "type": "integer",
+          "minimum": 0
+        },
         "reason": {
-          "type": ["string", "null"],
-          "enum": ["unknown_code", "inactive", "expired", "fully_redeemed", "not_applicable", "currency_mismatch", null]
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "unknown_code",
+            "inactive",
+            "expired",
+            "fully_redeemed",
+            "not_applicable",
+            "currency_mismatch",
+            null
+          ]
         }
       },
-      "required": ["valid", "code", "discountMinor"]
+      "required": [
+        "valid",
+        "code",
+        "discountMinor"
+      ]
     },
     "PlanUsageSnapshot": {
       "type": "object",
       "description": "Consumption of one service on one plan after a usage reservation settled. Distinct from billing.json's UsageSnapshot, which reports the standard plan's daily execution counter.",
       "properties": {
-        "planId": { "type": "string" },
-        "planType": { "$ref": "#/$defs/PlanType" },
-        "status": { "$ref": "#/$defs/AccountPlanStatus" },
-        "serviceId": { "type": "string" },
-        "outcome": { "$ref": "#/$defs/UsageOutcome" },
-        "charged": { "type": "boolean", "description": "False when the hold was released instead of committed" },
-        "budgetRemaining": { "type": ["integer", "null"], "minimum": 0 },
-        "usageCount": { "type": "integer", "minimum": 0 },
-        "usageCostMinor": { "type": "integer", "minimum": 0 }
+        "planId": {
+          "type": "string"
+        },
+        "planType": {
+          "$ref": "#/$defs/PlanType"
+        },
+        "status": {
+          "$ref": "#/$defs/AccountPlanStatus"
+        },
+        "serviceId": {
+          "type": "string"
+        },
+        "outcome": {
+          "$ref": "#/$defs/UsageOutcome"
+        },
+        "charged": {
+          "type": "boolean",
+          "description": "False when the hold was released instead of committed"
+        },
+        "budgetRemaining": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "usageCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "usageCostMinor": {
+          "type": "integer",
+          "minimum": 0
+        }
       },
-      "required": ["planId", "planType", "status", "serviceId", "outcome", "charged", "budgetRemaining", "usageCount", "usageCostMinor"]
+      "required": [
+        "planId",
+        "planType",
+        "status",
+        "serviceId",
+        "outcome",
+        "charged",
+        "budgetRemaining",
+        "usageCount",
+        "usageCostMinor"
+      ]
     }
   }
 }

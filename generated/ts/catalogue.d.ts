@@ -84,6 +84,10 @@ export interface CatalogueService {
   listPriceMinor: number;
   currency: string;
   active: boolean;
+  /**
+   * Per-unit price when bought as an extra credit on top of a running plan. Null falls back to listPriceMinor.
+   */
+  topUpPriceMinor?: number | null;
 }
 /**
  * A custom plan being negotiated. The revision array is the full immutable thread from both sides; activatedAt is set once payment confirms and becomes the plan's billing anniversary.

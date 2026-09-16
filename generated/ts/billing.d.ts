@@ -56,10 +56,13 @@ export interface BillingSchema {
   AccountEntitlements?: AccountEntitlements;
   FeatureDeniedReason?: FeatureDeniedReason;
   FeatureDenied?: FeatureDenied;
-  CreditPack?: CreditPack;
   CreditPurchase?: CreditPurchase;
   CreditLedgerEntry?: CreditLedgerEntry;
   CreditTopUpTarget?: CreditTopUpTarget;
+  ServiceCreditBalance?: ServiceCreditBalance;
+  UsageReset?: UsageReset;
+  CreditTopUpRate?: CreditTopUpRate;
+  CreditTopUpLine?: CreditTopUpLine;
 }
 /**
  * The billing state of one account. featureOverrides lets an administrator grant or revoke individual capabilities independently of the plan, which is how the 'custom' plan is fulfilled.
@@ -180,29 +183,12 @@ export interface FeatureDenied {
   currentPlan?: PlanId;
 }
 /**
- * A purchasable bundle of execution credits. Credits top up a plan that has a fixed allowance; pay-as-you-go plans bill usage directly and cannot use them.
- */
-export interface CreditPack {
-  id: string;
-  credits: number;
-  /**
-   * Pack price in minor units of `currency`.
-   */
-  priceMinor: number;
-  currency: string;
-}
-/**
- * Outcome of a credit top-up, carrying the new balance so the caller need not re-read it.
+ * Outcome of a credit top-up covering one or more services.
  */
 export interface CreditPurchase {
-  packId: string;
-  credits: number;
-  amountMinor: number;
+  lines: CreditTopUpLine[];
+  totalMinor: number;
   currency: string;
-  /**
-   * Credit balance after the purchase settled.
-   */
-  balance: number;
   reference: string;
   createdAt: string;
   /**
@@ -214,6 +200,12 @@ export interface CreditPurchase {
    */
   appliedNow: boolean;
 }
+export interface CreditTopUpLine {
+  serviceId: string;
+  quantity: number;
+  unitPriceMinor: number;
+  subtotalMinor: number;
+}
 /**
  * One movement on an account's credit balance, positive for a grant or purchase and negative for a consumed run.
  */
@@ -223,6 +215,7 @@ export interface CreditLedgerEntry {
   amount: number;
   reason: string;
   createdAt: string;
+  serviceId?: string | null;
 }
 /**
  * A plan a credit top-up can be bought for: the one running now, or one queued behind it.
@@ -234,4 +227,38 @@ export interface CreditTopUpTarget {
   planId: string | null;
   label: string;
   when: "now" | "upcoming";
+}
+/**
+ * Credits an account holds for one service.
+ */
+export interface ServiceCreditBalance {
+  serviceId: string;
+  serviceName: string;
+  unit: string;
+  balance: number;
+}
+/**
+ * Outcome of an administrator clearing today's usage counters as a goodwill gesture.
+ */
+export interface UsageReset {
+  accountsReset: number;
+  /**
+   * Accounts left alone because their plan meters every request and has no daily allowance to restore.
+   */
+  accountsSkipped: number;
+  resetAt: string;
+}
+/**
+ * What one extra unit of a service costs on top of a running plan, at the rate an administrator has set.
+ */
+export interface CreditTopUpRate {
+  serviceId: string;
+  serviceName: string;
+  unit: string;
+  unitPriceMinor: number;
+  currency: string;
+  /**
+   * Credits the account already holds for this service.
+   */
+  balance: number;
 }

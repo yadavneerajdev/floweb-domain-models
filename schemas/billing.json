@@ -433,53 +433,21 @@
         "message"
       ]
     },
-    "CreditPack": {
-      "type": "object",
-      "description": "A purchasable bundle of execution credits. Credits top up a plan that has a fixed allowance; pay-as-you-go plans bill usage directly and cannot use them.",
-      "properties": {
-        "id": {
-          "type": "string"
-        },
-        "credits": {
-          "type": "integer",
-          "minimum": 1
-        },
-        "priceMinor": {
-          "type": "integer",
-          "minimum": 0,
-          "description": "Pack price in minor units of `currency`."
-        },
-        "currency": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "id",
-        "credits",
-        "priceMinor",
-        "currency"
-      ],
-      "additionalProperties": false
-    },
     "CreditPurchase": {
       "type": "object",
-      "description": "Outcome of a credit top-up, carrying the new balance so the caller need not re-read it.",
+      "description": "Outcome of a credit top-up covering one or more services.",
       "properties": {
-        "packId": {
-          "type": "string"
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CreditTopUpLine"
+          }
         },
-        "credits": {
-          "type": "integer"
-        },
-        "amountMinor": {
+        "totalMinor": {
           "type": "integer"
         },
         "currency": {
           "type": "string"
-        },
-        "balance": {
-          "type": "integer",
-          "description": "Credit balance after the purchase settled."
         },
         "reference": {
           "type": "string"
@@ -501,11 +469,9 @@
         }
       },
       "required": [
-        "packId",
-        "credits",
-        "amountMinor",
+        "lines",
+        "totalMinor",
         "currency",
-        "balance",
         "reference",
         "createdAt",
         "targetPlanId",
@@ -532,6 +498,12 @@
         "createdAt": {
           "type": "string",
           "format": "date-time"
+        },
+        "serviceId": {
+          "type": [
+            "string",
+            "null"
+          ]
         }
       },
       "required": [
@@ -569,6 +541,116 @@
         "planId",
         "label",
         "when"
+      ],
+      "additionalProperties": false
+    },
+    "ServiceCreditBalance": {
+      "type": "object",
+      "description": "Credits an account holds for one service.",
+      "properties": {
+        "serviceId": {
+          "type": "string"
+        },
+        "serviceName": {
+          "type": "string"
+        },
+        "unit": {
+          "type": "string"
+        },
+        "balance": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "serviceId",
+        "serviceName",
+        "unit",
+        "balance"
+      ],
+      "additionalProperties": false
+    },
+    "UsageReset": {
+      "type": "object",
+      "description": "Outcome of an administrator clearing today's usage counters as a goodwill gesture.",
+      "properties": {
+        "accountsReset": {
+          "type": "integer"
+        },
+        "accountsSkipped": {
+          "type": "integer",
+          "description": "Accounts left alone because their plan meters every request and has no daily allowance to restore."
+        },
+        "resetAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "accountsReset",
+        "accountsSkipped",
+        "resetAt"
+      ],
+      "additionalProperties": false
+    },
+    "CreditTopUpRate": {
+      "type": "object",
+      "description": "What one extra unit of a service costs on top of a running plan, at the rate an administrator has set.",
+      "properties": {
+        "serviceId": {
+          "type": "string"
+        },
+        "serviceName": {
+          "type": "string"
+        },
+        "unit": {
+          "type": "string"
+        },
+        "unitPriceMinor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "currency": {
+          "type": "string"
+        },
+        "balance": {
+          "type": "integer",
+          "description": "Credits the account already holds for this service."
+        }
+      },
+      "required": [
+        "serviceId",
+        "serviceName",
+        "unit",
+        "unitPriceMinor",
+        "currency",
+        "balance"
+      ],
+      "additionalProperties": false
+    },
+    "CreditTopUpLine": {
+      "type": "object",
+      "properties": {
+        "serviceId": {
+          "type": "string"
+        },
+        "quantity": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "unitPriceMinor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "subtotalMinor": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "serviceId",
+        "quantity",
+        "unitPriceMinor",
+        "subtotalMinor"
       ],
       "additionalProperties": false
     }

@@ -97,6 +97,10 @@ class CatalogueService(BaseModel):
     """
     currency: str
     active: bool
+    topUpPriceMinor: Annotated[int | None, Field(ge=0)] = None
+    """
+    Per-unit price when bought as an extra credit on top of a running plan. Null falls back to listPriceMinor.
+    """
 
 
 class CatalogueLine(BaseModel):

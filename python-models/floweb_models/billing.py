@@ -212,53 +212,6 @@ class FeatureDenied(BaseModel):
     currentPlan: PlanId | None = None
 
 
-class CreditPack(BaseModel):
-    """
-    A purchasable bundle of execution credits. Credits top up a plan that has a fixed allowance; pay-as-you-go plans bill usage directly and cannot use them.
-    """
-
-    model_config = ConfigDict(
-        extra='forbid',
-        populate_by_name=True,
-    )
-    id: str
-    credits: Annotated[int, Field(ge=1)]
-    priceMinor: Annotated[int, Field(ge=0)]
-    """
-    Pack price in minor units of `currency`.
-    """
-    currency: str
-
-
-class CreditPurchase(BaseModel):
-    """
-    Outcome of a credit top-up, carrying the new balance so the caller need not re-read it.
-    """
-
-    model_config = ConfigDict(
-        extra='forbid',
-        populate_by_name=True,
-    )
-    packId: str
-    credits: int
-    amountMinor: int
-    currency: str
-    balance: int
-    """
-    Credit balance after the purchase settled.
-    """
-    reference: str
-    createdAt: AwareDatetime
-    targetPlanId: str | None
-    """
-    Plan the credits were bought for. Null means the running plan, which takes them straight away.
-    """
-    appliedNow: bool
-    """
-    False when the credits are held for a plan that has not started yet.
-    """
-
-
 class CreditLedgerEntry(BaseModel):
     """
     One movement on an account's credit balance, positive for a grant or purchase and negative for a consumed run.
@@ -273,6 +226,7 @@ class CreditLedgerEntry(BaseModel):
     amount: int
     reason: str
     createdAt: AwareDatetime
+    serviceId: str | None = None
 
 
 class When(StrEnum):
@@ -295,6 +249,69 @@ class CreditTopUpTarget(BaseModel):
     """
     label: str
     when: When
+
+
+class ServiceCreditBalance(BaseModel):
+    """
+    Credits an account holds for one service.
+    """
+
+    model_config = ConfigDict(
+        extra='forbid',
+        populate_by_name=True,
+    )
+    serviceId: str
+    serviceName: str
+    unit: str
+    balance: int
+
+
+class UsageReset(BaseModel):
+    """
+    Outcome of an administrator clearing today's usage counters as a goodwill gesture.
+    """
+
+    model_config = ConfigDict(
+        extra='forbid',
+        populate_by_name=True,
+    )
+    accountsReset: int
+    accountsSkipped: int
+    """
+    Accounts left alone because their plan meters every request and has no daily allowance to restore.
+    """
+    resetAt: AwareDatetime
+
+
+class CreditTopUpRate(BaseModel):
+    """
+    What one extra unit of a service costs on top of a running plan, at the rate an administrator has set.
+    """
+
+    model_config = ConfigDict(
+        extra='forbid',
+        populate_by_name=True,
+    )
+    serviceId: str
+    serviceName: str
+    unit: str
+    unitPriceMinor: Annotated[int, Field(ge=0)]
+    currency: str
+    balance: int
+    """
+    Credits the account already holds for this service.
+    """
+
+
+class CreditTopUpLine(BaseModel):
+    model_config = ConfigDict(
+        extra='forbid',
+        populate_by_name=True,
+    )
+    serviceId: str
+    quantity: Annotated[int, Field(ge=1)]
+    unitPriceMinor: Annotated[int, Field(ge=0)]
+    subtotalMinor: Annotated[int, Field(ge=0)]
 
 
 class AccountSubscription(BaseModel):
@@ -322,6 +339,30 @@ class AccountSubscription(BaseModel):
     payments: list[PaymentRecord] | None = None
     createdAt: AwareDatetime | None = None
     updatedAt: AwareDatetime | None = None
+
+
+class CreditPurchase(BaseModel):
+    """
+    Outcome of a credit top-up covering one or more services.
+    """
+
+    model_config = ConfigDict(
+        extra='forbid',
+        populate_by_name=True,
+    )
+    lines: list[CreditTopUpLine]
+    totalMinor: int
+    currency: str
+    reference: str
+    createdAt: AwareDatetime
+    targetPlanId: str | None
+    """
+    Plan the credits were bought for. Null means the running plan, which takes them straight away.
+    """
+    appliedNow: bool
+    """
+    False when the credits are held for a plan that has not started yet.
+    """
 
 
 class Billing(BaseModel):
