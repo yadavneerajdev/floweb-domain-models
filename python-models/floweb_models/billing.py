@@ -212,6 +212,61 @@ class FeatureDenied(BaseModel):
     currentPlan: PlanId | None = None
 
 
+class CreditPack(BaseModel):
+    """
+    A purchasable bundle of execution credits. Credits top up a plan that has a fixed allowance; pay-as-you-go plans bill usage directly and cannot use them.
+    """
+
+    model_config = ConfigDict(
+        extra='forbid',
+        populate_by_name=True,
+    )
+    id: str
+    credits: Annotated[int, Field(ge=1)]
+    priceMinor: Annotated[int, Field(ge=0)]
+    """
+    Pack price in minor units of `currency`.
+    """
+    currency: str
+
+
+class CreditPurchase(BaseModel):
+    """
+    Outcome of a credit top-up, carrying the new balance so the caller need not re-read it.
+    """
+
+    model_config = ConfigDict(
+        extra='forbid',
+        populate_by_name=True,
+    )
+    packId: str
+    credits: int
+    amountMinor: int
+    currency: str
+    balance: int
+    """
+    Credit balance after the purchase settled.
+    """
+    reference: str
+    createdAt: AwareDatetime
+
+
+class CreditLedgerEntry(BaseModel):
+    """
+    One movement on an account's credit balance, positive for a grant or purchase and negative for a consumed run.
+    """
+
+    model_config = ConfigDict(
+        extra='forbid',
+        populate_by_name=True,
+    )
+    id: str
+    kind: str
+    amount: int
+    reason: str
+    createdAt: AwareDatetime
+
+
 class AccountSubscription(BaseModel):
     """
     The billing state of one account. featureOverrides lets an administrator grant or revoke individual capabilities independently of the plan, which is how the 'custom' plan is fulfilled.

@@ -4050,6 +4050,43 @@ export interface FeatureDenied {
   currentPlan?: PlanId;
 }
 /**
+ * A purchasable bundle of execution credits. Credits top up a plan that has a fixed allowance; pay-as-you-go plans bill usage directly and cannot use them.
+ */
+export interface CreditPack {
+  id: string;
+  credits: number;
+  /**
+   * Pack price in minor units of `currency`.
+   */
+  priceMinor: number;
+  currency: string;
+}
+/**
+ * Outcome of a credit top-up, carrying the new balance so the caller need not re-read it.
+ */
+export interface CreditPurchase {
+  packId: string;
+  credits: number;
+  amountMinor: number;
+  currency: string;
+  /**
+   * Credit balance after the purchase settled.
+   */
+  balance: number;
+  reference: string;
+  createdAt: string;
+}
+/**
+ * One movement on an account's credit balance, positive for a grant or purchase and negative for a consumed run.
+ */
+export interface CreditLedgerEntry {
+  id: string;
+  kind: string;
+  amount: number;
+  reason: string;
+  createdAt: string;
+}
+/**
  * A service Floweb sells, seeded from the standard catalogue and editable by an administrator. serviceId is the stable slug every plan, cap and usage reservation keys off.
  */
 export interface CatalogueService {

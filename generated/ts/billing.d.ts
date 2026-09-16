@@ -56,6 +56,9 @@ export interface BillingSchema {
   AccountEntitlements?: AccountEntitlements;
   FeatureDeniedReason?: FeatureDeniedReason;
   FeatureDenied?: FeatureDenied;
+  CreditPack?: CreditPack;
+  CreditPurchase?: CreditPurchase;
+  CreditLedgerEntry?: CreditLedgerEntry;
 }
 /**
  * The billing state of one account. featureOverrides lets an administrator grant or revoke individual capabilities independently of the plan, which is how the 'custom' plan is fulfilled.
@@ -174,4 +177,41 @@ export interface FeatureDenied {
   message: string;
   requiredPlan?: PlanId;
   currentPlan?: PlanId;
+}
+/**
+ * A purchasable bundle of execution credits. Credits top up a plan that has a fixed allowance; pay-as-you-go plans bill usage directly and cannot use them.
+ */
+export interface CreditPack {
+  id: string;
+  credits: number;
+  /**
+   * Pack price in minor units of `currency`.
+   */
+  priceMinor: number;
+  currency: string;
+}
+/**
+ * Outcome of a credit top-up, carrying the new balance so the caller need not re-read it.
+ */
+export interface CreditPurchase {
+  packId: string;
+  credits: number;
+  amountMinor: number;
+  currency: string;
+  /**
+   * Credit balance after the purchase settled.
+   */
+  balance: number;
+  reference: string;
+  createdAt: string;
+}
+/**
+ * One movement on an account's credit balance, positive for a grant or purchase and negative for a consumed run.
+ */
+export interface CreditLedgerEntry {
+  id: string;
+  kind: string;
+  amount: number;
+  reason: string;
+  createdAt: string;
 }
