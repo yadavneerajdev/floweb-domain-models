@@ -2,9 +2,9 @@
 // GENERATED from schemas/ by scripts/generate-ts.cjs — do not edit by hand.
 
 /**
- * Billing plan identifier. 'custom' is assigned manually by a Floweb administrator.
+ * Billing plan identifier. 'none' is an account that has not bought a plan yet and is entitled to nothing; 'custom' is assigned manually by a Floweb administrator.
  */
-export type PlanId = "basic" | "premium" | "max" | "custom";
+export type PlanId = "none" | "basic" | "premium" | "max" | "custom";
 /**
  * Lifecycle state of an account subscription. Only 'active' and 'trialing' grant entitlements.
  */

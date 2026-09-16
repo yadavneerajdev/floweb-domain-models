@@ -11,9 +11,10 @@ from pydantic import AwareDatetime, BaseModel, ConfigDict, Field
 
 class PlanId(StrEnum):
     """
-    Billing plan identifier. 'custom' is assigned manually by a Floweb administrator.
+    Billing plan identifier. 'none' is an account that has not bought a plan yet and is entitled to nothing; 'custom' is assigned manually by a Floweb administrator.
     """
 
+    none = 'none'
     basic = 'basic'
     premium = 'premium'
     max = 'max'

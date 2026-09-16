@@ -2626,9 +2626,9 @@ export type ApiKeyScope = "runs:execute" | "runs:read";
  */
 export type ApiKeyStatus = "active" | "expired" | "revoked";
 /**
- * Billing plan identifier. 'custom' is assigned manually by a Floweb administrator.
+ * Billing plan identifier. 'none' is an account that has not bought a plan yet and is entitled to nothing; 'custom' is assigned manually by a Floweb administrator.
  */
-export type PlanId = "basic" | "premium" | "max" | "custom";
+export type PlanId = "none" | "basic" | "premium" | "max" | "custom";
 /**
  * A gateable product capability. Every enforcement point in the server, engine and UI keys off one of these.
  */
