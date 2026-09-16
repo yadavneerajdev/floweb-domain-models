@@ -357,6 +357,49 @@ class Invoice(BaseModel):
     createdAt: AwareDatetime
 
 
+class PricingUpdateStatus(StrEnum):
+    scheduled = 'scheduled'
+    applied = 'applied'
+    cancelled = 'cancelled'
+
+
+class PricingUpdateLine(BaseModel):
+    """
+    One service's price move. deltaMinor is what the admin entered; the absolute prices are recorded so the change stays auditable after the catalogue moves again.
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    serviceId: str
+    name: str
+    previousUnitPriceMinor: Annotated[int, Field(ge=0)]
+    newUnitPriceMinor: Annotated[int, Field(ge=0)]
+    deltaMinor: int
+
+
+class PricingUpdate(BaseModel):
+    """
+    An admin-announced change to per-service catalogue pricing. Active PAYG plans adopt it at their first period roll on or after effectiveFrom, so usage already incurred is never repriced. Fixed-budget plans are pre-paid and never adopt it.
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    id: str
+    status: PricingUpdateStatus
+    lines: list[PricingUpdateLine]
+    currency: str
+    note: str | None = None
+    """
+    Announcement shown to affected clients
+    """
+    effectiveFrom: AwareDatetime
+    announcedAt: AwareDatetime | None = None
+    createdByEmail: str | None = None
+    createdAt: AwareDatetime
+
+
 class Coupon(BaseModel):
     """
     A discount applicable to a standard plan purchase or a negotiated catalogue. An empty appliesToServiceIds discounts the whole order.

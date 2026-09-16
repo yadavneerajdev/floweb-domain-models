@@ -37,6 +37,7 @@ export type CouponDiscountType = "percent" | "fixed";
  */
 export type UsageOutcome = "completed" | "failed" | "cancelled";
 export type InvoiceStatus = "draft" | "issued" | "paid" | "void";
+export type PricingUpdateStatus = "scheduled" | "applied" | "cancelled";
 
 export interface CatalogueSchema {
   service?: CatalogueService;
@@ -59,6 +60,9 @@ export interface CatalogueSchema {
   InvoiceStatus?: InvoiceStatus;
   InvoiceLine?: InvoiceLine;
   Invoice?: Invoice;
+  PricingUpdateStatus?: PricingUpdateStatus;
+  PricingUpdateLine?: PricingUpdateLine;
+  PricingUpdate?: PricingUpdate;
   Coupon?: Coupon;
   CouponValidation?: CouponValidation;
   PlanUsageSnapshot?: PlanUsageSnapshot;
@@ -299,6 +303,33 @@ export interface Invoice {
   issuedAt?: string | null;
   dueAt?: string | null;
   paidAt?: string | null;
+  createdAt: string;
+}
+/**
+ * One service's price move. deltaMinor is what the admin entered; the absolute prices are recorded so the change stays auditable after the catalogue moves again.
+ */
+export interface PricingUpdateLine {
+  serviceId: string;
+  name: string;
+  previousUnitPriceMinor: number;
+  newUnitPriceMinor: number;
+  deltaMinor: number;
+}
+/**
+ * An admin-announced change to per-service catalogue pricing. Active PAYG plans adopt it at their first period roll on or after effectiveFrom, so usage already incurred is never repriced. Fixed-budget plans are pre-paid and never adopt it.
+ */
+export interface PricingUpdate {
+  id: string;
+  status: PricingUpdateStatus;
+  lines: PricingUpdateLine[];
+  currency: string;
+  /**
+   * Announcement shown to affected clients
+   */
+  note?: string | null;
+  effectiveFrom: string;
+  announcedAt?: string | null;
+  createdByEmail?: string | null;
   createdAt: string;
 }
 /**
