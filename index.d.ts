@@ -4075,6 +4075,14 @@ export interface CreditPurchase {
   balance: number;
   reference: string;
   createdAt: string;
+  /**
+   * Plan the credits were bought for. Null means the running plan, which takes them straight away.
+   */
+  targetPlanId: string | null;
+  /**
+   * False when the credits are held for a plan that has not started yet.
+   */
+  appliedNow: boolean;
 }
 /**
  * One movement on an account's credit balance, positive for a grant or purchase and negative for a consumed run.
@@ -4085,6 +4093,17 @@ export interface CreditLedgerEntry {
   amount: number;
   reason: string;
   createdAt: string;
+}
+/**
+ * A plan a credit top-up can be bought for: the one running now, or one queued behind it.
+ */
+export interface CreditTopUpTarget {
+  /**
+   * Null identifies the account's standard subscription rather than a catalogue plan.
+   */
+  planId: string | null;
+  label: string;
+  when: "now" | "upcoming";
 }
 /**
  * A service Floweb sells, seeded from the standard catalogue and editable by an administrator. serviceId is the stable slug every plan, cap and usage reservation keys off.

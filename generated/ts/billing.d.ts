@@ -59,6 +59,7 @@ export interface BillingSchema {
   CreditPack?: CreditPack;
   CreditPurchase?: CreditPurchase;
   CreditLedgerEntry?: CreditLedgerEntry;
+  CreditTopUpTarget?: CreditTopUpTarget;
 }
 /**
  * The billing state of one account. featureOverrides lets an administrator grant or revoke individual capabilities independently of the plan, which is how the 'custom' plan is fulfilled.
@@ -204,6 +205,14 @@ export interface CreditPurchase {
   balance: number;
   reference: string;
   createdAt: string;
+  /**
+   * Plan the credits were bought for. Null means the running plan, which takes them straight away.
+   */
+  targetPlanId: string | null;
+  /**
+   * False when the credits are held for a plan that has not started yet.
+   */
+  appliedNow: boolean;
 }
 /**
  * One movement on an account's credit balance, positive for a grant or purchase and negative for a consumed run.
@@ -214,4 +223,15 @@ export interface CreditLedgerEntry {
   amount: number;
   reason: string;
   createdAt: string;
+}
+/**
+ * A plan a credit top-up can be bought for: the one running now, or one queued behind it.
+ */
+export interface CreditTopUpTarget {
+  /**
+   * Null identifies the account's standard subscription rather than a catalogue plan.
+   */
+  planId: string | null;
+  label: string;
+  when: "now" | "upcoming";
 }

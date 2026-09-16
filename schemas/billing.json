@@ -487,6 +487,17 @@
         "createdAt": {
           "type": "string",
           "format": "date-time"
+        },
+        "targetPlanId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Plan the credits were bought for. Null means the running plan, which takes them straight away."
+        },
+        "appliedNow": {
+          "type": "boolean",
+          "description": "False when the credits are held for a plan that has not started yet."
         }
       },
       "required": [
@@ -496,7 +507,9 @@
         "currency",
         "balance",
         "reference",
-        "createdAt"
+        "createdAt",
+        "targetPlanId",
+        "appliedNow"
       ],
       "additionalProperties": false
     },
@@ -527,6 +540,35 @@
         "amount",
         "reason",
         "createdAt"
+      ],
+      "additionalProperties": false
+    },
+    "CreditTopUpTarget": {
+      "type": "object",
+      "description": "A plan a credit top-up can be bought for: the one running now, or one queued behind it.",
+      "properties": {
+        "planId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Null identifies the account's standard subscription rather than a catalogue plan."
+        },
+        "label": {
+          "type": "string"
+        },
+        "when": {
+          "type": "string",
+          "enum": [
+            "now",
+            "upcoming"
+          ]
+        }
+      },
+      "required": [
+        "planId",
+        "label",
+        "when"
       ],
       "additionalProperties": false
     }

@@ -249,6 +249,14 @@ class CreditPurchase(BaseModel):
     """
     reference: str
     createdAt: AwareDatetime
+    targetPlanId: str | None
+    """
+    Plan the credits were bought for. Null means the running plan, which takes them straight away.
+    """
+    appliedNow: bool
+    """
+    False when the credits are held for a plan that has not started yet.
+    """
 
 
 class CreditLedgerEntry(BaseModel):
@@ -265,6 +273,28 @@ class CreditLedgerEntry(BaseModel):
     amount: int
     reason: str
     createdAt: AwareDatetime
+
+
+class When(StrEnum):
+    now = 'now'
+    upcoming = 'upcoming'
+
+
+class CreditTopUpTarget(BaseModel):
+    """
+    A plan a credit top-up can be bought for: the one running now, or one queued behind it.
+    """
+
+    model_config = ConfigDict(
+        extra='forbid',
+        populate_by_name=True,
+    )
+    planId: str | None
+    """
+    Null identifies the account's standard subscription rather than a catalogue plan.
+    """
+    label: str
+    when: When
 
 
 class AccountSubscription(BaseModel):

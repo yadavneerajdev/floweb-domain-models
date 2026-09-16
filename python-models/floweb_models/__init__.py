@@ -512,6 +512,7 @@ from .billing import (
     CreditLedgerEntry,
     CreditPack,
     CreditPurchase,
+    CreditTopUpTarget,
     FeatureDenied,
     FeatureDeniedReason,
     FeatureId,
@@ -523,6 +524,7 @@ from .billing import (
     PlanQuotas,
     SubscriptionStatus,
     UsageSnapshot,
+    When,
 )
 
 __all__ = [
@@ -647,6 +649,7 @@ __all__ = [
     "CreditLedgerEntry",
     "CreditPack",
     "CreditPurchase",
+    "CreditTopUpTarget",
     "CustomCodeConfig",
     "Data",
     "DataLab",
@@ -988,5 +991,6 @@ __all__ = [
     "WebSocketMessage",
     "WebSocketResponse",
     "WebsocketCommunication",
+    "When",
     "Zoom",
 ]
