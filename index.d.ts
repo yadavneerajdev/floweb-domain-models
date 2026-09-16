@@ -4198,6 +4198,15 @@ export interface AccountPlan {
   services: PlanServiceState[];
   caps: UsageCap[];
   activatedAt?: string | null;
+  /**
+   * Payment confirmed but no plan was created. Resolved by an admin by hand; nothing retries or refunds automatically.
+   */
+  activationFailedAt?: string | null;
+  activationError?: string | null;
+  activationResolvedAt?: string | null;
+  activationResolution?: "retried" | "refunded" | "written_off" | null;
+  activationResolvedByEmail?: string | null;
+  activationResolutionNote?: string | null;
   exhaustedAt?: string | null;
   /**
    * Client asked to end this plan at the current period's end; it keeps metering until then

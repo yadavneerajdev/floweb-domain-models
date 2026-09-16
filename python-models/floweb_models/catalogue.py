@@ -245,6 +245,13 @@ class UsageCap(BaseModel):
     limit: Annotated[int, Field(ge=0)]
 
 
+class ActivationResolution(Enum):
+    retried = 'retried'
+    refunded = 'refunded'
+    written_off = 'written_off'
+    NoneType_None = None
+
+
 class AppliedDiscount(BaseModel):
     """
     Promo terms snapshotted at activation. Scoped to this plan for its lifetime and never inherited by a later plan; snapshotted so editing or expiring the code cannot retroactively change what an active plan is billed.
@@ -281,6 +288,15 @@ class AccountPlan(BaseModel):
     services: list[PlanServiceState]
     caps: list[UsageCap]
     activatedAt: AwareDatetime | None = None
+    activationFailedAt: AwareDatetime | None = None
+    """
+    Payment confirmed but no plan was created. Resolved by an admin by hand; nothing retries or refunds automatically.
+    """
+    activationError: str | None = None
+    activationResolvedAt: AwareDatetime | None = None
+    activationResolution: ActivationResolution | None = None
+    activationResolvedByEmail: str | None = None
+    activationResolutionNote: str | None = None
     exhaustedAt: AwareDatetime | None = None
     cancelAtPeriodEnd: bool | None = None
     """

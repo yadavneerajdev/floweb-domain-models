@@ -171,6 +171,19 @@
         "services": { "type": "array", "items": { "$ref": "#/$defs/PlanServiceState" } },
         "caps": { "type": "array", "items": { "$ref": "#/$defs/UsageCap" } },
         "activatedAt": { "type": ["string", "null"], "format": "date-time" },
+        "activationFailedAt": {
+          "type": ["string", "null"],
+          "format": "date-time",
+          "description": "Payment confirmed but no plan was created. Resolved by an admin by hand; nothing retries or refunds automatically."
+        },
+        "activationError": { "type": ["string", "null"] },
+        "activationResolvedAt": { "type": ["string", "null"], "format": "date-time" },
+        "activationResolution": {
+          "type": ["string", "null"],
+          "enum": ["retried", "refunded", "written_off", null]
+        },
+        "activationResolvedByEmail": { "type": ["string", "null"] },
+        "activationResolutionNote": { "type": ["string", "null"] },
         "exhaustedAt": { "type": ["string", "null"], "format": "date-time" },
         "cancelAtPeriodEnd": {
           "type": "boolean",

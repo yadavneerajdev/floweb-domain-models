@@ -469,6 +469,7 @@ from .openapi_import import (
 from .catalogue import (
     AccountPlan,
     AccountPlanStatus,
+    ActivationResolution,
     AppliedDiscount,
     Catalogue,
     CatalogueLine,
@@ -543,6 +544,7 @@ __all__ = [
     "ActionResult",
     "ActionType",
     "ActionTypes",
+    "ActivationResolution",
     "AddRecordingWaitCommand",
     "AddRecordingWaitResponse",
     "AggregateMetrics",
