@@ -178,9 +178,14 @@
           "properties": {
             "code": { "type": "string" },
             "discountType": { "$ref": "#/$defs/CouponDiscountType" },
-            "value": { "type": "integer", "minimum": 0 }
+            "value": { "type": "integer", "minimum": 0 },
+            "appliesToServiceIds": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "Services the discount is limited to; empty means the whole order"
+            }
           },
-          "required": ["code", "discountType", "value"]
+          "required": ["code", "discountType", "value", "appliesToServiceIds"]
         },
         "currency": {
           "type": "string",

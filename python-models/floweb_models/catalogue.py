@@ -256,6 +256,10 @@ class AppliedDiscount(BaseModel):
     code: str
     discountType: CouponDiscountType
     value: Annotated[int, Field(ge=0)]
+    appliesToServiceIds: list[str]
+    """
+    Services the discount is limited to; empty means the whole order
+    """
 
 
 class AccountPlan(BaseModel):

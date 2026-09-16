@@ -4205,6 +4205,10 @@ export interface AccountPlan {
     code: string;
     discountType: CouponDiscountType;
     value: number;
+    /**
+     * Services the discount is limited to; empty means the whole order
+     */
+    appliesToServiceIds: string[];
   } | null;
   /**
    * ISO-4217 code every minor-unit amount on this plan is denominated in
