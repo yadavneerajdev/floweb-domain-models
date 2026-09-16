@@ -469,6 +469,7 @@ from .openapi_import import (
 from .catalogue import (
     AccountPlan,
     AccountPlanStatus,
+    AppliedDiscount,
     Catalogue,
     CatalogueLine,
     CatalogueRequest,
@@ -551,6 +552,7 @@ __all__ = [
     "ApiKeyScope",
     "ApiKeyStatus",
     "AppSource",
+    "AppliedDiscount",
     "AssertType",
     "AssertVisibleConfig",
     "AssertionConfig",

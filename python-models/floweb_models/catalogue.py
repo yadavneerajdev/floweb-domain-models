@@ -245,6 +245,19 @@ class UsageCap(BaseModel):
     limit: Annotated[int, Field(ge=0)]
 
 
+class AppliedDiscount(BaseModel):
+    """
+    Promo terms snapshotted at activation. Scoped to this plan for its lifetime and never inherited by a later plan; snapshotted so editing or expiring the code cannot retroactively change what an active plan is billed.
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    code: str
+    discountType: CouponDiscountType
+    value: Annotated[int, Field(ge=0)]
+
+
 class AccountPlan(BaseModel):
     """
     The activated plan that meters usage. activatedAt is the billing anniversary and the anchor every period rolls forward from — deliberately not createdAt, which is when the plan was queued.
@@ -265,6 +278,10 @@ class AccountPlan(BaseModel):
     caps: list[UsageCap]
     activatedAt: AwareDatetime | None = None
     exhaustedAt: AwareDatetime | None = None
+    appliedDiscount: AppliedDiscount | None = None
+    """
+    Promo terms snapshotted at activation. Scoped to this plan for its lifetime and never inherited by a later plan; snapshotted so editing or expiring the code cannot retroactively change what an active plan is billed.
+    """
     currency: str
     """
     ISO-4217 code every minor-unit amount on this plan is denominated in

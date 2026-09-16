@@ -172,6 +172,16 @@
         "caps": { "type": "array", "items": { "$ref": "#/$defs/UsageCap" } },
         "activatedAt": { "type": ["string", "null"], "format": "date-time" },
         "exhaustedAt": { "type": ["string", "null"], "format": "date-time" },
+        "appliedDiscount": {
+          "type": ["object", "null"],
+          "description": "Promo terms snapshotted at activation. Scoped to this plan for its lifetime and never inherited by a later plan; snapshotted so editing or expiring the code cannot retroactively change what an active plan is billed.",
+          "properties": {
+            "code": { "type": "string" },
+            "discountType": { "$ref": "#/$defs/CouponDiscountType" },
+            "value": { "type": "integer", "minimum": 0 }
+          },
+          "required": ["code", "discountType", "value"]
+        },
         "currency": {
           "type": "string",
           "description": "ISO-4217 code every minor-unit amount on this plan is denominated in"

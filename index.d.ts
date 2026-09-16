@@ -4199,6 +4199,14 @@ export interface AccountPlan {
   activatedAt?: string | null;
   exhaustedAt?: string | null;
   /**
+   * Promo terms snapshotted at activation. Scoped to this plan for its lifetime and never inherited by a later plan; snapshotted so editing or expiring the code cannot retroactively change what an active plan is billed.
+   */
+  appliedDiscount?: {
+    code: string;
+    discountType: CouponDiscountType;
+    value: number;
+  } | null;
+  /**
    * ISO-4217 code every minor-unit amount on this plan is denominated in
    */
   currency: string;
