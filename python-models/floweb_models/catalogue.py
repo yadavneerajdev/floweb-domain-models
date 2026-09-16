@@ -394,6 +394,10 @@ class PricingUpdate(BaseModel):
     """
     Announcement shown to affected clients
     """
+    targetAccountIds: list[str] | None = None
+    """
+    Accounts this applies to; null means every account. Each target adopts it at its own next billing cycle, so adoption dates differ per account.
+    """
     effectiveFrom: AwareDatetime
     announcedAt: AwareDatetime | None = None
     createdByEmail: str | None = None

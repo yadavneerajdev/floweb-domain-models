@@ -4286,6 +4286,10 @@ export interface PricingUpdate {
    * Announcement shown to affected clients
    */
   note?: string | null;
+  /**
+   * Accounts this applies to; null means every account. Each target adopts it at its own next billing cycle, so adoption dates differ per account.
+   */
+  targetAccountIds?: string[] | null;
   effectiveFrom: string;
   announcedAt?: string | null;
   createdByEmail?: string | null;

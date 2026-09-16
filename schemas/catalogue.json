@@ -271,6 +271,11 @@
         "lines": { "type": "array", "items": { "$ref": "#/$defs/PricingUpdateLine" } },
         "currency": { "type": "string" },
         "note": { "type": ["string", "null"], "description": "Announcement shown to affected clients" },
+        "targetAccountIds": {
+          "type": ["array", "null"],
+          "items": { "type": "string" },
+          "description": "Accounts this applies to; null means every account. Each target adopts it at its own next billing cycle, so adoption dates differ per account."
+        },
         "effectiveFrom": { "type": "string", "format": "date-time" },
         "announcedAt": { "type": ["string", "null"], "format": "date-time" },
         "createdByEmail": { "type": ["string", "null"] },
