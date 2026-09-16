@@ -282,6 +282,14 @@ class AccountPlan(BaseModel):
     caps: list[UsageCap]
     activatedAt: AwareDatetime | None = None
     exhaustedAt: AwareDatetime | None = None
+    cancelAtPeriodEnd: bool | None = None
+    """
+    Client asked to end this plan at the current period's end; it keeps metering until then
+    """
+    endedAt: AwareDatetime | None = None
+    """
+    When the plan actually closed
+    """
     appliedDiscount: AppliedDiscount | None = None
     """
     Promo terms snapshotted at activation. Scoped to this plan for its lifetime and never inherited by a later plan; snapshotted so editing or expiring the code cannot retroactively change what an active plan is billed.

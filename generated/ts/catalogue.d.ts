@@ -180,6 +180,14 @@ export interface AccountPlan {
   activatedAt?: string | null;
   exhaustedAt?: string | null;
   /**
+   * Client asked to end this plan at the current period's end; it keeps metering until then
+   */
+  cancelAtPeriodEnd?: boolean;
+  /**
+   * When the plan actually closed
+   */
+  endedAt?: string | null;
+  /**
    * Promo terms snapshotted at activation. Scoped to this plan for its lifetime and never inherited by a later plan; snapshotted so editing or expiring the code cannot retroactively change what an active plan is billed.
    */
   appliedDiscount?: {
