@@ -214,6 +214,10 @@
           },
           "default": null,
           "description": "Eligible browsers when browser='random'. OS-aware filtering applied by the engine. (Wire name is camelCase per the committed model alias; sibling fields remain snake_case — see CHANGELOG casing note.)"
+        },
+        "browserAdapter": {
+          "$ref": "websocket-communication.json#/$defs/BrowserAdapter",
+          "default": null
         }
       },
       "required": [

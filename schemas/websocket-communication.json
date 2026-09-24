@@ -223,6 +223,11 @@
         "startedAt"
       ]
     },
+    "BrowserAdapter": {
+      "type": "string",
+      "enum": ["selenium", "playwright"],
+      "description": "Browser automation adapter for web actions; omitted uses the engine default."
+    },
     "RunCommand": {
       "allOf": [
         {
@@ -233,6 +238,10 @@
           "properties": {
             "command": {
               "const": "run"
+            },
+            "browserAdapter": {
+              "$ref": "#/$defs/BrowserAdapter",
+              "description": "Browser automation adapter for web actions; omitted uses the engine default. NOTE: this schema's RunCommand is a documentation model only — the real wire contract is the hand-maintained RunCommand in backend/engine/types/websocket_models.py, which must be edited to match."
             },
             "flow": {
               "type": "object",
@@ -382,6 +391,10 @@
             },
             "url": {
               "type": "string"
+            },
+            "browserAdapter": {
+              "$ref": "#/$defs/BrowserAdapter",
+              "description": "Browser automation adapter for the recording session; omitted uses the engine default. NOTE: this schema's RecordCommand is a documentation model only — the real wire contract is the hand-maintained RecordCommand in backend/engine/types/websocket_models.py, which must be edited to match."
             },
             "config": {
               "type": "object",
@@ -1255,6 +1268,9 @@
         },
         "incognito": {
           "type": "boolean"
+        },
+        "browserAdapter": {
+          "$ref": "#/$defs/BrowserAdapter"
         },
         "recordExecution": {
           "type": "boolean"

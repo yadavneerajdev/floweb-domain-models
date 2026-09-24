@@ -2,24 +2,15 @@
 // GENERATED from schemas/ by scripts/generate-ts.cjs — do not edit by hand.
 
 /**
- * Named output format for a `date` variable. `custom` defers to the variable's dateFormatPattern.
+ * Browser automation adapter for web actions; omitted uses the engine default.
  */
-export type DateFormatPreset =
-  | "iso"
-  | "iso-datetime"
-  | "rfc3339"
-  | "date-slash-dmy"
-  | "date-slash-mdy"
-  | "date-dash-ymd"
-  | "date-medium"
-  | "date-long"
-  | "datetime-friendly"
-  | "time-24h"
-  | "unix-seconds"
-  | "unix-millis"
-  | "custom";
+export type BrowserAdapter = "selenium" | "playwright";
 export type RunCommand = WebSocketMessage & {
   command: "run";
+  /**
+   * Browser automation adapter for web actions; omitted uses the engine default.
+   */
+  browserAdapter?: "selenium" | "playwright";
   /**
    * Flow to execute
    */
@@ -39,6 +30,10 @@ export type RecordCommand = WebSocketMessage & {
   command: "record";
   flow_id?: string;
   url?: string;
+  /**
+   * Browser automation adapter for web actions; omitted uses the engine default.
+   */
+  browserAdapter?: "selenium" | "playwright";
   config?: {
     [k: string]: unknown;
   };
@@ -456,6 +451,23 @@ export type ProcessEventResponse = WebSocketResponse & {
   message?: string | null;
   actions?: ProcessActionStatuses;
 };
+/**
+ * Named output format for a `date` variable. `custom` defers to the variable's dateFormatPattern.
+ */
+export type DateFormatPreset =
+  | "iso"
+  | "iso-datetime"
+  | "rfc3339"
+  | "date-slash-dmy"
+  | "date-slash-mdy"
+  | "date-dash-ymd"
+  | "date-medium"
+  | "date-long"
+  | "datetime-friendly"
+  | "time-24h"
+  | "unix-seconds"
+  | "unix-millis"
+  | "custom";
 
 export interface ParallelExecutionModelsSchema {
   parallelExecution?: {
@@ -476,12 +488,9 @@ export interface ParallelExecutionModelsSchema {
   FlowVariables?: FlowVariables1;
   FlowParameters?: FlowParameters1;
   FlowRoot?: Flow1;
-  DateFormatPreset?: DateFormatPreset;
-  Environment?: Environment1;
-  GlobalVariable?: GlobalVariable;
-  Variable?: Variable;
   WebSocketMessage?: WebSocketMessage;
   SessionInfo?: SessionInfo;
+  BrowserAdapter?: BrowserAdapter;
   RunCommand?: RunCommand;
   MobileRunConfig?: MobileRunConfig2;
   RecordCommand?: RecordCommand;
@@ -537,6 +546,10 @@ export interface ParallelExecutionModelsSchema {
   ProcessActionStatuses?: ProcessActionStatuses;
   ProcessSnapshotResponse?: ProcessSnapshotResponse;
   ProcessEventResponse?: ProcessEventResponse;
+  DateFormatPreset?: DateFormatPreset;
+  Environment?: Environment1;
+  GlobalVariable?: GlobalVariable;
+  Variable?: Variable;
 }
 /**
  * Request to execute multiple tests in parallel
@@ -588,6 +601,10 @@ export interface ParallelTestsRequest {
    * Eligible browsers when browser='random'. OS-aware filtering applied by the engine. (Wire name is camelCase per the committed model alias; sibling fields remain snake_case — see CHANGELOG casing note.)
    */
   randomBrowserPool?: string[];
+  /**
+   * Browser automation adapter for web actions; omitted uses the engine default.
+   */
+  browserAdapter?: "selenium" | "playwright";
 }
 /**
  * Request to execute a single test/flow
@@ -1280,45 +1297,6 @@ export interface Flow1 {
   assistantAuditHistory?: AssistantAuditEntry[];
 }
 /**
- * An environment configuration with its variables. Unifies the standalone-entity and embedded-in-flow forms: only id+name are required so embedded partial environments validate; the server always sets the remaining fields on stored environments.
- */
-export interface Environment1 {
-  /**
-   * Unique identifier for the environment
-   */
-  id: string;
-  /**
-   * Display name for the environment
-   */
-  name: string;
-  /**
-   * Description of the environment's purpose
-   */
-  description?: string;
-  /**
-   * Environment-specific variables
-   *
-   * @minItems 0
-   */
-  variables?: Variable[];
-  /**
-   * Whether this is the default environment
-   */
-  isDefault?: boolean;
-  /**
-   * Whether this environment is currently active
-   */
-  isActive?: boolean;
-  /**
-   * ISO 8601 timestamp when the environment was created
-   */
-  createdAt?: string;
-  /**
-   * ISO 8601 timestamp when the environment was last updated
-   */
-  updatedAt?: string;
-}
-/**
  * Base WebSocket message structure
  */
 export interface WebSocketMessage {
@@ -1454,6 +1432,7 @@ export interface SuiteRunConfigWire {
   browser?: string;
   headless?: boolean;
   incognito?: boolean;
+  browserAdapter?: BrowserAdapter;
   recordExecution?: boolean;
   environmentId?: string | null;
   randomBrowserPool?: string[];
@@ -1501,4 +1480,43 @@ export interface RecordingSmartWaitDecision {
  */
 export interface ProcessActionStatuses {
   [k: string]: "running" | "success" | "error";
+}
+/**
+ * An environment configuration with its variables. Unifies the standalone-entity and embedded-in-flow forms: only id+name are required so embedded partial environments validate; the server always sets the remaining fields on stored environments.
+ */
+export interface Environment1 {
+  /**
+   * Unique identifier for the environment
+   */
+  id: string;
+  /**
+   * Display name for the environment
+   */
+  name: string;
+  /**
+   * Description of the environment's purpose
+   */
+  description?: string;
+  /**
+   * Environment-specific variables
+   *
+   * @minItems 0
+   */
+  variables?: Variable[];
+  /**
+   * Whether this is the default environment
+   */
+  isDefault?: boolean;
+  /**
+   * Whether this environment is currently active
+   */
+  isActive?: boolean;
+  /**
+   * ISO 8601 timestamp when the environment was created
+   */
+  createdAt?: string;
+  /**
+   * ISO 8601 timestamp when the environment was last updated
+   */
+  updatedAt?: string;
 }

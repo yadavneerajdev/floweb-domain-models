@@ -2763,8 +2763,16 @@ export type DateFormatPreset =
  * Severity level of the warning
  */
 export type WarningSeverity = "minor" | "medium" | "critical";
+/**
+ * Browser automation adapter for web actions; omitted uses the engine default.
+ */
+export type BrowserAdapter = "selenium" | "playwright";
 export type RunCommand = WebSocketMessage & {
   command: "run";
+  /**
+   * Browser automation adapter for web actions; omitted uses the engine default.
+   */
+  browserAdapter?: "selenium" | "playwright";
   /**
    * Flow to execute
    */
@@ -2782,6 +2790,10 @@ export type RecordCommand = WebSocketMessage & {
   command: "record";
   flow_id?: string;
   url?: string;
+  /**
+   * Browser automation adapter for web actions; omitted uses the engine default.
+   */
+  browserAdapter?: "selenium" | "playwright";
   config?: AnyObject;
 };
 export type PauseRecordingCommand = WebSocketMessage & {
@@ -5672,6 +5684,7 @@ export interface SuiteRunConfigWire {
   browser?: string;
   headless?: boolean;
   incognito?: boolean;
+  browserAdapter?: BrowserAdapter;
   recordExecution?: boolean;
   environmentId?: string | null;
   randomBrowserPool?: string[];
@@ -5999,6 +6012,10 @@ export interface ParallelTestsRequest {
    * Eligible browsers when browser='random'. OS-aware filtering applied by the engine. (Wire name is camelCase per the committed model alias; sibling fields remain snake_case — see CHANGELOG casing note.)
    */
   randomBrowserPool?: string[];
+  /**
+   * Browser automation adapter for web actions; omitted uses the engine default.
+   */
+  browserAdapter?: "selenium" | "playwright";
 }
 /**
  * Result of parallel test execution
@@ -6679,7 +6696,7 @@ export interface ImageUploadResponse {
   filename: string;
 }
 /**
- * Run configuration for a suite. The persisted fields are browser/headless/incognito/environmentId/parallel/maxParallel/stopOnFailure (floweb-server normalizeRunConfig); recordExecution and randomBrowserPool are accepted from the client but not persisted.
+ * Run configuration for a suite. The persisted fields are browser/headless/incognito/environmentId/parallel/maxParallel/stopOnFailure/browserAdapter (floweb-server normalizeRunConfig); recordExecution and randomBrowserPool are accepted from the client but not persisted.
  */
 export interface SuiteRunConfig {
   /**
@@ -6710,6 +6727,7 @@ export interface SuiteRunConfig {
    * Stop the suite on first failure
    */
   stopOnFailure: boolean;
+  browserAdapter?: BrowserAdapter;
   /**
    * Client hint to record the run (not persisted server-side)
    */

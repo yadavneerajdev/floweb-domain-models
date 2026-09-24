@@ -59,9 +59,18 @@ class SuiteTriggerType(StrEnum):
     scheduled = 'scheduled'
 
 
+class BrowserAdapter(StrEnum):
+    """
+    Browser automation adapter for web actions; omitted uses the engine default.
+    """
+
+    selenium = 'selenium'
+    playwright = 'playwright'
+
+
 class SuiteRunConfig(BaseModel):
     """
-    Run configuration for a suite. The persisted fields are browser/headless/incognito/environmentId/parallel/maxParallel/stopOnFailure (floweb-server normalizeRunConfig); recordExecution and randomBrowserPool are accepted from the client but not persisted.
+    Run configuration for a suite. The persisted fields are browser/headless/incognito/environmentId/parallel/maxParallel/stopOnFailure/browserAdapter (floweb-server normalizeRunConfig); recordExecution and randomBrowserPool are accepted from the client but not persisted.
     """
 
     model_config = ConfigDict(
@@ -95,6 +104,7 @@ class SuiteRunConfig(BaseModel):
     """
     Stop the suite on first failure
     """
+    browserAdapter: BrowserAdapter | None = None
     recordExecution: bool | None = None
     """
     Client hint to record the run (not persisted server-side)

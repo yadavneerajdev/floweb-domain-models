@@ -4,6 +4,10 @@
 export type RunCommand = WebSocketMessage & {
   command: "run";
   /**
+   * Browser automation adapter for web actions; omitted uses the engine default. NOTE: this schema's RunCommand is a documentation model only — the real wire contract is the hand-maintained RunCommand in backend/engine/types/websocket_models.py, which must be edited to match.
+   */
+  browserAdapter?: "selenium" | "playwright";
+  /**
    * Flow to execute
    */
   flow: {
@@ -22,6 +26,10 @@ export type RecordCommand = WebSocketMessage & {
   command: "record";
   flow_id?: string;
   url?: string;
+  /**
+   * Browser automation adapter for the recording session; omitted uses the engine default. NOTE: this schema's RecordCommand is a documentation model only — the real wire contract is the hand-maintained RecordCommand in backend/engine/types/websocket_models.py, which must be edited to match.
+   */
+  browserAdapter?: "selenium" | "playwright";
   config?: {
     [k: string]: unknown;
   };
@@ -210,6 +218,10 @@ export type RunSuiteCommand = WebSocketMessage & {
   maxParallel?: number;
   stopOnFailure?: boolean;
 };
+/**
+ * Browser automation adapter for web actions; omitted uses the engine default.
+ */
+export type BrowserAdapter = "selenium" | "playwright";
 export type CancelSuiteCommand = WebSocketMessage & {
   command: "cancel_suite";
   suite_id: string;
@@ -498,6 +510,7 @@ export interface WebSocketCommunicationModelsSchema {
   };
   WebSocketMessage?: WebSocketMessage;
   SessionInfo?: SessionInfo;
+  BrowserAdapter?: BrowserAdapter;
   RunCommand?: RunCommand;
   MobileRunConfig?: MobileRunConfig1;
   RecordCommand?: RecordCommand;
@@ -611,6 +624,7 @@ export interface SuiteRunConfigWire {
   browser?: string;
   headless?: boolean;
   incognito?: boolean;
+  browserAdapter?: BrowserAdapter;
   recordExecution?: boolean;
   environmentId?: string | null;
   randomBrowserPool?: string[];
