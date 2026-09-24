@@ -57,6 +57,15 @@ class SessionInfo(BaseModel):
     """
 
 
+class BrowserAdapter(StrEnum):
+    """
+    Browser automation adapter for web actions; omitted uses the engine default.
+    """
+
+    selenium = 'selenium'
+    playwright = 'playwright'
+
+
 class Flow(BaseModel):
     """
     Flow to execute
@@ -134,6 +143,10 @@ class RecordCommand(WebSocketMessage):
     Flow ID for the command
     """
     url: str | None = None
+    browserAdapter: BrowserAdapter | None = None
+    """
+    Browser automation adapter for the recording session; omitted uses the engine default. NOTE: this schema's RecordCommand is a documentation model only — the real wire contract is the hand-maintained RecordCommand in backend/engine/types/websocket_models.py, which must be edited to match.
+    """
     config: dict[str, Any] | None = {}
 
 
@@ -679,6 +692,7 @@ class SuiteRunConfigWire(BaseModel):
     browser: str | None = None
     headless: bool | None = None
     incognito: bool | None = None
+    browserAdapter: BrowserAdapter | None = None
     recordExecution: bool | None = None
     environmentId: str | None = None
     randomBrowserPool: list[str] | None = None
@@ -1080,6 +1094,10 @@ class RunCommand(WebSocketMessage):
     command: Literal['run']
     """
     Command type
+    """
+    browserAdapter: BrowserAdapter | None = None
+    """
+    Browser automation adapter for web actions; omitted uses the engine default. NOTE: this schema's RunCommand is a documentation model only — the real wire contract is the hand-maintained RunCommand in backend/engine/types/websocket_models.py, which must be edited to match.
     """
     flow: Flow
     """

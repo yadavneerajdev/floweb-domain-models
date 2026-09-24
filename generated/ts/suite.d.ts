@@ -2,6 +2,10 @@
 // GENERATED from schemas/ by scripts/generate-ts.cjs — do not edit by hand.
 
 /**
+ * Browser automation adapter for web actions; omitted uses the engine default.
+ */
+export type BrowserAdapter = "selenium" | "playwright";
+/**
  * What triggered a suite execution
  */
 export type SuiteTriggerType = "manual" | "scheduled";
@@ -26,6 +30,7 @@ export interface SuiteSchema {
   SuiteExecutionTestStatus?: SuiteExecutionTestStatus;
   SuiteScheduleStatus?: SuiteScheduleStatus;
   SuiteTriggerType?: SuiteTriggerType;
+  BrowserAdapter?: BrowserAdapter;
   SuiteRunConfig?: SuiteRunConfig;
   SuiteTestRef?: SuiteTestRef;
   Suite?: Suite;
@@ -84,7 +89,7 @@ export interface Suite {
   updatedAt?: string;
 }
 /**
- * Run configuration for a suite. The persisted fields are browser/headless/incognito/environmentId/parallel/maxParallel/stopOnFailure (floweb-server normalizeRunConfig); recordExecution and randomBrowserPool are accepted from the client but not persisted.
+ * Run configuration for a suite. The persisted fields are browser/headless/incognito/environmentId/parallel/maxParallel/stopOnFailure/browserAdapter (floweb-server normalizeRunConfig); recordExecution and randomBrowserPool are accepted from the client but not persisted.
  */
 export interface SuiteRunConfig {
   /**
@@ -115,6 +120,7 @@ export interface SuiteRunConfig {
    * Stop the suite on first failure
    */
   stopOnFailure: boolean;
+  browserAdapter?: BrowserAdapter;
   /**
    * Client hint to record the run (not persisted server-side)
    */

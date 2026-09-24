@@ -18,8 +18,16 @@ export type DateFormatPreset =
   | "unix-seconds"
   | "unix-millis"
   | "custom";
+/**
+ * Browser automation adapter for web actions; omitted uses the engine default.
+ */
+export type BrowserAdapter = "selenium" | "playwright";
 export type RunCommand = WebSocketMessage & {
   command: "run";
+  /**
+   * Browser automation adapter for web actions; omitted uses the engine default.
+   */
+  browserAdapter?: "selenium" | "playwright";
   /**
    * Flow to execute
    */
@@ -39,6 +47,10 @@ export type RecordCommand = WebSocketMessage & {
   command: "record";
   flow_id?: string;
   url?: string;
+  /**
+   * Browser automation adapter for web actions; omitted uses the engine default.
+   */
+  browserAdapter?: "selenium" | "playwright";
   config?: {
     [k: string]: unknown;
   };
@@ -538,6 +550,7 @@ export interface FlowSchema {
   Variable?: Variable;
   WebSocketMessage?: WebSocketMessage;
   SessionInfo?: SessionInfo;
+  BrowserAdapter?: BrowserAdapter;
   RunCommand?: RunCommand;
   MobileRunConfig?: MobileRunConfig2;
   RecordCommand?: RecordCommand;
@@ -1211,6 +1224,7 @@ export interface SuiteRunConfigWire {
   browser?: string;
   headless?: boolean;
   incognito?: boolean;
+  browserAdapter?: BrowserAdapter;
   recordExecution?: boolean;
   environmentId?: string | null;
   randomBrowserPool?: string[];

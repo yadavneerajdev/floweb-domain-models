@@ -31,9 +31,14 @@
       "description": "What triggered a suite execution",
       "enum": ["manual", "scheduled"]
     },
+    "BrowserAdapter": {
+      "type": "string",
+      "enum": ["selenium", "playwright"],
+      "description": "Browser automation adapter for web actions; omitted uses the engine default."
+    },
     "SuiteRunConfig": {
       "type": "object",
-      "description": "Run configuration for a suite. The persisted fields are browser/headless/incognito/environmentId/parallel/maxParallel/stopOnFailure (floweb-server normalizeRunConfig); recordExecution and randomBrowserPool are accepted from the client but not persisted.",
+      "description": "Run configuration for a suite. The persisted fields are browser/headless/incognito/environmentId/parallel/maxParallel/stopOnFailure/browserAdapter (floweb-server normalizeRunConfig); recordExecution and randomBrowserPool are accepted from the client but not persisted.",
       "properties": {
         "browser": { "type": "string", "default": "chrome", "description": "Browser to run with" },
         "headless": { "type": "boolean", "default": false, "description": "Run headless" },
@@ -42,6 +47,7 @@
         "parallel": { "type": "boolean", "default": false, "description": "Run suite tests in parallel" },
         "maxParallel": { "type": "integer", "minimum": 1, "maximum": 15, "default": 5, "description": "Max parallel workers (clamped 1-15 by the server)" },
         "stopOnFailure": { "type": "boolean", "default": false, "description": "Stop the suite on first failure" },
+        "browserAdapter": { "$ref": "#/$defs/BrowserAdapter" },
         "recordExecution": { "type": "boolean", "description": "Client hint to record the run (not persisted server-side)" },
         "randomBrowserPool": { "type": "array", "items": { "type": "string" }, "description": "Eligible browsers when browser='random' (client-only, not persisted)" }
       },

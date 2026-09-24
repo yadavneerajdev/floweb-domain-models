@@ -9,6 +9,7 @@ from typing import Annotated, Any
 from pydantic import BaseModel, ConfigDict, Field
 
 from . import flow as flow_1
+from . import websocket_communication
 
 
 class Mode(StrEnum):
@@ -232,6 +233,7 @@ class ParallelTestsRequest(BaseModel):
     """
     Eligible browsers when browser='random'. OS-aware filtering applied by the engine. (Wire name is camelCase per the committed model alias; sibling fields remain snake_case — see CHANGELOG casing note.)
     """
+    browserAdapter: websocket_communication.BrowserAdapter | None = None
 
 
 class ParallelExecution(BaseModel):
