@@ -245,6 +245,10 @@ export interface SuiteExecutionTest {
    */
   browser?: string | null;
   /**
+   * Adapter that actually ran this test
+   */
+  browserAdapter?: BrowserAdapter | null;
+  /**
    * Start timestamp
    */
   startedAt?: string | null;

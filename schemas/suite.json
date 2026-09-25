@@ -91,6 +91,7 @@
         "reportId": { "type": ["string", "null"], "default": null, "description": "Execution report id" },
         "message": { "type": ["string", "null"], "default": null, "description": "Status message" },
         "browser": { "type": ["string", "null"], "default": null, "description": "Browser used for this test" },
+        "browserAdapter": { "anyOf": [{ "$ref": "#/$defs/BrowserAdapter" }, { "type": "null" }], "default": null, "description": "Adapter that actually ran this test" },
         "startedAt": { "type": ["string", "null"], "format": "date-time", "default": null, "description": "Start timestamp" },
         "finishedAt": { "type": ["string", "null"], "format": "date-time", "default": null, "description": "Finish timestamp" }
       },

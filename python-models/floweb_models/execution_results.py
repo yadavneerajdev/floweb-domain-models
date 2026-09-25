@@ -9,6 +9,15 @@ from typing import Annotated, Any
 from pydantic import BaseModel, ConfigDict, Field, constr
 
 
+class BrowserAdapter(StrEnum):
+    """
+    Browser automation adapter for web actions; omitted uses the engine default.
+    """
+
+    selenium = 'selenium'
+    playwright = 'playwright'
+
+
 class ActionResult(BaseModel):
     """
     Result of executing an action
@@ -277,6 +286,10 @@ class BrowserInfo(BaseModel):
     name: str | None = None
     version: str | None = None
     user_agent: str | None = None
+    adapter: BrowserAdapter | None = None
+    """
+    Adapter that actually ran this flow
+    """
 
 
 class Mode(StrEnum):
@@ -296,6 +309,10 @@ class BrowserConfigItem(BaseModel):
     browser: str
     mode: Mode
     browser_mode: BrowserMode
+    browserAdapter: BrowserAdapter | None = None
+    """
+    Adapter requested for this browser config; omitted uses the engine default.
+    """
 
 
 class RunConfig(BaseModel):

@@ -105,6 +105,18 @@
               },
               {
                 "$ref": "#/$defs/AuthenticateCommand"
+              },
+              {
+                "$ref": "#/$defs/GetComponentsStatusCommand"
+              },
+              {
+                "$ref": "#/$defs/InstallComponentCommand"
+              },
+              {
+                "$ref": "#/$defs/RemoveComponentCommand"
+              },
+              {
+                "$ref": "#/$defs/EnableSafaridriverCommand"
               }
             ]
           }
@@ -740,6 +752,88 @@
           "properties": {
             "command": {
               "const": "get_engine_status"
+            }
+          },
+          "required": [
+            "command"
+          ]
+        }
+      ]
+    },
+    "GetComponentsStatusCommand": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/WebSocketMessage"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "command": {
+              "const": "get_components_status"
+            }
+          },
+          "required": [
+            "command"
+          ]
+        }
+      ]
+    },
+    "InstallComponentCommand": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/WebSocketMessage"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "command": {
+              "const": "install_component"
+            },
+            "component_id": {
+              "type": "string",
+              "description": "Registry id of the engine-owned downloadable component to install"
+            }
+          },
+          "required": [
+            "command",
+            "component_id"
+          ]
+        }
+      ]
+    },
+    "RemoveComponentCommand": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/WebSocketMessage"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "command": {
+              "const": "remove_component"
+            },
+            "component_id": {
+              "type": "string",
+              "description": "Registry id of the engine-owned downloadable component to remove"
+            }
+          },
+          "required": [
+            "command",
+            "component_id"
+          ]
+        }
+      ]
+    },
+    "EnableSafaridriverCommand": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/WebSocketMessage"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "command": {
+              "const": "enable_safaridriver"
             }
           },
           "required": [
@@ -1890,16 +1984,18 @@
       "enum": [
         "run",
         "suite",
-        "recording"
+        "recording",
+        "download"
       ]
     },
     "ProcessStatus": {
       "type": "string",
-      "description": "Lifecycle state of a process. finished/failed/cancelled/stopped are terminal.",
+      "description": "Lifecycle state of a process. finished/completed/failed/cancelled/stopped are terminal. completed is used by download processes; other kinds use finished.",
       "enum": [
         "started",
         "running",
         "finished",
+        "completed",
         "failed",
         "cancelled",
         "stopped"
@@ -2013,6 +2109,41 @@
             },
             "actions": {
               "$ref": "#/$defs/ProcessActionStatuses"
+            },
+            "artifact": {
+              "type": "string",
+              "description": "Download processes only: id of the downloaded artifact, e.g. \"chrome\" or \"chromedriver\"."
+            },
+            "label": {
+              "type": "string",
+              "description": "Download processes only: human-readable name of the artifact, e.g. \"Google Chrome\"."
+            },
+            "phase": {
+              "type": "string",
+              "description": "Download processes only: stage of the download.",
+              "enum": [
+                "downloading",
+                "extracting",
+                "verifying"
+              ]
+            },
+            "bytes_downloaded": {
+              "type": "integer",
+              "description": "Download processes only: bytes transferred so far."
+            },
+            "bytes_total": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "description": "Download processes only: total bytes if the server reported Content-Length, else null."
+            },
+            "percent": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "description": "Download processes only: bytes_downloaded / bytes_total * 100, or null when bytes_total is unknown."
             }
           },
           "required": [

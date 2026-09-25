@@ -1014,16 +1014,18 @@ class ProcessKind(StrEnum):
     run = 'run'
     suite = 'suite'
     recording = 'recording'
+    download = 'download'
 
 
 class ProcessStatus(StrEnum):
     """
-    Lifecycle state of a process. finished/failed/cancelled/stopped are terminal.
+    Lifecycle state of a process. finished/completed/failed/cancelled/stopped are terminal. completed is used by download processes; other kinds use finished.
     """
 
     started = 'started'
     running = 'running'
     finished = 'finished'
+    completed = 'completed'
     failed = 'failed'
     cancelled = 'cancelled'
     stopped = 'stopped'
@@ -1041,6 +1043,16 @@ class ProcessActionStatuses(RootModel[dict[str, ProcessActionStatuses1]]):
     """
 
     root: dict[str, ProcessActionStatuses1]
+
+
+class Phase(StrEnum):
+    """
+    Download processes only: stage of the download.
+    """
+
+    downloading = 'downloading'
+    extracting = 'extracting'
+    verifying = 'verifying'
 
 
 class ProcessEventResponse(WebSocketResponse):
@@ -1085,6 +1097,30 @@ class ProcessEventResponse(WebSocketResponse):
     Response message
     """
     actions: ProcessActionStatuses | None = None
+    artifact: str | None = None
+    """
+    Download processes only: id of the downloaded artifact, e.g. "chrome" or "chromedriver".
+    """
+    label: str | None = None
+    """
+    Download processes only: human-readable name of the artifact, e.g. "Google Chrome".
+    """
+    phase: Phase | None = None
+    """
+    Download processes only: stage of the download.
+    """
+    bytes_downloaded: int | None = None
+    """
+    Download processes only: bytes transferred so far.
+    """
+    bytes_total: int | None = None
+    """
+    Download processes only: total bytes if the server reported Content-Length, else null.
+    """
+    percent: float | None = None
+    """
+    Download processes only: bytes_downloaded / bytes_total * 100, or null when bytes_total is unknown.
+    """
 
 
 class RunCommand(WebSocketMessage):
