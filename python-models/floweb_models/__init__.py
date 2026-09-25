@@ -181,6 +181,7 @@ from .action_types import (
 
 from .execution_results import (
     ActionResult,
+    BrowserAdapter,
     BrowserConfigItem,
     BrowserInfo,
     BrowserMode,
@@ -255,7 +256,6 @@ from .websocket_communication import (
     AddRecordingWaitResponse,
     AuthenticateCommand,
     AuthenticateResponse,
-    BrowserAdapter,
     CancelSuiteCommand,
     CancelSuiteResponse,
     CloseCommand,
@@ -285,6 +285,7 @@ from .websocket_communication import (
     ListSessionsResponse,
     MobileRunConfig,
     PauseRecordingCommand,
+    Phase,
     Platform,
     ProcessActionStatuses,
     ProcessActionStatuses1,
@@ -856,6 +857,7 @@ __all__ = [
     "PerformanceTest",
     "PerformanceTestMetadata",
     "PerformanceTestResults",
+    "Phase",
     "PlanCatalogEntry",
     "PlanId",
     "PlanQuotas",

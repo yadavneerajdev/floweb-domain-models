@@ -25,6 +25,11 @@
     }
   },
   "$defs": {
+    "BrowserAdapter": {
+      "type": "string",
+      "enum": ["selenium", "playwright"],
+      "description": "Browser automation adapter for web actions; omitted uses the engine default."
+    },
     "ActionResult": {
       "type": "object",
       "description": "Result of executing an action",
@@ -642,6 +647,10 @@
             },
             "user_agent": {
               "type": "string"
+            },
+            "adapter": {
+              "$ref": "#/$defs/BrowserAdapter",
+              "description": "Adapter that actually ran this flow"
             }
           }
         },
@@ -674,6 +683,10 @@
                       "headful",
                       "headless"
                     ]
+                  },
+                  "browserAdapter": {
+                    "$ref": "#/$defs/BrowserAdapter",
+                    "description": "Adapter requested for this browser config; omitted uses the engine default."
                   }
                 },
                 "required": [

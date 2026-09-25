@@ -217,6 +217,10 @@ class SuiteExecutionTest(BaseModel):
     """
     Browser used for this test
     """
+    browserAdapter: BrowserAdapter | None = None
+    """
+    Adapter that actually ran this test
+    """
     startedAt: AwareDatetime | None = None
     """
     Start timestamp

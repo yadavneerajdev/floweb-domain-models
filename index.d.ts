@@ -2732,13 +2732,13 @@ export type DateFormatPreset =
   | "unix-millis"
   | "custom";
 /**
- * Severity level of the warning
- */
-export type WarningSeverity = "minor" | "medium" | "critical";
-/**
  * Browser automation adapter for web actions; omitted uses the engine default.
  */
 export type BrowserAdapter = "selenium" | "playwright";
+/**
+ * Severity level of the warning
+ */
+export type WarningSeverity = "minor" | "medium" | "critical";
 export type RunCommand = WebSocketMessage & {
   command: "run";
   /**
@@ -3123,11 +3123,11 @@ export type ErrorResponse = WebSocketResponse & {
 /**
  * The kind of engine work a process represents.
  */
-export type ProcessKind = "run" | "suite" | "recording";
+export type ProcessKind = "run" | "suite" | "recording" | "download";
 /**
- * Lifecycle state of a process. finished/failed/cancelled/stopped are terminal.
+ * Lifecycle state of a process. finished/completed/failed/cancelled/stopped are terminal. completed is used by download processes; other kinds use finished.
  */
-export type ProcessStatus = "started" | "running" | "finished" | "failed" | "cancelled" | "stopped";
+export type ProcessStatus = "started" | "running" | "finished" | "completed" | "failed" | "cancelled" | "stopped";
 /**
  * The engine's full view of an account's processes, sent on every successful authenticate. This is how a reconnecting or reloaded client recovers work that started while it was away, including how far each run had progressed.
  */
@@ -3168,6 +3168,30 @@ export type ProcessEventResponse = WebSocketResponse & {
   result?: string | null;
   message?: string | null;
   actions?: ProcessActionStatuses;
+  /**
+   * Download processes only: id of the downloaded artifact, e.g. "chrome" or "chromedriver".
+   */
+  artifact?: string;
+  /**
+   * Download processes only: human-readable name of the artifact, e.g. "Google Chrome".
+   */
+  label?: string;
+  /**
+   * Download processes only: stage of the download.
+   */
+  phase?: "downloading" | "extracting" | "verifying";
+  /**
+   * Download processes only: bytes transferred so far.
+   */
+  bytes_downloaded?: number;
+  /**
+   * Download processes only: total bytes if the server reported Content-Length, else null.
+   */
+  bytes_total?: number | null;
+  /**
+   * Download processes only: bytes_downloaded / bytes_total * 100, or null when bytes_total is unknown.
+   */
+  percent?: number | null;
 };
 /**
  * Where generated variables (auth token, base URL, response outputs) are stored
@@ -5253,6 +5277,10 @@ export interface FlowReport {
     name?: string;
     version?: string;
     user_agent?: string;
+    /**
+     * Browser automation adapter for web actions; omitted uses the engine default.
+     */
+    adapter?: "selenium" | "playwright";
   };
   /**
    * Runtime execution configuration
@@ -5266,6 +5294,10 @@ export interface FlowReport {
       browser: string;
       mode: "normal" | "incognito";
       browser_mode: "headful" | "headless";
+      /**
+       * Browser automation adapter for web actions; omitted uses the engine default.
+       */
+      browserAdapter?: "selenium" | "playwright";
     }[];
   };
   /**
@@ -6933,6 +6965,10 @@ export interface SuiteExecutionTest {
    * Browser used for this test
    */
   browser?: string | null;
+  /**
+   * Adapter that actually ran this test
+   */
+  browserAdapter?: BrowserAdapter | null;
   /**
    * Start timestamp
    */
