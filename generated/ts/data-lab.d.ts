@@ -10,7 +10,7 @@ export type DataLabGenerationMode = "ai" | "synthetic" | "hybrid";
  */
 export type DatasetType = "test-scenario" | "xpath-selector";
 /**
- * Every automation action-type identifier (29 web + 18 desktop + 15 mobile + 3 api + 4 integrations + 6 core = 75).
+ * Every automation action-type identifier (29 web + 18 desktop + 15 mobile + 3 api + 4 integrations + 7 core = 76).
  */
 export type ActionType =
   | "click"
@@ -37,6 +37,7 @@ export type ActionType =
   | "captureWebVitals"
   | "visualRegression"
   | "loadDataset"
+  | "compute"
   | "conditional"
   | "loop"
   | "dbQuery"
@@ -190,9 +191,9 @@ export type WebActionType =
  */
 export type ApiActionType = "apiCall" | "dbQuery" | "dbInsert";
 /**
- * The 6 platform-agnostic control-flow and generic utility action types that need neither a browser nor OS automation (subset of ActionType).
+ * The 7 platform-agnostic control-flow and generic utility action types that need neither a browser nor OS automation (subset of ActionType).
  */
-export type CoreActionType = "conditional" | "loop" | "junction" | "callToFlow" | "wait" | "loadDataset";
+export type CoreActionType = "conditional" | "loop" | "junction" | "callToFlow" | "wait" | "loadDataset" | "compute";
 
 export interface DataLabSchema {
   generateTestsRequest?: GenerateTestsRequest;

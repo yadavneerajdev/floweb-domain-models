@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://floweb.com/schemas/action-types.json",
-  "$version": "1.4.0",
+  "$version": "1.5.0",
   "title": "Action Types",
   "description": "Canonical registry of automation action-type identifiers. The runtime strings are uniform camelCase across all consumers (AI catalog, backend factory/recorder, frontend, config classes); this schema is the single source. Config class names still diverge from the string in some cases (fillForm->FormFillConfig, dbQuery->DatabaseQueryConfig, dbInsert->DatabaseInsertConfig, custom->CustomCodeConfig) \u2014 that alignment is tracked in the backend/action-configs plans, not here.",
   "type": "object",
@@ -13,7 +13,7 @@
   "$defs": {
     "ActionType": {
       "type": "string",
-      "description": "Every automation action-type identifier (29 web + 18 desktop + 15 mobile + 3 api + 4 integrations + 6 core = 75).",
+      "description": "Every automation action-type identifier (29 web + 18 desktop + 15 mobile + 3 api + 4 integrations + 7 core = 76).",
       "enum": [
         "click",
         "input",
@@ -39,6 +39,7 @@
         "captureWebVitals",
         "visualRegression",
         "loadDataset",
+        "compute",
         "conditional",
         "loop",
         "dbQuery",
@@ -193,14 +194,15 @@
     },
     "CoreActionType": {
       "type": "string",
-      "description": "The 6 platform-agnostic control-flow and generic utility action types that need neither a browser nor OS automation (subset of ActionType).",
+      "description": "The 7 platform-agnostic control-flow and generic utility action types that need neither a browser nor OS automation (subset of ActionType).",
       "enum": [
         "conditional",
         "loop",
         "junction",
         "callToFlow",
         "wait",
-        "loadDataset"
+        "loadDataset",
+        "compute"
       ]
     }
   }
