@@ -335,6 +335,38 @@ class Format1(StrEnum):
     json = 'json'
 
 
+class Operation(StrEnum):
+    """
+    What to compute. 'expression' evaluates sandboxed Python-style logic; 'extractBetween' takes the text between a start and an end marker; 'regex' extracts regular-expression matches; 'jsonPath' reads a value out of JSON by path.
+    """
+
+    expression = 'expression'
+    extractBetween = 'extractBetween'
+    regex = 'regex'
+    jsonPath = 'jsonPath'
+
+
+class PatternMode(StrEnum):
+    """
+    extractBetween: match the start and end markers as literal text or as regular expressions.
+    """
+
+    text = 'text'
+    regex = 'regex'
+
+
+class OutputType(StrEnum):
+    """
+    Convert the result before storing it. 'auto' keeps it as computed; 'json' parses a JSON string into an object or list.
+    """
+
+    auto = 'auto'
+    string = 'string'
+    number = 'number'
+    boolean = 'boolean'
+    json = 'json'
+
+
 class Direction(StrEnum):
     """
     Scroll direction
@@ -502,7 +534,7 @@ class Format2(StrEnum):
     jpg = 'jpg'
 
 
-class Operation(StrEnum):
+class Operation1(StrEnum):
     """
     Gmail operation to perform
     """
@@ -512,7 +544,7 @@ class Operation(StrEnum):
     getMessage = 'getMessage'
 
 
-class Operation1(StrEnum):
+class Operation2(StrEnum):
     """
     postMessage uses a bot token and a channel; postWebhook posts to an incoming webhook URL.
     """
@@ -521,7 +553,7 @@ class Operation1(StrEnum):
     postWebhook = 'postWebhook'
 
 
-class Operation2(StrEnum):
+class Operation3(StrEnum):
     """
     postWebhook posts to a channel webhook URL; postMessage uses a bot token and a channel id.
     """
@@ -530,7 +562,7 @@ class Operation2(StrEnum):
     postMessage = 'postMessage'
 
 
-class Operation3(StrEnum):
+class Operation4(StrEnum):
     """
     Jira operation to perform
     """
@@ -1265,6 +1297,108 @@ class LoadDatasetConfig(BaseActionConfig):
     outputVariable: str | None = 'dataset'
     """
     Variable to store the parsed rows (a list of row objects) for a loop forEach to iterate.
+    """
+
+
+class ComputeConfig(BaseActionConfig):
+    """
+    Compute a value without a browser: sandboxed Python-style expressions for arithmetic, logic and text building, text extraction between markers with skippable occurrences, regular-expression extraction, and JSON path lookup. The result is stored in outputVariable.
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    operation: Operation | None = 'expression'
+    """
+    What to compute. 'expression' evaluates sandboxed Python-style logic; 'extractBetween' takes the text between a start and an end marker; 'regex' extracts regular-expression matches; 'jsonPath' reads a value out of JSON by path.
+    """
+    expression: str | None = ''
+    """
+    expression: a Python-style expression, or short lines of assignments, if/for and a final expression. The last expression (or a variable named 'result') is the output. Flow variables are available by name and as {{variable}}, bound as values rather than pasted text. No imports, attribute internals, file, network or process access.
+    """
+    source: str | None = ''
+    """
+    extractBetween/regex/jsonPath: the text or {{variable}} to read from. An object or list variable is read as its JSON text.
+    """
+    startPattern: str | None = ''
+    """
+    extractBetween: marker the extracted text starts after. Empty starts at the beginning.
+    """
+    endPattern: str | None = ''
+    """
+    extractBetween: marker the extracted text ends before. Empty runs to the end.
+    """
+    patternMode: PatternMode | None = 'text'
+    """
+    extractBetween: match the start and end markers as literal text or as regular expressions.
+    """
+    skipStartMatches: Annotated[int | None, Field(ge=0, le=1000)] = 0
+    """
+    extractBetween: occurrences of the start marker to skip, so 1 starts after its second occurrence.
+    """
+    skipEndMatches: Annotated[int | None, Field(ge=0, le=1000)] = 0
+    """
+    extractBetween: occurrences of the end marker to skip after the start, so 1 ends before its second occurrence.
+    """
+    includeBoundaries: bool | None = False
+    """
+    extractBetween: keep the start and end markers in the extracted text.
+    """
+    pattern: str | None = ''
+    """
+    regex: the regular expression to match.
+    """
+    group: str | None = ''
+    """
+    regex: capture group to return, by number or name. Empty returns the first group when the pattern has one, otherwise the whole match.
+    """
+    skipMatches: Annotated[int | None, Field(ge=0, le=1000)] = 0
+    """
+    regex: matches to skip before the one returned, so 1 returns the second match.
+    """
+    ignoreCase: bool | None = False
+    """
+    extractBetween (regex markers) and regex: match regardless of letter case.
+    """
+    multiline: bool | None = False
+    """
+    regex: ^ and $ match at every line break.
+    """
+    dotAll: bool | None = False
+    """
+    regex: . also matches line breaks.
+    """
+    matchAll: bool | None = False
+    """
+    extractBetween/regex: return every match (after the skipped ones) as a list instead of one value.
+    """
+    path: str | None = ''
+    """
+    jsonPath: dotted/bracket path such as data.items[0].name; [*] collects that field from every list item.
+    """
+    trim: bool | None = False
+    """
+    Strip leading and trailing whitespace from text results.
+    """
+    outputType: OutputType | None = 'auto'
+    """
+    Convert the result before storing it. 'auto' keeps it as computed; 'json' parses a JSON string into an object or list.
+    """
+    failIfNotFound: bool | None = True
+    """
+    extractBetween/regex/jsonPath: fail the step when nothing matches. When false, defaultValue is stored instead.
+    """
+    defaultValue: str | None = ''
+    """
+    Value stored when nothing matches and failIfNotFound is false.
+    """
+    timeoutMs: Annotated[int | None, Field(ge=100, le=10000)] = 2000
+    """
+    Longest the computation may run before it is stopped, in milliseconds.
+    """
+    outputVariable: str | None = 'computeResult'
+    """
+    Variable to store the result in.
     """
 
 
@@ -2853,7 +2987,7 @@ class GmailConfig(BaseActionConfig):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    operation: Operation
+    operation: Operation1
     """
     Gmail operation to perform
     """
@@ -2903,7 +3037,7 @@ class SlackConfig(BaseActionConfig):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    operation: Operation1
+    operation: Operation2
     """
     postMessage uses a bot token and a channel; postWebhook posts to an incoming webhook URL.
     """
@@ -2945,7 +3079,7 @@ class DiscordConfig(BaseActionConfig):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    operation: Operation2
+    operation: Operation3
     """
     postWebhook posts to a channel webhook URL; postMessage uses a bot token and a channel id.
     """
@@ -2987,7 +3121,7 @@ class JiraConfig(BaseActionConfig):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    operation: Operation3
+    operation: Operation4
     """
     Jira operation to perform
     """
@@ -3450,6 +3584,7 @@ class ActionConfigurations(BaseModel):
             | CaptureWebVitalsConfig
             | VisualRegressionConfig
             | LoadDatasetConfig
+            | ComputeConfig
             | ConditionalConfig
             | LoopConfig
             | DatabaseQueryConfig

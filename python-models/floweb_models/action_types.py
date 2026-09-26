@@ -10,7 +10,7 @@ from pydantic import BaseModel, ConfigDict
 
 class ActionType(StrEnum):
     """
-    Every automation action-type identifier (29 web + 18 desktop + 15 mobile + 3 api + 4 integrations + 6 core = 75).
+    Every automation action-type identifier (29 web + 18 desktop + 15 mobile + 3 api + 4 integrations + 7 core = 76).
     """
 
     click = 'click'
@@ -37,6 +37,7 @@ class ActionType(StrEnum):
     captureWebVitals = 'captureWebVitals'
     visualRegression = 'visualRegression'
     loadDataset = 'loadDataset'
+    compute = 'compute'
     conditional = 'conditional'
     loop = 'loop'
     dbQuery = 'dbQuery'
@@ -196,7 +197,7 @@ class ApiActionType(StrEnum):
 
 class CoreActionType(StrEnum):
     """
-    The 6 platform-agnostic control-flow and generic utility action types that need neither a browser nor OS automation (subset of ActionType).
+    The 7 platform-agnostic control-flow and generic utility action types that need neither a browser nor OS automation (subset of ActionType).
     """
 
     conditional = 'conditional'
@@ -205,6 +206,7 @@ class CoreActionType(StrEnum):
     callToFlow = 'callToFlow'
     wait = 'wait'
     loadDataset = 'loadDataset'
+    compute = 'compute'
 
 
 class ActionTypes(BaseModel):

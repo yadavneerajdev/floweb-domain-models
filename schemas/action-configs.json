@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://floweb.com/schemas/action-configs.json",
-  "$version": "1.9.0",
+  "$version": "1.10.0",
   "title": "Action Configurations",
   "description": "Configuration schemas for all automation actions",
   "type": "object",
@@ -82,6 +82,9 @@
             },
             {
               "$ref": "#/$defs/LoadDatasetConfig"
+            },
+            {
+              "$ref": "#/$defs/ComputeConfig"
             },
             {
               "$ref": "#/$defs/ConditionalConfig"
@@ -1030,7 +1033,10 @@
           "description": "MIME type of the part. Left to the server to infer when empty."
         }
       },
-      "required": ["field", "source"]
+      "required": [
+        "field",
+        "source"
+      ]
     },
     "ResponseAssertion": {
       "type": "object",
@@ -1305,6 +1311,159 @@
         }
       ],
       "description": "Load a CSV/JSON dataset (inline or from an uploaded file) into a variable as a list of row objects, for data-driven testing with loop forEach. Reference a row field as {{row.column}} inside the loop."
+    },
+    "ComputeConfig": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/BaseActionConfig"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "operation": {
+              "type": "string",
+              "enum": [
+                "expression",
+                "extractBetween",
+                "regex",
+                "jsonPath"
+              ],
+              "default": "expression",
+              "description": "What to compute. 'expression' evaluates sandboxed Python-style logic; 'extractBetween' takes the text between a start and an end marker; 'regex' extracts regular-expression matches; 'jsonPath' reads a value out of JSON by path."
+            },
+            "expression": {
+              "type": "string",
+              "default": "",
+              "description": "expression: a Python-style expression, or short lines of assignments, if/for and a final expression. The last expression (or a variable named 'result') is the output. Flow variables are available by name and as {{variable}}, bound as values rather than pasted text. No imports, attribute internals, file, network or process access."
+            },
+            "source": {
+              "type": "string",
+              "default": "",
+              "description": "extractBetween/regex/jsonPath: the text or {{variable}} to read from. An object or list variable is read as its JSON text."
+            },
+            "startPattern": {
+              "type": "string",
+              "default": "",
+              "description": "extractBetween: marker the extracted text starts after. Empty starts at the beginning."
+            },
+            "endPattern": {
+              "type": "string",
+              "default": "",
+              "description": "extractBetween: marker the extracted text ends before. Empty runs to the end."
+            },
+            "patternMode": {
+              "type": "string",
+              "enum": [
+                "text",
+                "regex"
+              ],
+              "default": "text",
+              "description": "extractBetween: match the start and end markers as literal text or as regular expressions."
+            },
+            "skipStartMatches": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000,
+              "default": 0,
+              "description": "extractBetween: occurrences of the start marker to skip, so 1 starts after its second occurrence."
+            },
+            "skipEndMatches": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000,
+              "default": 0,
+              "description": "extractBetween: occurrences of the end marker to skip after the start, so 1 ends before its second occurrence."
+            },
+            "includeBoundaries": {
+              "type": "boolean",
+              "default": false,
+              "description": "extractBetween: keep the start and end markers in the extracted text."
+            },
+            "pattern": {
+              "type": "string",
+              "default": "",
+              "description": "regex: the regular expression to match."
+            },
+            "group": {
+              "type": "string",
+              "default": "",
+              "description": "regex: capture group to return, by number or name. Empty returns the first group when the pattern has one, otherwise the whole match."
+            },
+            "skipMatches": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000,
+              "default": 0,
+              "description": "regex: matches to skip before the one returned, so 1 returns the second match."
+            },
+            "ignoreCase": {
+              "type": "boolean",
+              "default": false,
+              "description": "extractBetween (regex markers) and regex: match regardless of letter case."
+            },
+            "multiline": {
+              "type": "boolean",
+              "default": false,
+              "description": "regex: ^ and $ match at every line break."
+            },
+            "dotAll": {
+              "type": "boolean",
+              "default": false,
+              "description": "regex: . also matches line breaks."
+            },
+            "matchAll": {
+              "type": "boolean",
+              "default": false,
+              "description": "extractBetween/regex: return every match (after the skipped ones) as a list instead of one value."
+            },
+            "path": {
+              "type": "string",
+              "default": "",
+              "description": "jsonPath: dotted/bracket path such as data.items[0].name; [*] collects that field from every list item."
+            },
+            "trim": {
+              "type": "boolean",
+              "default": false,
+              "description": "Strip leading and trailing whitespace from text results."
+            },
+            "outputType": {
+              "type": "string",
+              "enum": [
+                "auto",
+                "string",
+                "number",
+                "boolean",
+                "json"
+              ],
+              "default": "auto",
+              "description": "Convert the result before storing it. 'auto' keeps it as computed; 'json' parses a JSON string into an object or list."
+            },
+            "failIfNotFound": {
+              "type": "boolean",
+              "default": true,
+              "description": "extractBetween/regex/jsonPath: fail the step when nothing matches. When false, defaultValue is stored instead."
+            },
+            "defaultValue": {
+              "type": "string",
+              "default": "",
+              "description": "Value stored when nothing matches and failIfNotFound is false."
+            },
+            "timeoutMs": {
+              "type": "integer",
+              "minimum": 100,
+              "maximum": 10000,
+              "default": 2000,
+              "description": "Longest the computation may run before it is stopped, in milliseconds."
+            },
+            "outputVariable": {
+              "type": "string",
+              "default": "computeResult",
+              "description": "Variable to store the result in."
+            }
+          }
+        }
+      ],
+      "description": "Compute a value without a browser: sandboxed Python-style expressions for arithmetic, logic and text building, text extraction between markers with skippable occurrences, regular-expression extraction, and JSON path lookup. The result is stored in outputVariable."
     },
     "DatabaseQueryConfig": {
       "allOf": [
