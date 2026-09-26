@@ -119,6 +119,26 @@ export type CloseEngineCommand = WebSocketMessage & {
 export type GetEngineStatusCommand = WebSocketMessage & {
   command: "get_engine_status";
 };
+export type GetComponentsStatusCommand = WebSocketMessage & {
+  command: "get_components_status";
+};
+export type InstallComponentCommand = WebSocketMessage & {
+  command: "install_component";
+  /**
+   * Registry id of the engine-owned downloadable component to install
+   */
+  component_id: string;
+};
+export type RemoveComponentCommand = WebSocketMessage & {
+  command: "remove_component";
+  /**
+   * Registry id of the engine-owned downloadable component to remove
+   */
+  component_id: string;
+};
+export type EnableSafaridriverCommand = WebSocketMessage & {
+  command: "enable_safaridriver";
+};
 export type StartPerformanceScanCommand = WebSocketMessage & {
   command: "start_performance_scan";
   /**
@@ -534,6 +554,10 @@ export interface ParallelExecutionModelsSchema {
   RestartEngineCommand?: RestartEngineCommand;
   CloseEngineCommand?: CloseEngineCommand;
   GetEngineStatusCommand?: GetEngineStatusCommand;
+  GetComponentsStatusCommand?: GetComponentsStatusCommand;
+  InstallComponentCommand?: InstallComponentCommand;
+  RemoveComponentCommand?: RemoveComponentCommand;
+  EnableSafaridriverCommand?: EnableSafaridriverCommand;
   StartPerformanceScanCommand?: StartPerformanceScanCommand;
   StopPerformanceScanCommand?: StopPerformanceScanCommand;
   RunLoadTestCommand?: RunLoadTestCommand;

@@ -258,6 +258,26 @@ export type AuthenticateCommand = WebSocketMessage & {
   account_id?: string;
   server_url?: string;
 };
+export type GetComponentsStatusCommand = WebSocketMessage & {
+  command: "get_components_status";
+};
+export type InstallComponentCommand = WebSocketMessage & {
+  command: "install_component";
+  /**
+   * Registry id of the engine-owned downloadable component to install
+   */
+  component_id: string;
+};
+export type RemoveComponentCommand = WebSocketMessage & {
+  command: "remove_component";
+  /**
+   * Registry id of the engine-owned downloadable component to remove
+   */
+  component_id: string;
+};
+export type EnableSafaridriverCommand = WebSocketMessage & {
+  command: "enable_safaridriver";
+};
 export type RunResponse = WebSocketResponse & {
   command: "run";
   mode: "full" | "partial";
@@ -510,6 +530,10 @@ export interface WebSocketCommunicationModelsSchema {
       | CancelSuiteCommand
       | AddRecordingWaitCommand
       | AuthenticateCommand
+      | GetComponentsStatusCommand
+      | InstallComponentCommand
+      | RemoveComponentCommand
+      | EnableSafaridriverCommand
     )[];
     responses?: (
       | RunResponse
@@ -554,6 +578,10 @@ export interface WebSocketCommunicationModelsSchema {
   RestartEngineCommand?: RestartEngineCommand;
   CloseEngineCommand?: CloseEngineCommand;
   GetEngineStatusCommand?: GetEngineStatusCommand;
+  GetComponentsStatusCommand?: GetComponentsStatusCommand;
+  InstallComponentCommand?: InstallComponentCommand;
+  RemoveComponentCommand?: RemoveComponentCommand;
+  EnableSafaridriverCommand?: EnableSafaridriverCommand;
   StartPerformanceScanCommand?: StartPerformanceScanCommand;
   StopPerformanceScanCommand?: StopPerformanceScanCommand;
   RunLoadTestCommand?: RunLoadTestCommand;

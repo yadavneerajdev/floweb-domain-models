@@ -349,6 +349,54 @@ class GetEngineStatusCommand(WebSocketMessage):
     """
 
 
+class GetComponentsStatusCommand(WebSocketMessage):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    command: Literal['get_components_status']
+    """
+    Command type
+    """
+
+
+class InstallComponentCommand(WebSocketMessage):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    command: Literal['install_component']
+    """
+    Command type
+    """
+    component_id: str
+    """
+    Registry id of the engine-owned downloadable component to install
+    """
+
+
+class RemoveComponentCommand(WebSocketMessage):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    command: Literal['remove_component']
+    """
+    Command type
+    """
+    component_id: str
+    """
+    Registry id of the engine-owned downloadable component to remove
+    """
+
+
+class EnableSafaridriverCommand(WebSocketMessage):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    command: Literal['enable_safaridriver']
+    """
+    Command type
+    """
+
+
 class StartPerformanceScanCommand(WebSocketMessage):
     model_config = ConfigDict(
         populate_by_name=True,
@@ -1206,6 +1254,10 @@ class WebsocketCommunication(BaseModel):
             | CancelSuiteCommand
             | AddRecordingWaitCommand
             | AuthenticateCommand
+            | GetComponentsStatusCommand
+            | InstallComponentCommand
+            | RemoveComponentCommand
+            | EnableSafaridriverCommand
         ]
         | None
     ) = None
