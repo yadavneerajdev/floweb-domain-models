@@ -1,0 +1,16 @@
+{
+  "flowId": "flow-123",
+  "flowName": "Checkout smoke test",
+  "isValid": true,
+  "warnings": [],
+  "errors": [],
+  "summary": {
+    "totalNodes": 3,
+    "totalEdges": 2,
+    "warningCount": 0,
+    "errorCount": 0,
+    "criticalCount": 0
+  },
+  "validatedAt": "2026-07-20T10:00:00Z",
+  "validationTime": 12.5
+}

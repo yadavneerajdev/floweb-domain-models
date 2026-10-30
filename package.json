@@ -1,17 +1,30 @@
 {
   "name": "@autoweb/domain-models",
-  "version": "1.0.23",
+  "version": "1.0.38",
   "description": "Domain models for AutoWeb Desktop - centralized type definitions",
   "main": "index.js",
   "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "default": "./index.js"
+    },
+    "./schemas/*.json": "./schemas/*.json",
+    "./schemas/*": "./schemas/*.json",
+    "./package.json": "./package.json"
+  },
   "scripts": {
-    "build": "tsc",
-    "generate": "node generate-types.js",
-    "generate-python": "node generate-python-models.js",
-    "validate": "ajv validate -s schemas/*.json -d examples/*.json",
+    "typecheck": "tsc --noEmit",
+    "generate": "node scripts/generate-ts.cjs && node scripts/generate-index.cjs",
+    "generate-python": "node scripts/generate-python.cjs",
+    "generate:all": "npm run generate && npm run generate-python",
+    "validate": "node scripts/validate-schemas.cjs",
+    "check-breaking": "node scripts/check-breaking-changes.cjs",
+    "build": "npm run validate && npm run generate:all && npm run typecheck && npm run test",
     "test": "jest",
+    "test:python": "python3 -m pytest tests/python -q",
     "docs": "typedoc",
-    "prepublishOnly": "npm run build && npm run test"
+    "prepublishOnly": "npm run build"
   },
   "keywords": [
     "autoweb",
@@ -29,7 +42,9 @@
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
+    "ajv": "^8.17.1",
     "ajv-cli": "^5.0.0",
+    "ajv-formats": "^2.1.1",
     "jest": "^29.0.0",
     "json-schema-to-typescript": "^13.0.0",
     "ts-jest": "^29.4.6",

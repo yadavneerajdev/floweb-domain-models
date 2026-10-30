@@ -1,0 +1,479 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://floweb.com/schemas/ai-contracts.json",
+  "$version": "1.2.0",
+  "title": "AI Contracts",
+  "description": "Request/response contracts for the AI service routes. Authored in canonical camelCase (the aliases the Pydantic models already accept via populate_by_name). NOTE: the ai-service currently emits snake_case for a few aliased response fields (testData, optimizedActions, removedActions) unless dumped by_alias; aligning that is ai-service Phase 3. The floweb-server proxy defines requests only and passes responses through opaquely. The autonomous generate-tests contracts are prefixed Autonomous* because data-lab.json defines an unrelated GenerateTestsRequest for dataset generation.",
+  "type": "object",
+  "properties": {
+    "generateFlowRequest": { "$ref": "#/$defs/GenerateFlowRequest" },
+    "generateFlowResponse": { "$ref": "#/$defs/GenerateFlowResponse" },
+    "providerConfig": { "$ref": "#/$defs/AIProviderConfig" },
+    "autonomousTestsRequest": { "$ref": "#/$defs/AutonomousTestsRequest" }
+  },
+  "$defs": {
+    "AIProviderType": {
+      "type": "string",
+      "description": "AI provider selector",
+      "enum": ["auto", "ollama", "openai", "anthropic", "openai-compatible", "disabled"]
+    },
+    "AIProviderConfig": {
+      "type": "object",
+      "description": "Provider/model selection for an AI request",
+      "properties": {
+        "provider": { "$ref": "#/$defs/AIProviderType", "default": "auto" },
+        "model": { "type": ["string", "null"], "default": null },
+        "baseUrl": { "type": ["string", "null"], "default": null },
+        "apiKey": { "type": ["string", "null"], "default": null },
+        "temperature": { "type": "number", "default": 0.2 },
+        "maxTokens": { "type": "integer", "default": 2000 },
+        "requestTimeoutSeconds": {
+          "type": ["number", "null"],
+          "description": "How long to wait for the model to respond, in seconds. Null uses the service default. Bounded so a client cannot hold a worker open indefinitely.",
+          "minimum": 10,
+          "maximum": 900,
+          "default": null
+        }
+      }
+    },
+    "AIRequestMetadata": {
+      "type": "object",
+      "description": "Server-injected request context. Accepts additional keys.",
+      "properties": {
+        "accountId": { "type": ["string", "null"], "default": null },
+        "userId": { "type": ["string", "null"], "default": null },
+        "traceId": { "type": ["string", "null"], "default": null }
+      },
+      "additionalProperties": true
+    },
+    "AIResponseMetadata": {
+      "type": "object",
+      "description": "Provenance attached to every AI response",
+      "properties": {
+        "provider": { "type": "string" },
+        "model": { "type": "string" },
+        "source": { "type": "string", "enum": ["llm", "heuristic"] },
+        "warnings": { "type": "array", "items": { "type": "string" }, "default": [] },
+        "raw": { "type": ["object", "null"], "additionalProperties": true, "default": null }
+      },
+      "required": ["provider", "model", "source"]
+    },
+    "FlowStep": {
+      "type": "object",
+      "description": "A high-level generated flow step",
+      "properties": {
+        "name": { "type": "string" },
+        "action": { "type": "string" },
+        "description": { "type": "string", "default": "" },
+        "parameters": { "type": "object", "additionalProperties": true, "default": {} }
+      },
+      "required": ["name", "action"],
+      "additionalProperties": true
+    },
+    "GenerateFlowRequest": {
+      "type": "object",
+      "description": "POST /ai/generate-flow request",
+      "properties": {
+        "description": { "type": "string" },
+        "url": { "type": ["string", "null"], "default": null },
+        "currentTest": { "type": ["object", "null"], "additionalProperties": true, "default": null },
+        "provider": { "$ref": "#/$defs/AIProviderConfig" },
+        "metadata": { "$ref": "#/$defs/AIRequestMetadata" }
+      },
+      "required": ["description"]
+    },
+    "GenerateFlowResponse": {
+      "type": "object",
+      "description": "POST /ai/generate-flow response",
+      "properties": {
+        "nodes": { "type": "array", "items": { "type": "object", "additionalProperties": true } },
+        "edges": { "type": "array", "items": { "type": "object", "additionalProperties": true } },
+        "steps": { "type": "array", "items": { "$ref": "#/$defs/FlowStep" } },
+        "variables": { "type": "array", "items": { "type": "object", "additionalProperties": true }, "default": [] },
+        "testData": { "type": "object", "additionalProperties": true, "default": {} },
+        "metadata": { "$ref": "#/$defs/AIResponseMetadata" },
+        "message": { "type": "string" }
+      },
+      "required": ["nodes", "edges", "steps", "metadata", "message"]
+    },
+    "AssistantOperation": {
+      "type": "object",
+      "description": "One tool operation proposed/performed by the assistant",
+      "properties": {
+        "tool": { "type": "string" },
+        "payload": { "type": "object", "additionalProperties": true, "default": {} },
+        "summary": { "type": ["string", "null"], "default": null }
+      },
+      "required": ["tool"],
+      "additionalProperties": true
+    },
+    "AssistantToolDescriptor": {
+      "type": "object",
+      "description": "A registered assistant tool (GET /ai/assistant-tools)",
+      "properties": {
+        "id": { "type": "string" },
+        "label": { "type": "string" },
+        "description": { "type": "string" },
+        "category": { "type": "string" },
+        "requiresExecution": { "type": "boolean" }
+      },
+      "required": ["id", "label", "description", "category", "requiresExecution"]
+    },
+    "AssistantActionRequest": {
+      "type": "object",
+      "description": "POST /ai/assistant-actions request",
+      "properties": {
+        "instruction": { "type": "string" },
+        "currentTest": { "type": ["object", "null"], "additionalProperties": true, "default": null },
+        "assistantPermissions": { "type": ["object", "null"], "additionalProperties": true, "default": null },
+        "runOutcome": { "oneOf": [{ "$ref": "#/$defs/AssistantRunOutcome" }, { "type": "null" }], "description": "Results of a run the assistant previously requested", "default": null },
+        "engineConnected": { "type": ["boolean", "null"], "description": "Whether the engine is reachable, so the assistant knows if running is possible", "default": null },
+        "provider": { "$ref": "#/$defs/AIProviderConfig" },
+        "metadata": { "$ref": "#/$defs/AIRequestMetadata" }
+      },
+      "required": ["instruction"]
+    },
+    "AssistantActionResponse": {
+      "type": "object",
+      "description": "POST /ai/assistant-actions response",
+      "properties": {
+        "message": { "type": "string" },
+        "operations": { "type": "array", "items": { "$ref": "#/$defs/AssistantOperation" }, "default": [] },
+        "plan": { "type": ["array", "null"], "items": { "type": "string" }, "default": null },
+        "suggestions": { "type": ["array", "null"], "items": { "type": "string" }, "default": null },
+        "steps": { "type": "array", "items": { "$ref": "#/$defs/AssistantStep" }, "default": [] },
+        "continuation": { "oneOf": [{ "$ref": "#/$defs/AssistantContinuation" }, { "type": "null" }], "default": null },
+        "runRequest": { "oneOf": [{ "$ref": "#/$defs/AssistantRunRequest" }, { "type": "null" }], "default": null },
+        "metadata": { "$ref": "#/$defs/AIResponseMetadata" }
+      },
+      "required": ["message", "metadata"]
+    },
+    "AssistantRunRequest": {
+      "type": "object",
+      "description": "The assistant asking for the test to be executed so it can check its own work. `partial` runs only what it changed; `full` runs everything.",
+      "properties": {
+        "mode": { "type": "string", "enum": ["partial", "full"], "default": "partial" },
+        "reason": { "type": "string", "description": "Why the run is needed, shown to the user when asking permission" },
+        "nodeIds": { "type": "array", "items": { "type": "string" }, "description": "Nodes to run for a partial run. The client prepends whatever setup steps are required, so a mid-flow action does not fail for want of a browser.", "default": [] },
+        "expectation": { "type": ["string", "null"], "description": "What the assistant expects to happen, so a mismatch is meaningful", "default": null }
+      },
+      "required": ["mode", "reason"],
+      "additionalProperties": true
+    },
+    "AssistantRunOutcome": {
+      "type": "object",
+      "description": "Execution results handed back to the assistant so it can decide whether to fix, continue, or stop.",
+      "properties": {
+        "status": { "type": "string", "enum": ["passed", "failed", "error", "cancelled", "not_run"] },
+        "mode": { "type": "string", "enum": ["partial", "full"] },
+        "durationSeconds": { "type": ["number", "null"], "default": null },
+        "failedNodeId": { "type": ["string", "null"], "default": null },
+        "failedAction": { "type": ["string", "null"], "default": null },
+        "errorMessage": { "type": ["string", "null"], "default": null },
+        "steps": { "type": "array", "items": { "type": "object", "additionalProperties": true }, "description": "Per-step outcomes from the engine report", "default": [] },
+        "consoleLogs": { "type": "array", "items": { "type": "string" }, "default": [] },
+        "reportId": { "type": ["string", "null"], "default": null }
+      },
+      "required": ["status", "mode"],
+      "additionalProperties": true
+    },
+    "AssistantContinuation": {
+      "type": "object",
+      "description": "Set when the assistant could not finish in one turn. The client applies this turn, then sends `nextInstruction` back to continue, so progress is visible per step instead of after the whole goal.",
+      "properties": {
+        "goal": { "type": "string", "description": "The overall objective being worked towards" },
+        "nextInstruction": { "type": "string", "description": "Instruction the client should send to continue" },
+        "remaining": { "type": ["integer", "null"], "description": "Best estimate of turns still needed, when known", "default": null },
+        "reason": { "type": ["string", "null"], "description": "Why the work was split", "default": null }
+      },
+      "required": ["goal", "nextInstruction"],
+      "additionalProperties": true
+    },
+    "AssistantPhase": {
+      "type": "string",
+      "description": "Coarse stage of an assistant turn, streamed while the turn runs",
+      "enum": ["reading_context", "consulting_docs", "awaiting_model", "executing_tools", "done", "failed", "cancelled"]
+    },
+    "AssistantProgressEvent": {
+      "type": "object",
+      "description": "One server-sent event emitted while an assistant turn runs. Terminal events carry the final response.",
+      "properties": {
+        "phase": { "$ref": "#/$defs/AssistantPhase" },
+        "label": { "type": "string", "description": "Human-readable description of the current phase" },
+        "detail": { "type": ["string", "null"], "description": "Optional extra context for the phase", "default": null },
+        "response": { "type": ["object", "null"], "additionalProperties": true, "description": "The completed AssistantActionResponse, present only on a terminal event", "default": null }
+      },
+      "required": ["phase", "label"],
+      "additionalProperties": true
+    },
+    "AssistantStepKind": {
+      "type": "string",
+      "description": "What kind of work a thread step represents",
+      "enum": ["discovery", "decision", "edit", "answer", "error"]
+    },
+    "AssistantStep": {
+      "type": "object",
+      "description": "One entry in the assistant's reasoning thread: what it looked at, what it decided, and what it changed",
+      "properties": {
+        "id": { "type": "string" },
+        "kind": { "$ref": "#/$defs/AssistantStepKind" },
+        "title": { "type": "string" },
+        "detail": { "type": ["string", "null"], "description": "Longer explanation shown when expanded. Markdown.", "default": null },
+        "tool": { "type": ["string", "null"], "description": "Tool this step corresponds to, when it maps to one", "default": null },
+        "status": { "type": "string", "enum": ["ok", "skipped", "failed"], "default": "ok" }
+      },
+      "required": ["id", "kind", "title"],
+      "additionalProperties": true
+    },
+    "FixLocatorRequest": {
+      "type": "object",
+      "description": "POST /ai/fix-locator request",
+      "properties": {
+        "dom": { "type": "string" },
+        "oldLocator": { "type": "string" },
+        "attemptedSelectors": { "type": "array", "items": { "type": "string" }, "default": [] },
+        "failedSelectors": { "type": "array", "items": { "type": "string" }, "default": [] },
+        "semanticTarget": { "type": ["object", "null"], "additionalProperties": true, "default": null },
+        "actionType": { "type": ["string", "null"], "default": null },
+        "provider": { "$ref": "#/$defs/AIProviderConfig" },
+        "metadata": { "$ref": "#/$defs/AIRequestMetadata" }
+      },
+      "required": ["dom", "oldLocator"]
+    },
+    "FixLocatorResponse": {
+      "type": "object",
+      "description": "POST /ai/fix-locator response",
+      "properties": {
+        "locator": { "type": "string" },
+        "confidence": { "type": "number" },
+        "alternatives": { "type": "array", "items": { "type": "string" }, "default": [] },
+        "metadata": { "$ref": "#/$defs/AIResponseMetadata" },
+        "reasoning": { "type": ["string", "null"], "default": null }
+      },
+      "required": ["locator", "confidence", "metadata"]
+    },
+    "AnalyzeFailureRequest": {
+      "type": "object",
+      "description": "POST /ai/analyze-failure request",
+      "properties": {
+        "failedStep": { "type": ["object", "null"], "additionalProperties": true, "default": null },
+        "dom": { "type": ["string", "null"], "default": null },
+        "screenshot": { "type": ["string", "null"], "default": null },
+        "consoleLogs": { "type": "array", "items": { "type": "string" }, "default": [] },
+        "networkLogs": { "type": "array", "items": { "type": "object", "additionalProperties": true }, "default": [] },
+        "errorMessage": { "type": ["string", "null"], "default": null },
+        "provider": { "$ref": "#/$defs/AIProviderConfig" },
+        "metadata": { "$ref": "#/$defs/AIRequestMetadata" }
+      }
+    },
+    "AnalyzeFailureResponse": {
+      "type": "object",
+      "description": "POST /ai/analyze-failure response",
+      "properties": {
+        "cause": { "type": "string" },
+        "fix": { "type": "string" },
+        "confidence": { "type": "number" },
+        "metadata": { "$ref": "#/$defs/AIResponseMetadata" },
+        "recommendations": { "type": "array", "items": { "type": "string" }, "default": [] }
+      },
+      "required": ["cause", "fix", "confidence", "metadata"]
+    },
+    "OptimizeRecordingRequest": {
+      "type": "object",
+      "description": "POST /ai/optimize-recording request",
+      "properties": {
+        "flowName": { "type": "string", "default": "Recorded Flow" },
+        "recordedActions": { "type": "array", "items": { "type": "object", "additionalProperties": true }, "default": [] },
+        "provider": { "$ref": "#/$defs/AIProviderConfig" },
+        "metadata": { "$ref": "#/$defs/AIRequestMetadata" }
+      }
+    },
+    "OptimizeRecordingResponse": {
+      "type": "object",
+      "description": "POST /ai/optimize-recording response",
+      "properties": {
+        "flow": { "type": "object", "additionalProperties": true },
+        "optimizedActions": { "type": "array", "items": { "type": "object", "additionalProperties": true }, "default": [] },
+        "removedActions": { "type": "integer", "default": 0 },
+        "metadata": { "$ref": "#/$defs/AIResponseMetadata" },
+        "message": { "type": "string" }
+      },
+      "required": ["flow", "metadata", "message"]
+    },
+    "VibeAction": {
+      "type": "object",
+      "description": "A vibe-mode action decision",
+      "properties": {
+        "type": { "type": "string" },
+        "label": { "type": "string", "default": "" },
+        "description": { "type": "string", "default": "" },
+        "config": { "type": "object", "additionalProperties": true, "default": {} }
+      },
+      "required": ["type"]
+    },
+    "VibeStepRecord": {
+      "type": "object",
+      "description": "A prior vibe step in history",
+      "properties": {
+        "type": { "type": "string", "default": "" },
+        "label": { "type": "string", "default": "" },
+        "reasoning": { "type": "string", "default": "" },
+        "success": { "type": "boolean", "default": true },
+        "message": { "type": "string", "default": "" }
+      }
+    },
+    "VibeMessage": {
+      "type": "object",
+      "description": "A conversational message for vibe mode",
+      "properties": {
+        "role": { "type": "string", "default": "user" },
+        "content": { "type": "string", "default": "" }
+      }
+    },
+    "VibeExistingStep": {
+      "type": "object",
+      "description": "An already-authored step passed as context",
+      "properties": {
+        "type": { "type": "string", "default": "" },
+        "label": { "type": "string", "default": "" }
+      }
+    },
+    "VibeNextActionRequest": {
+      "type": "object",
+      "description": "POST /ai/vibe-next-action request",
+      "properties": {
+        "instruction": { "type": "string" },
+        "screenshot": { "type": "string", "description": "base64 / data URI" },
+        "screenWidth": { "type": "integer", "default": 0 },
+        "screenHeight": { "type": "integer", "default": 0 },
+        "step": { "type": "integer", "default": 1 },
+        "maxSteps": { "type": "integer", "default": 25 },
+        "history": { "type": "array", "items": { "$ref": "#/$defs/VibeStepRecord" }, "default": [] },
+        "messages": { "type": "array", "items": { "$ref": "#/$defs/VibeMessage" }, "default": [] },
+        "existingSteps": { "type": "array", "items": { "$ref": "#/$defs/VibeExistingStep" }, "default": [] },
+        "provider": { "$ref": "#/$defs/AIProviderConfig" },
+        "metadata": { "$ref": "#/$defs/AIRequestMetadata" }
+      },
+      "required": ["instruction", "screenshot"]
+    },
+    "VibeNextActionResponse": {
+      "type": "object",
+      "description": "POST /ai/vibe-next-action response",
+      "properties": {
+        "done": { "type": "boolean", "default": false },
+        "reasoning": { "type": "string", "default": "" },
+        "message": { "type": "string", "default": "" },
+        "expectation": { "type": "string", "default": "" },
+        "action": { "oneOf": [{ "$ref": "#/$defs/VibeAction" }, { "type": "null" }], "default": null },
+        "metadata": { "$ref": "#/$defs/AIResponseMetadata" }
+      },
+      "required": ["metadata"]
+    },
+    "VibeVerifyRequest": {
+      "type": "object",
+      "description": "POST /ai/vibe-verify request",
+      "properties": {
+        "instruction": { "type": "string" },
+        "screenshot": { "type": "string", "description": "post-action screenshot (base64)" },
+        "expectation": { "type": "string" },
+        "lastAction": { "oneOf": [{ "$ref": "#/$defs/VibeAction" }, { "type": "null" }], "default": null },
+        "step": { "type": "integer", "default": 1 },
+        "provider": { "$ref": "#/$defs/AIProviderConfig" },
+        "metadata": { "$ref": "#/$defs/AIRequestMetadata" }
+      },
+      "required": ["instruction", "screenshot", "expectation"]
+    },
+    "AutonomousTestsRequest": {
+      "type": "object",
+      "description": "POST /ai/generate-tests request. Crawls the URL server-side, so the body carries a target rather than a description; bounds mirror the ai-service's GenerateTestsRequest.",
+      "properties": {
+        "url": { "type": "string", "minLength": 5, "maxLength": 2048 },
+        "goal": { "type": "string", "maxLength": 2000 },
+        "maxSuites": { "type": "integer", "minimum": 1, "maximum": 10 },
+        "provider": { "$ref": "#/$defs/AIProviderConfig" }
+      },
+      "required": ["url"]
+    },
+    "VibeVerifyResponse": {
+      "type": "object",
+      "description": "POST /ai/vibe-verify response",
+      "properties": {
+        "verified": { "type": "boolean", "default": false },
+        "reason": { "type": "string", "default": "" },
+        "metadata": { "$ref": "#/$defs/AIResponseMetadata" }
+      },
+      "required": ["metadata"]
+    },
+    "AutonomousTestsRequest": {
+      "type": "object",
+      "description": "POST /ai/generate-tests request",
+      "properties": {
+        "url": { "type": "string", "minLength": 5, "description": "Page to crawl and generate tests for" },
+        "goal": {
+          "type": "string",
+          "default": "Generate smoke tests",
+          "description": "What the generated suite should verify"
+        },
+        "maxSuites": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10,
+          "default": 3,
+          "description": "Upper bound on generated test suites"
+        },
+        "provider": { "$ref": "#/$defs/AIProviderConfig" },
+        "metadata": { "$ref": "#/$defs/AIRequestMetadata" }
+      },
+      "required": ["url"]
+    },
+    "AutonomousCrawlInspection": {
+      "type": "object",
+      "description": "Summary of what the crawler found on the target page",
+      "properties": {
+        "url": { "type": "string" },
+        "statusCode": { "type": "integer" },
+        "formCount": { "type": "integer" },
+        "buttonCount": { "type": "integer" },
+        "inputCount": { "type": "integer" },
+        "linkCount": { "type": "integer" }
+      },
+      "required": ["url", "statusCode", "formCount", "buttonCount", "inputCount", "linkCount"]
+    },
+    "AutonomousGeneratedSuite": {
+      "type": "object",
+      "description": "A single generated test suite with its runnable steps",
+      "properties": {
+        "name": { "type": "string" },
+        "description": { "type": "string", "default": "" },
+        "steps": { "type": "array", "items": { "$ref": "#/$defs/FlowStep" } }
+      },
+      "required": ["name", "steps"]
+    },
+    "AutonomousTestsResponse": {
+      "type": "object",
+      "description": "POST /ai/generate-tests response",
+      "properties": {
+        "inspection": { "$ref": "#/$defs/AutonomousCrawlInspection" },
+        "suite": {
+          "$ref": "#/$defs/AutonomousGeneratedSuite",
+          "description": "First generated suite, retained for single-suite consumers"
+        },
+        "suites": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/AutonomousGeneratedSuite" },
+          "default": [],
+          "description": "All generated suites, ordered as planned"
+        },
+        "variables": {
+          "type": "array",
+          "items": { "type": "object", "additionalProperties": true },
+          "default": [],
+          "description": "Typed placeholders referenced by the generated steps"
+        },
+        "plan": { "type": "object", "additionalProperties": true, "default": {} },
+        "metadata": { "$ref": "#/$defs/AIResponseMetadata" }
+      },
+      "required": ["inspection", "suite", "metadata"]
+    }
+  }
+}

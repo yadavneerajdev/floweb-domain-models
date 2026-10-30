@@ -1,0 +1,7 @@
+{
+  "type": "presence",
+  "users": [
+    { "id": "u1", "name": "Ada", "color": "#3b82f6", "nodeId": null },
+    { "id": "u2", "name": "Grace", "color": "#ef4444", "nodeId": "action-1" }
+  ]
+}

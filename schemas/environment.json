@@ -1,6 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://floweb.com/schemas/environment.json",
+  "$version": "2.3.0",
   "title": "Environment and Global Variables Configuration",
   "description": "Schema for environment configurations and global variables used in Floweb automation flows",
   "type": "object",
@@ -27,11 +28,19 @@
       "pattern": "^[a-zA-Z0-9_-]+$"
     }
   },
-  "required": ["environments", "globalVariables"],
+  "required": [
+    "environments",
+    "globalVariables"
+  ],
   "$defs": {
+    "DateFormatPreset": {
+      "type": "string",
+      "description": "Named output format for a `date` variable. `custom` defers to the variable's dateFormatPattern.",
+      "enum": ["iso", "iso-datetime", "rfc3339", "date-slash-dmy", "date-slash-mdy", "date-dash-ymd", "date-medium", "date-long", "datetime-friendly", "time-24h", "unix-seconds", "unix-millis", "custom"]
+    },
     "Environment": {
       "type": "object",
-      "description": "An environment configuration with its variables",
+      "description": "An environment configuration with its variables. Unifies the standalone-entity and embedded-in-flow forms: only id+name are required so embedded partial environments validate; the server always sets the remaining fields on stored environments.",
       "properties": {
         "id": {
           "type": "string",
@@ -64,6 +73,10 @@
           "description": "Whether this is the default environment",
           "default": false
         },
+        "isActive": {
+          "type": "boolean",
+          "description": "Whether this environment is currently active"
+        },
         "createdAt": {
           "type": "string",
           "format": "date-time",
@@ -75,7 +88,10 @@
           "description": "ISO 8601 timestamp when the environment was last updated"
         }
       },
-      "required": ["id", "name", "variables", "isDefault"]
+      "required": [
+        "id",
+        "name"
+      ]
     },
     "GlobalVariable": {
       "type": "object",
@@ -91,25 +107,52 @@
         "name": {
           "type": "string",
           "description": "Variable name used in flows",
-          "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$",
+          "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*$",
           "minLength": 1,
           "maxLength": 50
-        },
-        "value": {
-          "type": "string",
-          "description": "The variable's value",
-          "minLength": 0,
-          "maxLength": 10000
         },
         "type": {
           "type": "string",
           "description": "Data type of the variable",
-          "enum": ["string", "number", "boolean", "url", "file", "json", "array"]
+          "enum": [
+            "string",
+            "number",
+            "boolean",
+            "object",
+            "array",
+            "url",
+            "file",
+            "json",
+            "web-identifier",
+            "image",
+            "secret",
+            "date",
+            "code",
+            "email"
+          ]
+        },
+        "value": {
+          "description": "The variable's value; any JSON value is allowed (2026-07 decision: runtime stores structured values, aligned with TS JsonValue rather than the old string-only contract)"
+        },
+        "dateFormat": {
+          "type": "string",
+          "description": "Output format applied when a `date` variable is substituted into an action. The stored value stays canonical ISO-8601; this only affects rendering. Either a DateFormatPreset id or, when set to `custom`, the pattern in `dateFormatPattern`. Ignored for other types.",
+          "maxLength": 40
+        },
+        "dateFormatPattern": {
+          "type": "string",
+          "description": "Token pattern used when `dateFormat` is `custom`, e.g. `DD MMM YYYY HH:mm`.",
+          "maxLength": 80
         },
         "description": {
           "type": "string",
           "description": "Description of the variable's purpose",
           "maxLength": 500
+        },
+        "secret": {
+          "type": "boolean",
+          "description": "When true, the value is a secret: write-only for UI clients (masked in API responses, never returned as plaintext), redacted from reports and logs, and sent in plaintext only to the engine runtime context. Set automatically when type is `secret`.",
+          "default": false
         },
         "createdAt": {
           "type": "string",
@@ -122,15 +165,20 @@
           "description": "ISO 8601 timestamp when the variable was last updated"
         }
       },
-      "required": ["id", "name", "value", "type"]
+      "required": [
+        "id",
+        "name",
+        "type",
+        "value"
+      ]
     },
     "Variable": {
       "type": "object",
-      "description": "An environment-specific variable",
+      "description": "A variable (environment, global, or flow parameter). Field constraints are strict; `value` accepts any JSON value.",
       "properties": {
         "id": {
           "type": "string",
-          "description": "Unique identifier for the variable within this environment",
+          "description": "Unique identifier for the variable",
           "pattern": "^[a-zA-Z0-9_-]+$",
           "minLength": 1,
           "maxLength": 50
@@ -138,28 +186,64 @@
         "name": {
           "type": "string",
           "description": "Variable name used in flows",
-          "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$",
+          "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*$",
           "minLength": 1,
           "maxLength": 50
-        },
-        "value": {
-          "type": "string",
-          "description": "The variable's value",
-          "minLength": 0,
-          "maxLength": 10000
         },
         "type": {
           "type": "string",
           "description": "Data type of the variable",
-          "enum": ["string", "number", "boolean", "url", "file", "json", "array"]
+          "enum": [
+            "string",
+            "number",
+            "boolean",
+            "object",
+            "array",
+            "url",
+            "file",
+            "json",
+            "web-identifier",
+            "image",
+            "secret",
+            "date",
+            "code",
+            "email"
+          ]
+        },
+        "value": {
+          "description": "The variable's value; any JSON value is allowed (2026-07 decision: runtime stores structured values, aligned with TS JsonValue rather than the old string-only contract)"
+        },
+        "dateFormat": {
+          "type": "string",
+          "description": "Output format applied when a `date` variable is substituted into an action. The stored value stays canonical ISO-8601; this only affects rendering. Either a DateFormatPreset id or, when set to `custom`, the pattern in `dateFormatPattern`. Ignored for other types.",
+          "maxLength": 40
+        },
+        "dateFormatPattern": {
+          "type": "string",
+          "description": "Token pattern used when `dateFormat` is `custom`, e.g. `DD MMM YYYY HH:mm`.",
+          "maxLength": 80
         },
         "description": {
           "type": "string",
           "description": "Description of the variable's purpose",
           "maxLength": 500
+        },
+        "isOutput": {
+          "type": "boolean",
+          "description": "Whether this is an output variable (flow parameters)"
+        },
+        "secret": {
+          "type": "boolean",
+          "description": "When true, the value is a secret: write-only for UI clients (masked in API responses, never returned as plaintext), redacted from reports and logs, and sent in plaintext only to the engine runtime context. Set automatically when type is `secret`.",
+          "default": false
         }
       },
-      "required": ["id", "name", "value", "type"]
+      "required": [
+        "id",
+        "name",
+        "type",
+        "value"
+      ]
     }
   }
 }

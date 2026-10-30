@@ -1,6 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://floweb.com/schemas/performance-test.json",
+  "$version": "1.1.0",
   "title": "PerformanceTest",
   "description": "Performance test definition for load testing and API monitoring",
   "type": "object",
@@ -36,7 +37,11 @@
       "description": "Results from load test execution"
     }
   },
-  "required": ["metadata", "recordedRequests", "loadTestConfig"],
+  "required": [
+    "metadata",
+    "recordedRequests",
+    "loadTestConfig"
+  ],
   "$defs": {
     "RecordedRequest": {
       "type": "object",
@@ -52,7 +57,15 @@
         },
         "method": {
           "type": "string",
-          "enum": ["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"],
+          "enum": [
+            "GET",
+            "POST",
+            "PUT",
+            "DELETE",
+            "PATCH",
+            "HEAD",
+            "OPTIONS"
+          ],
           "description": "HTTP method"
         },
         "headers": {
@@ -76,7 +89,15 @@
         },
         "resourceType": {
           "type": "string",
-          "enum": ["document", "stylesheet", "script", "image", "fetch", "xhr", "other"],
+          "enum": [
+            "document",
+            "stylesheet",
+            "script",
+            "image",
+            "fetch",
+            "xhr",
+            "other"
+          ],
           "description": "Type of resource requested"
         },
         "initiator": {
@@ -84,7 +105,14 @@
           "description": "What triggered this request"
         }
       },
-      "required": ["id", "url", "method", "headers", "timestamp", "resourceType"]
+      "required": [
+        "id",
+        "url",
+        "method",
+        "headers",
+        "timestamp",
+        "resourceType"
+      ]
     },
     "RecordedResponse": {
       "type": "object",
@@ -117,7 +145,13 @@
           "description": "Response timing breakdown"
         }
       },
-      "required": ["status", "statusText", "headers", "size", "timing"]
+      "required": [
+        "status",
+        "statusText",
+        "headers",
+        "size",
+        "timing"
+      ]
     },
     "ResponseTiming": {
       "type": "object",
@@ -147,7 +181,14 @@
           "description": "Total request time in milliseconds"
         }
       },
-      "required": ["dns", "tcp", "ssl", "ttfb", "download", "total"]
+      "required": [
+        "dns",
+        "tcp",
+        "ssl",
+        "ttfb",
+        "download",
+        "total"
+      ]
     },
     "PerformanceTestMetadata": {
       "type": "object",
@@ -172,7 +213,10 @@
           "description": "Test tags for categorization"
         },
         "parentID": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "description": "Parent folder ID"
         },
         "createdAt": {
@@ -196,7 +240,13 @@
         },
         "status": {
           "type": "string",
-          "enum": ["draft", "configured", "running", "completed", "archived"],
+          "enum": [
+            "draft",
+            "configured",
+            "running",
+            "completed",
+            "archived"
+          ],
           "description": "Test status"
         },
         "lastRun": {
@@ -205,7 +255,17 @@
           "description": "Last execution timestamp"
         }
       },
-      "required": ["id", "name", "description", "tags", "createdAt", "updatedAt", "createdBy", "version", "status"]
+      "required": [
+        "id",
+        "name",
+        "description",
+        "tags",
+        "createdAt",
+        "updatedAt",
+        "createdBy",
+        "version",
+        "status"
+      ]
     },
     "AuthConfig": {
       "type": "object",
@@ -237,7 +297,11 @@
         },
         "refresh_method": {
           "type": "string",
-          "enum": ["GET", "POST", "PUT"],
+          "enum": [
+            "GET",
+            "POST",
+            "PUT"
+          ],
           "default": "POST",
           "description": "HTTP method for refresh request"
         },
@@ -270,7 +334,10 @@
           "description": "Refresh interval in seconds"
         }
       },
-      "required": ["refresh_url", "token_path"]
+      "required": [
+        "refresh_url",
+        "token_path"
+      ]
     },
     "CredentialRotationConfig": {
       "type": "object",
@@ -292,18 +359,25 @@
                 "description": "User identifier"
               }
             },
-            "required": ["headers"]
+            "required": [
+              "headers"
+            ]
           },
           "description": "Array of credential sets"
         },
         "rotation_strategy": {
           "type": "string",
-          "enum": ["round_robin", "random"],
+          "enum": [
+            "round_robin",
+            "random"
+          ],
           "default": "round_robin",
           "description": "Credential rotation strategy"
         }
       },
-      "required": ["credentials"]
+      "required": [
+        "credentials"
+      ]
     },
     "LoadTestConfiguration": {
       "type": "object",
@@ -349,7 +423,13 @@
           "description": "Authentication configuration"
         }
       },
-      "required": ["targetUrl", "duration", "virtualUsers", "includeRequests", "thresholds"]
+      "required": [
+        "targetUrl",
+        "duration",
+        "virtualUsers",
+        "includeRequests",
+        "thresholds"
+      ]
     },
     "LoadTestThresholds": {
       "type": "object",
@@ -371,7 +451,11 @@
           "description": "Minimum requests per second"
         }
       },
-      "required": ["maxResponseTime", "maxErrorRate", "minThroughput"]
+      "required": [
+        "maxResponseTime",
+        "maxErrorRate",
+        "minThroughput"
+      ]
     },
     "PerformanceTestResults": {
       "type": "object",
@@ -422,7 +506,16 @@
           "description": "Reasons for test failure"
         }
       },
-      "required": ["testId", "startTime", "endTime", "duration", "metrics", "requestResults", "timeline", "passed"]
+      "required": [
+        "testId",
+        "startTime",
+        "endTime",
+        "duration",
+        "metrics",
+        "requestResults",
+        "timeline",
+        "passed"
+      ]
     },
     "AggregateMetrics": {
       "type": "object",
@@ -456,7 +549,15 @@
           "description": "Bandwidth usage metrics"
         }
       },
-      "required": ["totalRequests", "successfulRequests", "failedRequests", "errorRate", "throughput", "responseTime", "bandwidth"]
+      "required": [
+        "totalRequests",
+        "successfulRequests",
+        "failedRequests",
+        "errorRate",
+        "throughput",
+        "responseTime",
+        "bandwidth"
+      ]
     },
     "ResponseTimeMetrics": {
       "type": "object",
@@ -490,7 +591,15 @@
           "description": "99th percentile response time"
         }
       },
-      "required": ["min", "max", "mean", "median", "p90", "p95", "p99"]
+      "required": [
+        "min",
+        "max",
+        "mean",
+        "median",
+        "p90",
+        "p95",
+        "p99"
+      ]
     },
     "BandwidthMetrics": {
       "type": "object",
@@ -512,7 +621,12 @@
           "description": "Average bytes received per second"
         }
       },
-      "required": ["sent", "received", "avgSentPerSecond", "avgReceivedPerSecond"]
+      "required": [
+        "sent",
+        "received",
+        "avgSentPerSecond",
+        "avgReceivedPerSecond"
+      ]
     },
     "RequestResults": {
       "type": "object",
@@ -538,7 +652,12 @@
           "description": "Individual execution results"
         }
       },
-      "required": ["requestId", "url", "method", "executions"]
+      "required": [
+        "requestId",
+        "url",
+        "method",
+        "executions"
+      ]
     },
     "RequestExecution": {
       "type": "object",
@@ -568,7 +687,13 @@
           "description": "Error message if failed"
         }
       },
-      "required": ["timestamp", "statusCode", "responseTime", "size", "success"]
+      "required": [
+        "timestamp",
+        "statusCode",
+        "responseTime",
+        "size",
+        "success"
+      ]
     },
     "TimelineDataPoint": {
       "type": "object",
@@ -594,7 +719,13 @@
           "description": "Error rate at this point"
         }
       },
-      "required": ["timestamp", "activeUsers", "requestsPerSecond", "avgResponseTime", "errorRate"]
+      "required": [
+        "timestamp",
+        "activeUsers",
+        "requestsPerSecond",
+        "avgResponseTime",
+        "errorRate"
+      ]
     }
   }
 }
