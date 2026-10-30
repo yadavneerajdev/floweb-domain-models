@@ -711,6 +711,103 @@ export type LoadDatasetConfig = BaseActionConfig & {
   outputVariable?: string;
 };
 /**
+ * Compute a value without a browser: sandboxed Python-style expressions for arithmetic, logic and text building, text extraction between markers with skippable occurrences, regular-expression extraction, and JSON path lookup. The result is stored in outputVariable.
+ */
+export type ComputeConfig = BaseActionConfig & {
+  /**
+   * What to compute. 'expression' evaluates sandboxed Python-style logic; 'extractBetween' takes the text between a start and an end marker; 'regex' extracts regular-expression matches; 'jsonPath' reads a value out of JSON by path.
+   */
+  operation?: "expression" | "extractBetween" | "regex" | "jsonPath";
+  /**
+   * expression: a Python-style expression, or short lines of assignments, if/for and a final expression. The last expression (or a variable named 'result') is the output. Flow variables are available by name and as {{variable}}, bound as values rather than pasted text. No imports, attribute internals, file, network or process access.
+   */
+  expression?: string;
+  /**
+   * extractBetween/regex/jsonPath: the text or {{variable}} to read from. An object or list variable is read as its JSON text.
+   */
+  source?: string;
+  /**
+   * extractBetween: marker the extracted text starts after. Empty starts at the beginning.
+   */
+  startPattern?: string;
+  /**
+   * extractBetween: marker the extracted text ends before. Empty runs to the end.
+   */
+  endPattern?: string;
+  /**
+   * extractBetween: match the start and end markers as literal text or as regular expressions.
+   */
+  patternMode?: "text" | "regex";
+  /**
+   * extractBetween: occurrences of the start marker to skip, so 1 starts after its second occurrence.
+   */
+  skipStartMatches?: number;
+  /**
+   * extractBetween: occurrences of the end marker to skip after the start, so 1 ends before its second occurrence.
+   */
+  skipEndMatches?: number;
+  /**
+   * extractBetween: keep the start and end markers in the extracted text.
+   */
+  includeBoundaries?: boolean;
+  /**
+   * regex: the regular expression to match.
+   */
+  pattern?: string;
+  /**
+   * regex: capture group to return, by number or name. Empty returns the first group when the pattern has one, otherwise the whole match.
+   */
+  group?: string;
+  /**
+   * regex: matches to skip before the one returned, so 1 returns the second match.
+   */
+  skipMatches?: number;
+  /**
+   * extractBetween (regex markers) and regex: match regardless of letter case.
+   */
+  ignoreCase?: boolean;
+  /**
+   * regex: ^ and $ match at every line break.
+   */
+  multiline?: boolean;
+  /**
+   * regex: . also matches line breaks.
+   */
+  dotAll?: boolean;
+  /**
+   * extractBetween/regex: return every match (after the skipped ones) as a list instead of one value.
+   */
+  matchAll?: boolean;
+  /**
+   * jsonPath: dotted/bracket path such as data.items[0].name; [*] collects that field from every list item.
+   */
+  path?: string;
+  /**
+   * Strip leading and trailing whitespace from text results.
+   */
+  trim?: boolean;
+  /**
+   * Convert the result before storing it. 'auto' keeps it as computed; 'json' parses a JSON string into an object or list.
+   */
+  outputType?: "auto" | "string" | "number" | "boolean" | "json";
+  /**
+   * extractBetween/regex/jsonPath: fail the step when nothing matches. When false, defaultValue is stored instead.
+   */
+  failIfNotFound?: boolean;
+  /**
+   * Value stored when nothing matches and failIfNotFound is false.
+   */
+  defaultValue?: string;
+  /**
+   * Longest the computation may run before it is stopped, in milliseconds.
+   */
+  timeoutMs?: number;
+  /**
+   * Variable to store the result in.
+   */
+  outputVariable?: string;
+};
+/**
  * Branch based on a condition.
  */
 export type ConditionalConfig = ConditionalConfig1 & {
@@ -2390,6 +2487,7 @@ export interface ActionConfigurationsSchema {
       | CaptureWebVitalsConfig
       | VisualRegressionConfig
       | LoadDatasetConfig
+      | ComputeConfig
       | ConditionalConfig
       | LoopConfig
       | DatabaseQueryConfig
@@ -2458,6 +2556,7 @@ export interface ActionConfigurationsSchema {
   CaptureWebVitalsConfig?: CaptureWebVitalsConfig;
   VisualRegressionConfig?: VisualRegressionConfig;
   LoadDatasetConfig?: LoadDatasetConfig;
+  ComputeConfig?: ComputeConfig;
   DatabaseQueryConfig?: DatabaseQueryConfig;
   DatabaseInsertConfig?: DatabaseInsertConfig;
   FileUploadConfig?: FileUploadConfig;

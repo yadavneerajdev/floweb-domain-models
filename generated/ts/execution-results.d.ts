@@ -1,11 +1,17 @@
 /* eslint-disable */
 // GENERATED from schemas/ by scripts/generate-ts.cjs — do not edit by hand.
 
+/**
+ * Browser automation adapter for web actions; omitted uses the engine default.
+ */
+export type BrowserAdapter = "selenium" | "playwright";
+
 export interface ExecutionResultsModelsSchema {
   executionResults?: {
     actionResults?: ActionResult[];
     flowReports?: FlowReport[];
   };
+  BrowserAdapter?: BrowserAdapter;
   ActionResult?: ActionResult;
   SemanticExpectedStates?: SemanticExpectedStates;
   SemanticRelation?: SemanticRelation;
@@ -179,6 +185,10 @@ export interface FlowReport {
     name?: string;
     version?: string;
     user_agent?: string;
+    /**
+     * Adapter that actually ran this flow
+     */
+    adapter?: "selenium" | "playwright";
   };
   /**
    * Runtime execution configuration
@@ -192,6 +202,10 @@ export interface FlowReport {
       browser: string;
       mode: "normal" | "incognito";
       browser_mode: "headful" | "headless";
+      /**
+       * Adapter requested for this browser config; omitted uses the engine default.
+       */
+      browserAdapter?: "selenium" | "playwright";
     }[];
   };
   /**

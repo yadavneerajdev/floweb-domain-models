@@ -57,6 +57,15 @@ class SessionInfo(BaseModel):
     """
 
 
+class BrowserAdapter(StrEnum):
+    """
+    Browser automation adapter for web actions; omitted uses the engine default.
+    """
+
+    selenium = 'selenium'
+    playwright = 'playwright'
+
+
 class Flow(BaseModel):
     """
     Flow to execute
@@ -134,6 +143,10 @@ class RecordCommand(WebSocketMessage):
     Flow ID for the command
     """
     url: str | None = None
+    browserAdapter: BrowserAdapter | None = None
+    """
+    Browser automation adapter for the recording session; omitted uses the engine default. NOTE: this schema's RecordCommand is a documentation model only — the real wire contract is the hand-maintained RecordCommand in backend/engine/types/websocket_models.py, which must be edited to match.
+    """
     config: dict[str, Any] | None = {}
 
 
@@ -679,6 +692,7 @@ class SuiteRunConfigWire(BaseModel):
     browser: str | None = None
     headless: bool | None = None
     incognito: bool | None = None
+    browserAdapter: BrowserAdapter | None = None
     recordExecution: bool | None = None
     environmentId: str | None = None
     randomBrowserPool: list[str] | None = None
@@ -1000,16 +1014,18 @@ class ProcessKind(StrEnum):
     run = 'run'
     suite = 'suite'
     recording = 'recording'
+    download = 'download'
 
 
 class ProcessStatus(StrEnum):
     """
-    Lifecycle state of a process. finished/failed/cancelled/stopped are terminal.
+    Lifecycle state of a process. finished/completed/failed/cancelled/stopped are terminal. completed is used by download processes; other kinds use finished.
     """
 
     started = 'started'
     running = 'running'
     finished = 'finished'
+    completed = 'completed'
     failed = 'failed'
     cancelled = 'cancelled'
     stopped = 'stopped'
@@ -1027,6 +1043,16 @@ class ProcessActionStatuses(RootModel[dict[str, ProcessActionStatuses1]]):
     """
 
     root: dict[str, ProcessActionStatuses1]
+
+
+class Phase(StrEnum):
+    """
+    Download processes only: stage of the download.
+    """
+
+    downloading = 'downloading'
+    extracting = 'extracting'
+    verifying = 'verifying'
 
 
 class ProcessEventResponse(WebSocketResponse):
@@ -1071,6 +1097,30 @@ class ProcessEventResponse(WebSocketResponse):
     Response message
     """
     actions: ProcessActionStatuses | None = None
+    artifact: str | None = None
+    """
+    Download processes only: id of the downloaded artifact, e.g. "chrome" or "chromedriver".
+    """
+    label: str | None = None
+    """
+    Download processes only: human-readable name of the artifact, e.g. "Google Chrome".
+    """
+    phase: Phase | None = None
+    """
+    Download processes only: stage of the download.
+    """
+    bytes_downloaded: int | None = None
+    """
+    Download processes only: bytes transferred so far.
+    """
+    bytes_total: int | None = None
+    """
+    Download processes only: total bytes if the server reported Content-Length, else null.
+    """
+    percent: float | None = None
+    """
+    Download processes only: bytes_downloaded / bytes_total * 100, or null when bytes_total is unknown.
+    """
 
 
 class RunCommand(WebSocketMessage):
@@ -1080,6 +1130,10 @@ class RunCommand(WebSocketMessage):
     command: Literal['run']
     """
     Command type
+    """
+    browserAdapter: BrowserAdapter | None = None
+    """
+    Browser automation adapter for web actions; omitted uses the engine default. NOTE: this schema's RunCommand is a documentation model only — the real wire contract is the hand-maintained RunCommand in backend/engine/types/websocket_models.py, which must be edited to match.
     """
     flow: Flow
     """

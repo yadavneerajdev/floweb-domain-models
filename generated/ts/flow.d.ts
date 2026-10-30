@@ -18,8 +18,16 @@ export type DateFormatPreset =
   | "unix-seconds"
   | "unix-millis"
   | "custom";
+/**
+ * Browser automation adapter for web actions; omitted uses the engine default.
+ */
+export type BrowserAdapter = "selenium" | "playwright";
 export type RunCommand = WebSocketMessage & {
   command: "run";
+  /**
+   * Browser automation adapter for web actions; omitted uses the engine default.
+   */
+  browserAdapter?: "selenium" | "playwright";
   /**
    * Flow to execute
    */
@@ -39,6 +47,10 @@ export type RecordCommand = WebSocketMessage & {
   command: "record";
   flow_id?: string;
   url?: string;
+  /**
+   * Browser automation adapter for web actions; omitted uses the engine default.
+   */
+  browserAdapter?: "selenium" | "playwright";
   config?: {
     [k: string]: unknown;
   };
@@ -410,11 +422,11 @@ export type ErrorResponse = WebSocketResponse & {
 /**
  * The kind of engine work a process represents.
  */
-export type ProcessKind = "run" | "suite" | "recording";
+export type ProcessKind = "run" | "suite" | "recording" | "download";
 /**
- * Lifecycle state of a process. finished/failed/cancelled/stopped are terminal.
+ * Lifecycle state of a process. finished/completed/failed/cancelled/stopped are terminal. completed is used by download processes; other kinds use finished.
  */
-export type ProcessStatus = "started" | "running" | "finished" | "failed" | "cancelled" | "stopped";
+export type ProcessStatus = "started" | "running" | "finished" | "completed" | "failed" | "cancelled" | "stopped";
 /**
  * The engine's full view of an account's processes, sent on every successful authenticate. This is how a reconnecting or reloaded client recovers work that started while it was away, including how far each run had progressed.
  */
@@ -455,6 +467,30 @@ export type ProcessEventResponse = WebSocketResponse & {
   result?: string | null;
   message?: string | null;
   actions?: ProcessActionStatuses;
+  /**
+   * Download processes only: id of the downloaded artifact, e.g. "chrome" or "chromedriver".
+   */
+  artifact?: string;
+  /**
+   * Download processes only: human-readable name of the artifact, e.g. "Google Chrome".
+   */
+  label?: string;
+  /**
+   * Download processes only: stage of the download.
+   */
+  phase?: "downloading" | "extracting" | "verifying";
+  /**
+   * Download processes only: bytes transferred so far.
+   */
+  bytes_downloaded?: number;
+  /**
+   * Download processes only: total bytes if the server reported Content-Length, else null.
+   */
+  bytes_total?: number | null;
+  /**
+   * Download processes only: bytes_downloaded / bytes_total * 100, or null when bytes_total is unknown.
+   */
+  percent?: number | null;
 };
 
 export interface FlowSchema {
@@ -538,6 +574,7 @@ export interface FlowSchema {
   Variable?: Variable;
   WebSocketMessage?: WebSocketMessage;
   SessionInfo?: SessionInfo;
+  BrowserAdapter?: BrowserAdapter;
   RunCommand?: RunCommand;
   MobileRunConfig?: MobileRunConfig2;
   RecordCommand?: RecordCommand;
@@ -1211,6 +1248,7 @@ export interface SuiteRunConfigWire {
   browser?: string;
   headless?: boolean;
   incognito?: boolean;
+  browserAdapter?: BrowserAdapter;
   recordExecution?: boolean;
   environmentId?: string | null;
   randomBrowserPool?: string[];
