@@ -3,10 +3,11 @@
 
 from __future__ import annotations
 
-from enum import StrEnum
+from enum import Enum, StrEnum
 from typing import Annotated
 
 from pydantic import AwareDatetime, BaseModel, ConfigDict, Field
+from typing_extensions import TypeAliasType
 
 
 class PlanId(StrEnum):
@@ -41,7 +42,7 @@ class FeatureId(StrEnum):
 
 class SubscriptionStatus(StrEnum):
     """
-    Lifecycle state of an account subscription. Only 'active' and 'trialing' grant entitlements.
+    Lifecycle state of an account subscription. Only 'active' and 'trialing' grant entitlements. 'past_due' means the period ended unpaid: the catalogue stays applied but chargeable activity is blocked until the invoice is settled.
     """
 
     active = 'active'
@@ -158,30 +159,19 @@ class UsageSnapshot(BaseModel):
     """
 
 
-class AccountEntitlements(BaseModel):
+MetricCreditsAdditionalProperty = TypeAliasType(
+    "MetricCreditsAdditionalProperty", Annotated[int, Field(ge=0)]
+)
+
+
+class BlockedBy(Enum):
     """
-    The resolved answer to 'what may this account do right now'. Sent to the UI on load and to the engine in its runtime context; both treat it as read-only.
+    Why chargeable activity is paused, so a denial can name the right remedy
     """
 
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    accountId: str
-    planId: PlanId
-    planName: str | None = None
-    status: SubscriptionStatus
-    features: list[FeatureId]
-    quotas: PlanQuotas
-    usage: UsageSnapshot | None = None
-    credits: Annotated[int | None, Field(ge=0)] = None
-    """
-    Admin-granted credits available once the daily plan allowance is spent
-    """
-    aiEnabledByUser: bool | None = True
-    """
-    Account preference gating AI at runtime; AI runs only when this is true AND the matching feature is entitled
-    """
-    currentPeriodEnd: AwareDatetime | None = None
+    spend_cap = 'spend_cap'
+    invoice_unpaid = 'invoice_unpaid'
+    NoneType_None = None
 
 
 class FeatureDeniedReason(StrEnum):
@@ -193,22 +183,364 @@ class FeatureDeniedReason(StrEnum):
     quota_exceeded = 'quota_exceeded'
     subscription_inactive = 'subscription_inactive'
     disabled_by_user = 'disabled_by_user'
+    spend_cap_reached = 'spend_cap_reached'
+    allowance_exhausted = 'allowance_exhausted'
+    invoice_unpaid = 'invoice_unpaid'
 
 
-class FeatureDenied(BaseModel):
+class MeteredMetric(StrEnum):
     """
-    Error payload returned with HTTP 402 when a gated feature is refused
+    A countable unit of consumption. Distinct from FeatureId: a feature is gateable, a metric is billable. Every metric that maps to a gated capability is enforced through that feature as well.
+    """
+
+    test_execution = 'test_execution'
+    suite_execution = 'suite_execution'
+    api_test_execution = 'api_test_execution'
+    performance_test_run = 'performance_test_run'
+    test_creation = 'test_creation'
+    crawl_generation = 'crawl_generation'
+    recorder_session = 'recorder_session'
+    ai_test_generation = 'ai_test_generation'
+    ai_assistant_message = 'ai_assistant_message'
+    ai_vibe_testing = 'ai_vibe_testing'
+    self_healing_ai = 'self_healing_ai'
+    seat = 'seat'
+
+
+class BillingModel(StrEnum):
+    """
+    How an account is charged. 'fixed' bills a recurring amount and caps each metric with an allowance; 'pay_as_you_go' bills per unit consumed plus an optional per-seat charge.
+    """
+
+    fixed = 'fixed'
+    pay_as_you_go = 'pay_as_you_go'
+
+
+class MetricAllowance(BaseModel):
+    """
+    A fixed plan's ceiling for one metric. A null limit means unlimited. Daily limits reset at 00:00 UTC; monthly limits reset on the account's anniversary.
     """
 
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    code: str
-    feature: FeatureId
-    reason: FeatureDeniedReason
-    message: str
-    requiredPlan: PlanId | None = None
-    currentPlan: PlanId | None = None
+    metric: MeteredMetric
+    limitPerDay: Annotated[int | None, Field(ge=0)] = None
+    limitPerMonth: Annotated[int | None, Field(ge=0)] = None
+
+
+class MetricPrice(BaseModel):
+    """
+    Pay-as-you-go unit price for one metric, set by a Floweb administrator and agreed by the account before it takes effect.
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    metric: MeteredMetric
+    unitPrice: Annotated[float, Field(ge=0.0)]
+    unit: Annotated[str | None, Field(max_length=40)] = None
+    """
+    Human label for one billable unit, e.g. 'per execution'
+    """
+
+
+class SpendCapScope(StrEnum):
+    """
+    Whether a cap applies to the whole account or to each individual member.
+    """
+
+    account = 'account'
+    user = 'user'
+
+
+class SpendCap(BaseModel):
+    """
+    A ceiling set by the account owner or admin on pay-as-you-go spend. Enforcement triggers when the cap is reached, not exceeded, so the final chargeable action is the one that meets the limit. Account and user caps are both enforced and the stricter one wins.
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    scope: SpendCapScope
+    limitDaily: Annotated[float | None, Field(ge=0.0)] = None
+    limitMonthly: Annotated[float | None, Field(ge=0.0)] = None
+    userId: str | None = None
+    """
+    Set only for a per-member override of the account's user-scope default
+    """
+
+
+class CatalogueStatus(StrEnum):
+    """
+    Lifecycle of an administrator-authored pricing proposal. A catalogue is negotiated in a support thread first and only becomes payable once the account has approved it there and an administrator has released it to billing. Only an 'accepted' catalogue grants entitlements.
+    """
+
+    draft = 'draft'
+    in_negotiation = 'in_negotiation'
+    client_approved = 'client_approved'
+    revision_requested = 'revision_requested'
+    sent = 'sent'
+    accepted = 'accepted'
+    declined = 'declined'
+    superseded = 'superseded'
+    expired = 'expired'
+
+
+class PricingCatalogue(BaseModel):
+    """
+    A per-account pricing proposal authored by a Floweb administrator. Negotiated in a support thread, then released to the account's billing page for payment. Immutable once proposed: a revision creates a new catalogue pointing at the previous one via revisionOf, so the negotiation history stays auditable. Terms are copied onto the subscription when accepted, so later catalogue edits never retroactively change what an account agreed to.
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    id: str | None = None
+    accountId: str | None = None
+    """
+    Account the catalogue is for; null for one quoted offline before an account exists
+    """
+    billingModel: BillingModel
+    name: Annotated[str, Field(max_length=80)]
+    summary: Annotated[str | None, Field(max_length=500)] = None
+    currency: str | None = 'USD'
+    baseMonthlyPrice: Annotated[float | None, Field(ge=0.0)] = None
+    """
+    Recurring charge for a fixed catalogue; null for pure pay-as-you-go
+    """
+    seatPriceMonthly: Annotated[float | None, Field(ge=0.0)] = None
+    """
+    Per-member monthly charge, counted from active account members at invoice time
+    """
+    allowances: list[MetricAllowance]
+    """
+    Populated for a fixed catalogue
+    """
+    prices: list[MetricPrice]
+    """
+    Populated for a pay-as-you-go catalogue
+    """
+    features: list[FeatureId]
+    """
+    Capabilities the catalogue unlocks
+    """
+    status: CatalogueStatus
+    ticketId: str | None = None
+    """
+    Support thread the catalogue was negotiated in
+    """
+    revisionOf: str | None = None
+    """
+    Catalogue this one supersedes
+    """
+    validUntil: AwareDatetime | None = None
+    createdByAdminId: str | None = None
+    createdByAdminEmail: str | None = None
+    sentAt: AwareDatetime | None = None
+    respondedAt: AwareDatetime | None = None
+    acceptedByUserId: str | None = None
+    createdAt: AwareDatetime | None = None
+    updatedAt: AwareDatetime | None = None
+    proposedAt: AwareDatetime | None = None
+    """
+    When it was posted into the support thread for the account to review
+    """
+    clientRespondedAt: AwareDatetime | None = None
+    clientResponseNote: Annotated[str | None, Field(max_length=1000)] = None
+    """
+    What the account said when approving or asking for a revision
+    """
+
+
+class MetricUsage(BaseModel):
+    """
+    Consumption of one metric over a window, with the money it accrued. Cost is zero on a fixed catalogue, where allowances rather than prices apply.
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    metric: MeteredMetric
+    count: Annotated[int, Field(ge=0)]
+    cost: Annotated[float, Field(ge=0.0)]
+    limitPerDay: Annotated[int | None, Field(ge=0)] = None
+    limitPerMonth: Annotated[int | None, Field(ge=0)] = None
+    remainingToday: Annotated[int | None, Field(ge=0)] = None
+    remainingThisMonth: Annotated[int | None, Field(ge=0)] = None
+    credits: Annotated[int | None, Field(ge=0)] = None
+    """
+    Credits held for this metric
+    """
+
+
+class SpendState(BaseModel):
+    """
+    Where an account or member stands against its spend caps right now. blocked is true once a cap is reached, which refuses further chargeable actions until the cap is raised.
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    scope: SpendCapScope
+    userId: str | None = None
+    spentToday: Annotated[float, Field(ge=0.0)]
+    spentThisMonth: Annotated[float, Field(ge=0.0)]
+    limitDaily: Annotated[float | None, Field(ge=0.0)] = None
+    limitMonthly: Annotated[float | None, Field(ge=0.0)] = None
+    blocked: bool
+    blockedReason: str | None = None
+
+
+class InvoiceStatus(StrEnum):
+    """
+    Lifecycle of a generated invoice. 'open' is billed and awaiting payment; 'void' was cancelled by an administrator.
+    """
+
+    draft = 'draft'
+    open = 'open'
+    paid = 'paid'
+    past_due = 'past_due'
+    void = 'void'
+
+
+class InvoiceLineKind(StrEnum):
+    """
+    What an invoice line represents. 'base' and 'seat' are prepaid for the period the invoice opens; 'metric' lines are charged in arrears for the period that just elapsed.
+    """
+
+    base = 'base'
+    seat = 'seat'
+    metric = 'metric'
+    credit_grant = 'credit_grant'
+    adjustment = 'adjustment'
+
+
+class InvoiceLine(BaseModel):
+    """
+    One charge on an invoice. amount is quantity times unitPrice, stored rather than derived so a later price change cannot alter an issued invoice.
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    kind: InvoiceLineKind
+    metric: MeteredMetric | None = None
+    description: Annotated[str, Field(max_length=200)]
+    quantity: Annotated[float, Field(ge=0.0)]
+    unitPrice: Annotated[float, Field(ge=0.0)]
+    amount: float
+
+
+class Invoice(BaseModel):
+    """
+    A billing statement. Combines the prepaid charge for the period it opens with any metered usage from the period that just elapsed, so a rolling catalogue bills correctly without giving service before payment. Lines are frozen at issue time.
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    id: str | None = None
+    number: str | None = None
+    """
+    Human-facing invoice number
+    """
+    accountId: str
+    accountName: str | None = None
+    billingModel: BillingModel
+    currency: str | None = 'USD'
+    periodStart: AwareDatetime
+    periodEnd: AwareDatetime
+    lines: list[InvoiceLine]
+    subtotal: float
+    creditsApplied: Annotated[float | None, Field(ge=0.0)] = None
+    total: float
+    status: InvoiceStatus
+    issuedAt: AwareDatetime
+    dueAt: AwareDatetime | None = None
+    paidAt: AwareDatetime | None = None
+    paymentReference: str | None = None
+    createdAt: AwareDatetime | None = None
+    updatedAt: AwareDatetime | None = None
+    coversPeriodStart: AwareDatetime | None = None
+    """
+    Start of the prepaid period this invoice opens once settled
+    """
+    coversPeriodEnd: AwareDatetime | None = None
+
+
+class CreditRequestStatus(StrEnum):
+    """
+    Lifecycle of an account's request for additional credits.
+    """
+
+    requested = 'requested'
+    quoted = 'quoted'
+    accepted = 'accepted'
+    granted = 'granted'
+    declined = 'declined'
+
+
+class CreditRequest(BaseModel):
+    """
+    A structured request for additional credits, raised from the billing page and negotiated in a support thread. Once granted, the quoted amount is added to the account's next invoice.
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    id: str | None = None
+    accountId: str
+    requestedByUserId: str
+    requestedByEmail: str | None = None
+    metric: MeteredMetric | None = None
+    """
+    Metric the credits are for; null means general-purpose credits usable for executions
+    """
+    quantity: Annotated[int, Field(ge=1)]
+    reason: Annotated[str, Field(max_length=1000)]
+    status: CreditRequestStatus
+    quotedUnitPrice: Annotated[float | None, Field(ge=0.0)] = None
+    quotedTotal: Annotated[float | None, Field(ge=0.0)] = None
+    currency: str | None = 'USD'
+    ticketId: str | None = None
+    grantedAt: AwareDatetime | None = None
+    invoiceId: str | None = None
+    """
+    Invoice the granted credits were charged on
+    """
+    createdAt: AwareDatetime | None = None
+    updatedAt: AwareDatetime | None = None
+
+
+class TicketPayloadKind(StrEnum):
+    """
+    What a structured support-thread message carries, beyond its text.
+    """
+
+    catalogue_proposal = 'catalogue_proposal'
+    catalogue_approval = 'catalogue_approval'
+    catalogue_revision_request = 'catalogue_revision_request'
+    credit_quote = 'credit_quote'
+    credit_acceptance = 'credit_acceptance'
+
+
+class TicketCommentPayload(BaseModel):
+    """
+    A structured attachment on a support comment. The comment's own text stays the human message; this carries what the UI needs to render an actionable card and to link the thread to the billing document it is about.
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    kind: TicketPayloadKind
+    catalogueId: str | None = None
+    creditRequestId: str | None = None
+    summary: Annotated[str | None, Field(max_length=300)] = None
+    """
+    One-line description shown on the card
+    """
+    amount: Annotated[float | None, Field(ge=0.0)] = None
+    currency: str | None = None
 
 
 class AccountSubscription(BaseModel):
@@ -236,11 +568,107 @@ class AccountSubscription(BaseModel):
     payments: list[PaymentRecord] | None = None
     createdAt: AwareDatetime | None = None
     updatedAt: AwareDatetime | None = None
+    billingModel: BillingModel | None = None
+    catalogueId: str | None = None
+    """
+    Accepted catalogue whose terms are in force
+    """
+    allowances: list[MetricAllowance] | None = None
+    """
+    Per-metric ceilings copied from the accepted catalogue
+    """
+    prices: list[MetricPrice] | None = None
+    """
+    Per-metric unit prices copied from the accepted catalogue
+    """
+    spendCaps: list[SpendCap] | None = None
+    """
+    Caps set by the account owner or admin, not by Floweb
+    """
+    seatPriceMonthly: Annotated[float | None, Field(ge=0.0)] = None
+    baseMonthlyPrice: Annotated[float | None, Field(ge=0.0)] = None
+    anniversaryDayOfMonth: Annotated[int | None, Field(ge=1, le=31)] = None
+    """
+    Deprecated: periods are anchored to payment, not to a fixed calendar day
+    """
+    periodStartsOnPayment: bool | None = True
+    """
+    A negotiated catalogue rolls over indefinitely and each period begins when its invoice is settled, so an account that pays late simply starts late on the same terms
+    """
+    serviceSuspendedAt: AwareDatetime | None = None
+    """
+    When activity was blocked for an unsettled period; cleared on payment
+    """
+
+
+class AccountEntitlements(BaseModel):
+    """
+    The resolved answer to 'what may this account do right now'. Sent to the UI on load and to the engine in its runtime context; both treat it as read-only.
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    accountId: str
+    planId: PlanId
+    planName: str | None = None
+    status: SubscriptionStatus
+    features: list[FeatureId]
+    quotas: PlanQuotas
+    usage: UsageSnapshot | None = None
+    credits: Annotated[int | None, Field(ge=0)] = None
+    """
+    Admin-granted credits available once the daily plan allowance is spent
+    """
+    aiEnabledByUser: bool | None = True
+    """
+    Account preference gating AI at runtime; AI runs only when this is true AND the matching feature is entitled
+    """
+    currentPeriodEnd: AwareDatetime | None = None
+    billingModel: BillingModel | None = None
+    metrics: list[MetricUsage] | None = None
+    """
+    Per-metric consumption and remaining headroom for the caller
+    """
+    spend: list[SpendState] | None = None
+    """
+    Cap state for the account and for the calling member
+    """
+    blocked: bool | None = False
+    """
+    True when a reached cap or an unpaid invoice suspends chargeable activity account-wide
+    """
+    blockedReason: str | None = None
+    metricCredits: dict[str, MetricCreditsAdditionalProperty] | None = None
+    """
+    Credits held per metric, spent once that metric's allowance is exhausted
+    """
+    blockedBy: BlockedBy | None = None
+    """
+    Why chargeable activity is paused, so a denial can name the right remedy
+    """
+
+
+class FeatureDenied(BaseModel):
+    """
+    Error payload returned with HTTP 402 when a gated feature is refused
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    code: str
+    feature: FeatureId
+    reason: FeatureDeniedReason
+    message: str
+    requiredPlan: PlanId | None = None
+    currentPlan: PlanId | None = None
+    metric: MeteredMetric | None = None
 
 
 class Billing(BaseModel):
     """
-    Per-account plans, feature entitlements and usage quotas. Entitlements are the authority for whether a feature may run; plans are only a convenient way to assemble them. Field-level source of truth is floweb-server subscription.model.ts.
+    Per-account plans, feature entitlements, metered usage and pricing. Entitlements are the authority for whether a feature may run; plans and catalogues are only ways to assemble them. FeatureId gates a capability, MeteredMetric counts it. Field-level source of truth is floweb-server subscription.model.ts.
     """
 
     model_config = ConfigDict(
@@ -249,3 +677,7 @@ class Billing(BaseModel):
     subscription: AccountSubscription | None = None
     entitlements: AccountEntitlements | None = None
     catalog: PlanCatalogEntry | None = None
+    catalogue: PricingCatalogue | None = None
+    invoice: Invoice | None = None
+    creditRequest: CreditRequest | None = None
+    ticketPayload: TicketCommentPayload | None = None
