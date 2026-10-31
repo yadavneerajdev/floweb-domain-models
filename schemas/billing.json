@@ -1219,6 +1219,21 @@
           ],
           "minimum": 0
         },
+        "requestedAmount": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Credits asked for, as stored in the credit_requests collection the admin service owns."
+        },
+        "quotedAmount": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Total the account expects to pay for the request, as stored."
+        },
+        "note": {
+          "type": ["string", "null"],
+          "maxLength": 1000,
+          "description": "The requester's reason, as stored."
+        },
         "currency": {
           "type": "string",
           "default": "USD"

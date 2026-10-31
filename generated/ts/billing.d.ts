@@ -486,6 +486,18 @@ export interface CreditRequest {
   status: CreditRequestStatus;
   quotedUnitPrice?: number | null;
   quotedTotal?: number | null;
+  /**
+   * Credits asked for, as stored in the credit_requests collection the admin service owns.
+   */
+  requestedAmount?: number;
+  /**
+   * Total the account expects to pay for the request, as stored.
+   */
+  quotedAmount?: number;
+  /**
+   * The requester's reason, as stored.
+   */
+  note?: string | null;
   currency?: string;
   ticketId?: string | null;
   grantedAt?: string | null;
