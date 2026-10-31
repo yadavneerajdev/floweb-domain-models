@@ -501,6 +501,18 @@ class CreditRequest(BaseModel):
     status: CreditRequestStatus
     quotedUnitPrice: Annotated[float | None, Field(ge=0.0)] = None
     quotedTotal: Annotated[float | None, Field(ge=0.0)] = None
+    requestedAmount: Annotated[int | None, Field(ge=1)] = None
+    """
+    Credits asked for, as stored in the credit_requests collection the admin service owns.
+    """
+    quotedAmount: Annotated[float | None, Field(ge=0.0)] = None
+    """
+    Total the account expects to pay for the request, as stored.
+    """
+    note: Annotated[str | None, Field(max_length=1000)] = None
+    """
+    The requester's reason, as stored.
+    """
     currency: str | None = 'USD'
     ticketId: str | None = None
     grantedAt: AwareDatetime | None = None
